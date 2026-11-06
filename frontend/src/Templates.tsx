@@ -61,56 +61,73 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
   const idPrefix = mode === "create" ? "create" : `edit-${initial?.id}`;
 
   return (
-    <form onSubmit={handleSubmit} aria-label={mode === "create" ? "Create template" : "Edit template"}>
-      <div>
+    <form
+      onSubmit={handleSubmit}
+      aria-label={mode === "create" ? "Create template" : "Edit template"}
+      className="card template-form"
+    >
+      <h3 className="card-title">{mode === "create" ? "Create template" : "Edit template"}</h3>
+      <div className="field">
         <label htmlFor={`${idPrefix}-name`}>Name</label>
         <input
           id={`${idPrefix}-name`}
+          className="input"
           value={name}
           onChange={(event) => setName(event.target.value)}
           required
         />
       </div>
-      <div>
+      <div className="field">
         <label htmlFor={`${idPrefix}-unit`}>Unit</label>
         <input
           id={`${idPrefix}-unit`}
+          className="input"
           value={unit}
           onChange={(event) => setUnit(event.target.value)}
           required
         />
       </div>
-      <div>
-        <label htmlFor={`${idPrefix}-min`}>Min value</label>
-        <input
-          id={`${idPrefix}-min`}
-          type="number"
-          step="0.01"
-          value={minValue}
-          onChange={(event) => setMinValue(event.target.value)}
-          required
-        />
+      <div className="field-grid">
+        <div className="field">
+          <label htmlFor={`${idPrefix}-min`}>Min value</label>
+          <input
+            id={`${idPrefix}-min`}
+            type="number"
+            step="0.01"
+            className="input"
+            value={minValue}
+            onChange={(event) => setMinValue(event.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label htmlFor={`${idPrefix}-max`}>Max value</label>
+          <input
+            id={`${idPrefix}-max`}
+            type="number"
+            step="0.01"
+            className="input"
+            value={maxValue}
+            onChange={(event) => setMaxValue(event.target.value)}
+            required
+          />
+        </div>
       </div>
-      <div>
-        <label htmlFor={`${idPrefix}-max`}>Max value</label>
-        <input
-          id={`${idPrefix}-max`}
-          type="number"
-          step="0.01"
-          value={maxValue}
-          onChange={(event) => setMaxValue(event.target.value)}
-          required
-        />
-      </div>
-      <button type="submit" disabled={submitting}>
-        {mode === "create" ? "Create" : "Save"}
-      </button>
-      {onCancel && (
-        <button type="button" onClick={onCancel}>
-          Cancel
+      <div className="template-form__actions">
+        <button type="submit" className="btn btn--primary" disabled={submitting}>
+          {mode === "create" ? "Create" : "Save"}
         </button>
+        {onCancel && (
+          <button type="button" className="btn btn--secondary" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+      </div>
+      {error && (
+        <p role="alert" className="error-box">
+          {error}
+        </p>
       )}
-      {error && <p role="alert">{error}</p>}
     </form>
   );
 }
@@ -162,19 +179,24 @@ export function Templates({
     setEditingId(null);
   }
 
-  if (loading) return <p>Loading templates…</p>;
-  if (loadError) return <p role="alert">{loadError}</p>;
+  if (loading) return <p className="status-message">Loading templates…</p>;
+  if (loadError)
+    return (
+      <p role="alert" className="error-box">
+        {loadError}
+      </p>
+    );
 
   return (
-    <section>
-      <h2>Templates</h2>
+    <section className="templates">
+      <h2 className="section-title">Templates</h2>
       {role === "MANAGER" && (
         <TemplateForm mode="create" onSaved={handleCreated} onUnauthorized={onUnauthorized} />
       )}
-      <ul>
+      <ul className="template-list">
         {(templates ?? []).map((template) =>
           editingId === template.id ? (
-            <li key={template.id}>
+            <li key={template.id} className="template-list__item template-list__item--editing">
               <TemplateForm
                 mode="edit"
                 initial={template}
@@ -184,14 +206,17 @@ export function Templates({
               />
             </li>
           ) : (
-            <li key={template.id}>
-              <span>{template.name}</span> ({template.unit}){" "}
-              <span>
-                {template.minValue}–{template.maxValue}
-              </span>
+            <li key={template.id} className="template-list__item">
+              <div className="template-list__info">
+                <span className="template-list__name">{template.name}</span>
+                <span className="template-list__meta">
+                  {template.unit} · {template.minValue}–{template.maxValue}
+                </span>
+              </div>
               {role === "MANAGER" && (
                 <button
                   type="button"
+                  className="btn btn--secondary btn--small"
                   aria-label={`Edit ${template.name}`}
                   onClick={() => setEditingId(template.id)}
                 >
