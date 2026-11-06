@@ -1,0 +1,556 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/templates.test.ts (27 tests | 27 failed) 8110ms
+   ❯ POST /templates (3)
+     × TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 386ms
+     × TEST-02.1b trims name and unit and stores the trimmed value 291ms
+     × TEST-02.2 rejects a Participant with 403 and stores nothing 288ms
+   ❯ AC-02.3 anonymous access (3)
+     × TEST-02.3a GET /templates with no cookie returns 401 UNAUTHENTICATED 302ms
+     × TEST-02.3b POST /templates with no cookie returns 401 293ms
+     × TEST-02.3c PUT /templates/1 with no cookie returns 401 291ms
+   ❯ AC-02.4 min/max ordering (3)
+     × TEST-02.4a rejects minValue equal to maxValue on create 293ms
+     × TEST-02.4b rejects minValue greater than maxValue on create 297ms
+     × TEST-02.4c rejects minValue greater than maxValue on update, leaving the template unchanged 295ms
+   ❯ AC-02.5 / AC-02.11 / AC-02.12 validation (10)
+     × TEST-02.5a rejects an empty body and stores nothing 287ms
+     × TEST-02.5b rejects a whitespace-only name 287ms
+     × TEST-02.5c rejects a non-numeric minValue 286ms
+     × TEST-02.5d rejects a maxValue with more than two decimals 285ms
+     × TEST-02.5e rejects an unknown field 286ms
+     × TEST-02.5f rejects a name longer than 100 characters after trimming 289ms
+     × TEST-02.5g rejects a unit longer than 20 characters after trimming 294ms
+     × TEST-02.5h rejects a numeric string for minValue 288ms
+     × TEST-02.5i rejects a maxValue outside the allowed range 291ms
+     × TEST-02.5j accepts a negative minValue 289ms
+   ❯ PUT /templates/:id (6)
+     × TEST-02.6a updates a template, keeps createdById, and GET reflects the change 299ms
+     × TEST-02.6b allows a different Manager to update, and createdById stays the original Manager's id 426ms
+     × TEST-02.7 rejects a Participant with 403 and leaves the template unchanged 289ms
+     × TEST-02.8a returns 404 NOT_FOUND for a Manager updating a missing id 286ms
+     × TEST-02.8b returns 400 for a non-integer id 287ms
+     × TEST-02.8c returns 403 (not 404) for a Participant updating a missing id 286ms
+   ❯ GET /templates (2)
+     × TEST-02.9a returns both templates to a Manager, ordered by id ascending 323ms
+     × TEST-02.9b returns both templates to a Participant 293ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 27 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/templates.test.ts:63:24
+     61|       .send(VALID_TEMPLATE);
+     62|
+     63|     expect(res.status).toBe(201);
+       |                        ^
+     64|     expect(res.body).toMatchObject({ ...VALID_TEMPLATE, createdById: m…
+     65|     expect(typeof res.body.id).toBe("number");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/27]⎯
+
+ FAIL  tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/templates.test.ts:74:24
+     72|       .send({ name: "  Running  ", unit: " km ", minValue: 0, maxValue…
+     73|
+     74|     expect(res.status).toBe(201);
+       |                        ^
+     75|     expect(res.body.name).toBe("Running");
+     76|     expect(res.body.unit).toBe("km");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/27]⎯
+
+ FAIL  tests/templates.test.ts > POST /templates > TEST-02.2 rejects a Participant with 403 and stores nothing
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/templates.test.ts:85:24
+     83|       .send(VALID_TEMPLATE);
+     84|
+     85|     expect(res.status).toBe(403);
+       |                        ^
+     86|     expect(res.body.error.code).toBe("FORBIDDEN");
+     87|     await expect(prisma.template.count()).resolves.toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3a GET /templates with no cookie returns 401 UNAUTHENTICATED
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/templates.test.ts:95:24
+     93|     const res = await request(app).get("/templates");
+     94|
+     95|     expect(res.status).toBe(401);
+       |                        ^
+     96|     expect(res.body.error.code).toBe("UNAUTHENTICATED");
+     97|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3b POST /templates with no cookie returns 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/templates.test.ts:102:24
+    100|     const res = await request(app).post("/templates").send(VALID_TEMPL…
+    101|
+    102|     expect(res.status).toBe(401);
+       |                        ^
+    103|   });
+    104|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3c PUT /templates/1 with no cookie returns 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/templates.test.ts:108:24
+    106|     const res = await request(app).put("/templates/1").send(VALID_TEMP…
+    107|
+    108|     expect(res.status).toBe(401);
+       |                        ^
+    109|   });
+    110| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4a rejects minValue equal to maxValue on create
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:119:24
+    117|       .send({ name: "Running", unit: "km", minValue: 10, maxValue: 10 …
+    118|
+    119|     expect(res.status).toBe(400);
+       |                        ^
+    120|     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    121|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4b rejects minValue greater than maxValue on create
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:129:24
+    127|       .send({ name: "Running", unit: "km", minValue: 20, maxValue: 5 }…
+    128|
+    129|     expect(res.status).toBe(400);
+       |                        ^
+    130|   });
+    131|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4c rejects minValue greater than maxValue on update, leaving the template unchanged
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:143:24
+    141|       .send({ name: "Running", unit: "km", minValue: 9, maxValue: 3 });
+    142|
+    143|     expect(res.status).toBe(400);
+       |                        ^
+    144|
+    145|     const stored = await prisma.template.findUniqueOrThrow({ where: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5a rejects an empty body and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:155:24
+    153|     const res = await request(app).post("/templates").set("Cookie", ma…
+    154|
+    155|     expect(res.status).toBe(400);
+       |                        ^
+    156|     await expect(prisma.template.count()).resolves.toBe(0);
+    157|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5b rejects a whitespace-only name
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:165:24
+    163|       .send({ name: "   ", unit: "km", minValue: 0, maxValue: 50 });
+    164|
+    165|     expect(res.status).toBe(400);
+       |                        ^
+    166|   });
+    167|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5c rejects a non-numeric minValue
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:174:24
+    172|       .send({ name: "Running", unit: "km", minValue: "abc", maxValue: …
+    173|
+    174|     expect(res.status).toBe(400);
+       |                        ^
+    175|   });
+    176|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5d rejects a maxValue with more than two decimals
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:183:24
+    181|       .send({ name: "Running", unit: "km", minValue: 0, maxValue: 10.1…
+    182|
+    183|     expect(res.status).toBe(400);
+       |                        ^
+    184|   });
+    185|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5e rejects an unknown field
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:192:24
+    190|       .send({ ...VALID_TEMPLATE, colour: "red" });
+    191|
+    192|     expect(res.status).toBe(400);
+       |                        ^
+    193|   });
+    194|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5f rejects a name longer than 100 characters after trimming
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:201:24
+    199|       .send({ name: "a".repeat(101), unit: "km", minValue: 0, maxValue…
+    200|
+    201|     expect(res.status).toBe(400);
+       |                        ^
+    202|   });
+    203|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5g rejects a unit longer than 20 characters after trimming
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:210:24
+    208|       .send({ name: "Running", unit: "a".repeat(21), minValue: 0, maxV…
+    209|
+    210|     expect(res.status).toBe(400);
+       |                        ^
+    211|   });
+    212|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5h rejects a numeric string for minValue
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:219:24
+    217|       .send({ name: "Running", unit: "km", minValue: "10", maxValue: 5…
+    218|
+    219|     expect(res.status).toBe(400);
+       |                        ^
+    220|   });
+    221|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5i rejects a maxValue outside the allowed range
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:228:24
+    226|       .send({ name: "Running", unit: "km", minValue: 0, maxValue: 1000…
+    227|
+    228|     expect(res.status).toBe(400);
+       |                        ^
+    229|   });
+    230|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/27]⎯
+
+ FAIL  tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5j accepts a negative minValue
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/templates.test.ts:237:24
+    235|       .send({ name: "Temperature", unit: "C", minValue: -20, maxValue:…
+    236|
+    237|     expect(res.status).toBe(201);
+       |                        ^
+    238|   });
+    239| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.6a updates a template, keeps createdById, and GET reflects the change
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/templates.test.ts:254:27
+    252|       .send(updated);
+    253|
+    254|     expect(putRes.status).toBe(200);
+       |                           ^
+    255|     expect(putRes.body).toMatchObject({ ...updated, id: created.body.i…
+    256|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.6b allows a different Manager to update, and createdById stays the original Manager's id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/templates.test.ts:276:24
+    274|       .send(updated);
+    275|
+    276|     expect(res.status).toBe(200);
+       |                        ^
+    277|     expect(res.body.createdById).toBe(manager.id);
+    278|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.7 rejects a Participant with 403 and leaves the template unchanged
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/templates.test.ts:291:24
+    289|       .send({ name: "Cycling", unit: "km", minValue: 0, maxValue: 100 …
+    290|
+    291|     expect(res.status).toBe(403);
+       |                        ^
+    292|
+    293|     const stored = await prisma.template.findUniqueOrThrow({ where: { …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.8a returns 404 NOT_FOUND for a Manager updating a missing id
+TypeError: Cannot read properties of undefined (reading 'code')
+ ❯ tests/templates.test.ts:304:27
+    302|
+    303|     expect(res.status).toBe(404);
+    304|     expect(res.body.error.code).toBe("NOT_FOUND");
+       |                           ^
+    305|   });
+    306|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.8b returns 400 for a non-integer id
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/templates.test.ts:313:24
+    311|       .send(VALID_TEMPLATE);
+    312|
+    313|     expect(res.status).toBe(400);
+       |                        ^
+    314|   });
+    315|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/27]⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.8c returns 403 (not 404) for a Participant updating a missing id
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/templates.test.ts:322:24
+    320|       .send(VALID_TEMPLATE);
+    321|
+    322|     expect(res.status).toBe(403);
+       |                        ^
+    323|     expect(res.body.error.code).toBe("FORBIDDEN");
+    324|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/27]⎯
+
+ FAIL  tests/templates.test.ts > GET /templates > TEST-02.9a returns both templates to a Manager, ordered by id ascending
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/templates.test.ts:337:24
+    335|     const res = await request(app).get("/templates").set("Cookie", man…
+    336|
+    337|     expect(res.status).toBe(200);
+       |                        ^
+    338|     expect(res.body.map((t: { id: number }) => t.id)).toEqual([first.b…
+    339|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/27]⎯
+
+ FAIL  tests/templates.test.ts > GET /templates > TEST-02.9b returns both templates to a Participant
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/templates.test.ts:350:24
+    348|     const res = await request(app).get("/templates").set("Cookie", par…
+    349|
+    350|     expect(res.status).toBe(200);
+       |                        ^
+    351|     expect(res.body).toHaveLength(2);
+    352|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/27]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  27 failed | 16 passed (43)
+   Start at  23:32:09
+   Duration  12.15s (tests 94%, import 4%, setup 1%)
+
