@@ -1,0 +1,243 @@
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+ ❯ src/Templates.test.tsx (9 tests | 9 failed) 9090ms
+   ❯ loading and error states (2)
+     × TEST-02.13a shows a loading message while GET /templates is pending 1021ms
+     × TEST-02.13b shows an error message if GET /templates fails, not endless loading 1007ms
+   ❯ AC-02.14 / AC-02.15 role-based controls (2)
+     × TEST-02.14 a Participant sees the list only, with no create or edit controls 1009ms
+     × TEST-02.15 a Manager sees a create form and an edit control for each template 1007ms
+   ❯ AC-02.16 / AC-02.17 create flow (2)
+     × TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 1009ms
+     × TEST-02.17 shows the server's validation message verbatim and keeps what was typed 1012ms
+   ❯ AC-02.18 edit flow (1)
+     × TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 1006ms
+   ❯ AC-02.19 session expiry (1)
+     × TEST-02.19 calls onUnauthorized when a template request returns 401 1010ms
+   ❯ AC-02.20 in-flight submit (1)
+     × TEST-02.20 disables the submit button while the create request is in flight 1006ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending
+TestingLibraryElementError: Unable to find an element with the text: /loading/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:58:25
+     56|     render(<Templates role="PARTICIPANT" onUnauthorized={vi.fn()} />);
+     57|
+     58|     expect(await screen.findByText(/loading/i)).toBeInTheDocument();
+       |                         ^
+     59|
+     60|     resolveList(jsonResponse(200, [TEMPLATE_A]));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:74:25
+     72|     render(<Templates role="PARTICIPANT" onUnauthorized={vi.fn()} />);
+     73|
+     74|     expect(await screen.findByRole("alert")).toBeInTheDocument();
+       |                         ^
+     75|     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+     76|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls
+TestingLibraryElementError: Unable to find an element with the text: Running. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:85:25
+     83|     render(<Templates role="PARTICIPANT" onUnauthorized={vi.fn()} />);
+     84|
+     85|     expect(await screen.findByText(TEMPLATE_A.name)).toBeInTheDocument…
+       |                         ^
+     86|     expect(screen.queryByRole("form", { name: /create/i })).not.toBeIn…
+     87|     expect(screen.queryByRole("button", { name: /edit/i })).not.toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template
+TestingLibraryElementError: Unable to find an element with the text: Running. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:95:25
+     93|     render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+     94|
+     95|     expect(await screen.findByText(TEMPLATE_A.name)).toBeInTheDocument…
+       |                         ^
+     96|     expect(screen.getByRole("form", { name: /create/i })).toBeInTheDoc…
+     97|     expect(screen.getAllByRole("button", { name: /edit/i })).toHaveLen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list
+TestingLibraryElementError: Unable to find role="form" and name `/create/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:112:31
+    110|     render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+    111|
+    112|     const form = await screen.findByRole("form", { name: /create/i });
+       |                               ^
+    113|     await user.type(within(form).getByLabelText(/name/i), TEMPLATE_A.n…
+    114|     await user.type(within(form).getByLabelText(/unit/i), TEMPLATE_A.u…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed
+TestingLibraryElementError: Unable to find role="form" and name `/create/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:133:31
+    131|     render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+    132|
+    133|     const form = await screen.findByRole("form", { name: /create/i });
+       |                               ^
+    134|     await user.type(within(form).getByLabelText(/name/i), "Running");
+    135|     await user.type(within(form).getByLabelText(/unit/i), "km");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values
+TestingLibraryElementError: Unable to find an element with the text: Running. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:159:18
+    157|     render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+    158|
+    159|     await screen.findByText(TEMPLATE_A.name);
+       |                  ^
+    160|     await user.click(screen.getByRole("button", { name: /edit/i }));
+    161|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 calls onUnauthorized when a template request returns 401
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div />[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ❯ src/Templates.test.tsx:185:48
+    183|     render(<Templates role="PARTICIPANT" onUnauthorized={onUnauthorize…
+    184|
+    185|     await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1…
+       |                                                ^
+    186|   });
+    187| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight
+TestingLibraryElementError: Unable to find role="form" and name `/create/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Templates.test.tsx:203:31
+    201|     render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+    202|
+    203|     const form = await screen.findByRole("form", { name: /create/i });
+       |                               ^
+    204|     await user.type(within(form).getByLabelText(/name/i), TEMPLATE_A.n…
+    205|     await user.type(within(form).getByLabelText(/unit/i), TEMPLATE_A.u…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  9 failed | 9 passed (18)
+   Start at  01:26:09
+   Duration  9.78s (tests 89%, environment 8%, setup 1%, import 1%)
+
