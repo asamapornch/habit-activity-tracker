@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Templates } from "./Templates";
+import App from "./App";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
@@ -120,6 +121,37 @@ describe("AC-02.16 / AC-02.17 create flow", () => {
     expect(await screen.findByText(TEMPLATE_A.name)).toBeInTheDocument();
   });
 
+  it("TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings", async () => {
+    const createHandler = vi.fn((_init?: RequestInit) =>
+      jsonResponse(201, { ...TEMPLATE_A, minValue: 0.5, maxValue: 2.25 }),
+    );
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, []),
+      "POST /templates": createHandler,
+    });
+
+    const user = userEvent.setup();
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    const form = await screen.findByRole("form", { name: /create/i });
+    expect(within(form).getByLabelText(/min/i)).toHaveAttribute("step", "0.01");
+    expect(within(form).getByLabelText(/max/i)).toHaveAttribute("step", "0.01");
+
+    await user.type(within(form).getByLabelText(/name/i), "Weight");
+    await user.type(within(form).getByLabelText(/unit/i), "kg");
+    await user.type(within(form).getByLabelText(/min/i), "0.5");
+    await user.type(within(form).getByLabelText(/max/i), "2.25");
+    await user.click(within(form).getByRole("button", { name: /create/i }));
+
+    await waitFor(() => expect(createHandler).toHaveBeenCalledTimes(1));
+    const [init] = createHandler.mock.calls[0];
+    const sentBody = JSON.parse(init!.body as string);
+    expect(sentBody.minValue).toBe(0.5);
+    expect(sentBody.maxValue).toBe(2.25);
+    expect(typeof sentBody.minValue).toBe("number");
+    expect(typeof sentBody.maxValue).toBe("number");
+  });
+
   it("TEST-02.17 shows the server's validation message verbatim and keeps what was typed", async () => {
     mockFetch({
       "GET /templates": () => jsonResponse(200, []),
@@ -141,6 +173,30 @@ describe("AC-02.16 / AC-02.17 create flow", () => {
     expect(within(form).getByLabelText(/name/i)).toHaveValue("Running");
     expect(within(form).getByLabelText(/min/i)).toHaveValue(50);
     expect(within(form).getByLabelText(/max/i)).toHaveValue(10);
+  });
+
+  it("TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values", async () => {
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, [TEMPLATE_A]),
+      [`PUT /templates/${TEMPLATE_A.id}`]: () =>
+        jsonResponse(400, { error: { code: "VALIDATION_ERROR", message: "maxValue must be greater than minValue." } }),
+    });
+
+    const user = userEvent.setup();
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    await screen.findByText(TEMPLATE_A.name);
+    await user.click(screen.getByRole("button", { name: /edit/i }));
+
+    const form = await screen.findByRole("form", { name: /edit/i });
+    await user.clear(within(form).getByLabelText(/max/i));
+    await user.type(within(form).getByLabelText(/max/i), "5");
+    await user.click(within(form).getByRole("button", { name: /save/i }));
+
+    expect(await screen.findByText("maxValue must be greater than minValue.")).toBeInTheDocument();
+    expect(screen.getByRole("form", { name: /edit/i })).toBeInTheDocument();
+    expect(within(form).getByLabelText(/name/i)).toHaveValue(TEMPLATE_A.name);
+    expect(within(form).getByLabelText(/max/i)).toHaveValue(5);
   });
 });
 
@@ -173,16 +229,17 @@ describe("AC-02.18 edit flow", () => {
 });
 
 describe("AC-02.19 session expiry", () => {
-  it("TEST-02.19 calls onUnauthorized when a template request returns 401", async () => {
+  it("TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form", async () => {
     mockFetch({
+      "GET /auth/me": () => jsonResponse(200, { id: 9, email: "manager@example.com", role: "MANAGER" }),
       "GET /templates": () =>
         jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
     });
-    const onUnauthorized = vi.fn();
 
-    render(<Templates role="PARTICIPANT" onUnauthorized={onUnauthorized} />);
+    render(<App />);
 
-    await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1));
+    expect(await screen.findByLabelText(/^email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
   });
 });
 
