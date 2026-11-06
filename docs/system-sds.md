@@ -79,13 +79,14 @@ Constraints:
   for BR-03, BR-04 and BR-09 is the current date in the **Asia/Bangkok** time zone, computed by the server.
 - Numbers: `value`, `dailyTarget`, `minValue`, `maxValue` are floats limited to two decimal places
   (input with more is rejected with 400) and are compared after rounding to two decimals (SRS D-07).
-- BR-04 (one active goal per template) cannot be a plain unique constraint because activity depends
-  on date ranges. It is enforced inside a database transaction that first takes a per-(user, template)
-  advisory lock (`pg_advisory_xact_lock`), then checks for an active goal and inserts. Two concurrent
+- BR-04 (no overlapping goals for the same template) cannot be a plain unique constraint because it
+  depends on date ranges. It is enforced inside a database transaction that first takes a per-(user, template)
+  advisory lock (`pg_advisory_xact_lock`), then checks for an existing goal of the same user and template whose range overlaps
+  (existing.start ≤ new.end and new.start ≤ existing.end) and inserts. Two concurrent
   requests are therefore serialised and the second receives 409.
 - Changing a template's min/max affects only new input (SRS D-06); existing goals and entries are not
   revalidated.
-- "Active goal" (BR-04) is derived: a goal whose start date ≤ today ≤ end date. It is not stored.
+- Overlap (BR-04) is computed from stored start and end dates; nothing extra is stored.
 - Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
 
 ## 4. Roles and permissions
@@ -139,7 +140,7 @@ not revealed).
 | 401 | No valid session | not logged in, after logout, wrong credentials |
 | 403 | Role not allowed | Participant creates a template |
 | 404 | Not found or not yours | another participant's goal |
-| 409 | Conflicts with existing data | second entry on same date, second active goal on a template |
+| 409 | Conflicts with existing data | second entry on same date, goal overlapping an existing goal on the same template |
 
 ### 6.1 Endpoint inventory (Sprint 1)
 
