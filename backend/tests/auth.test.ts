@@ -5,6 +5,7 @@ import request from "supertest";
 import { createApp } from "../src/app.js";
 import { prisma } from "../src/lib/prisma.js";
 import { requireAuth, requireRole } from "../src/middleware/auth.js";
+import { errorHandler } from "../src/middleware/errorHandler.js";
 
 const MANAGER_PASSWORD = "manager-pass-123";
 const PARTICIPANT_PASSWORD = "participant-pass-123";
@@ -19,6 +20,12 @@ function buildTestApp(): Express {
   app.get("/__test/manager-only", requireRole("MANAGER"), (_req, res) => {
     res.status(200).json({ ok: true });
   });
+
+  app.get("/__test/boom", (_req, _res, next) => {
+    next(new Error("boom"));
+  });
+
+  app.use(errorHandler);
 
   return app;
 }
@@ -105,14 +112,17 @@ describe("POST /auth/login", () => {
 });
 
 describe("POST /auth/logout", () => {
-  it("TEST-01.3 invalidates the session so the same cookie later gets 401 from /auth/me", async () => {
-    const agent = request.agent(app);
-    await agent.post("/auth/login").send({ email: manager.email, password: MANAGER_PASSWORD });
+  it("TEST-01.3 invalidates the session so the exact captured login cookie later gets 401 from /auth/me", async () => {
+    const loginRes = await request(app)
+      .post("/auth/login")
+      .send({ email: manager.email, password: MANAGER_PASSWORD });
+    const loginCookie = loginRes.headers["set-cookie"]?.[0];
+    expect(loginCookie).toBeDefined();
 
-    const logoutRes = await agent.post("/auth/logout");
+    const logoutRes = await request(app).post("/auth/logout").set("Cookie", loginCookie!);
     expect(logoutRes.status).toBe(200);
 
-    const meRes = await agent.get("/auth/me");
+    const meRes = await request(app).get("/auth/me").set("Cookie", loginCookie!);
     expect(meRes.status).toBe(401);
   });
 });
@@ -199,5 +209,30 @@ describe("session regeneration", () => {
 
     const meWithB = await request(app).get("/auth/me").set("Cookie", cookieB!);
     expect(meWithB.status).toBe(200);
+  });
+});
+
+describe("error handling", () => {
+  it("TEST-01.11a returns 400 VALIDATION_ERROR for a malformed JSON body, with no stack trace or HTML", async () => {
+    const res = await request(app)
+      .post("/auth/login")
+      .set("Content-Type", "application/json")
+      .send("{bad");
+
+    expect(res.status).toBe(400);
+    expect(res.type).toBe("application/json");
+    expect(res.body).toEqual({
+      error: { code: "VALIDATION_ERROR", message: expect.any(String) },
+    });
+  });
+
+  it("TEST-01.11b returns 500 INTERNAL_ERROR for an unexpected server error, with no stack trace or HTML", async () => {
+    const res = await request(app).get("/__test/boom");
+
+    expect(res.status).toBe(500);
+    expect(res.type).toBe("application/json");
+    expect(res.body).toEqual({
+      error: { code: "INTERNAL_ERROR", message: expect.any(String) },
+    });
   });
 });

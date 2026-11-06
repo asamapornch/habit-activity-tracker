@@ -1,0 +1,68 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/auth.test.ts (15 tests | 2 failed) 3013ms
+   ❯ error handling (2)
+     × TEST-01.11a returns 400 VALIDATION_ERROR for a malformed JSON body, with no stack trace or HTML 149ms
+     × TEST-01.11b returns 500 INTERNAL_ERROR for an unexpected server error, with no stack trace or HTML 146ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/auth.test.ts > error handling > TEST-01.11a returns 400 VALIDATION_ERROR for a malformed JSON body, with no stack trace or HTML
+AssertionError: expected 501 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 501
+
+ ❯ tests/auth.test.ts:222:24
+    220|       .send("{bad");
+    221|
+    222|     expect(res.status).toBe(400);
+       |                        ^
+    223|     expect(res.type).toBe("application/json");
+    224|     expect(res.body).toEqual({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/auth.test.ts > error handling > TEST-01.11b returns 500 INTERNAL_ERROR for an unexpected server error, with no stack trace or HTML
+AssertionError: expected 501 to be 500 // Object.is equality
+
+- Expected
++ Received
+
+- 500
++ 501
+
+ ❯ tests/auth.test.ts:232:24
+    230|     const res = await request(app).get("/__test/boom");
+    231|
+    232|     expect(res.status).toBe(500);
+       |                        ^
+    233|     expect(res.type).toBe("application/json");
+    234|     expect(res.body).toEqual({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 14 passed (16)
+   Start at  23:00:45
+   Duration  3.31s (tests 88%, import 9%, setup 1%, transform 1%)
+
+
+---
+Note: TEST-01.3 was rewritten to capture the login cookie explicitly and replay
+that exact cookie on /auth/logout and /auth/me, instead of relying on a
+supertest agent's cookie jar. It already passes in this run — the existing
+implementation (session.destroy + regenerate) already invalidated the old
+session correctly; the rewrite makes the test itself more rigorous, it did not
+reveal a behaviour bug. The only two failing tests are TEST-01.11a and
+TEST-01.11b, which exercise the new INTERNAL_ERROR/VALIDATION_ERROR error
+envelope that does not exist yet (errorHandler is a 501 stub).
