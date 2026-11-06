@@ -2,6 +2,7 @@ import { Router } from "express";
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prisma.js";
 import { sendError } from "../lib/errors.js";
+import { SESSION_COOKIE_NAME } from "../lib/session.js";
 
 export const authRouter = Router();
 
@@ -60,7 +61,7 @@ authRouter.post("/auth/logout", (req, res, next) => {
       next(err);
       return;
     }
-    res.clearCookie("sid");
+    res.clearCookie(SESSION_COOKIE_NAME);
     res.status(200).json({ message: "logged out" });
   });
 });
