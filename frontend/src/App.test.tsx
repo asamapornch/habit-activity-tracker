@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 describe("on page load", () => {
-  it("shows the login form when GET /auth/me is unauthenticated", async () => {
+  it("TEST-01.16a shows the login form when GET /auth/me is unauthenticated", async () => {
     mockFetch({
       "GET /auth/me": () =>
         jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
@@ -53,7 +53,7 @@ describe("on page load", () => {
     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
   });
 
-  it("shows the signed-in view directly when GET /auth/me is authenticated", async () => {
+  it("TEST-01.16b shows the signed-in view directly when GET /auth/me is authenticated", async () => {
     mockFetch({
       "GET /auth/me": () => jsonResponse(200, { id: 1, email: "p1@example.com", role: "PARTICIPANT" }),
     });
@@ -67,7 +67,7 @@ describe("on page load", () => {
 });
 
 describe("login form", () => {
-  it("renders email and password fields and a submit button", async () => {
+  it("TEST-01.12 renders email and password fields and a submit button", async () => {
     mockFetch({
       "GET /auth/me": () =>
         jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
@@ -80,7 +80,7 @@ describe("login form", () => {
     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
   });
 
-  it("shows the server's message on a 401", async () => {
+  it("TEST-01.13 shows the server's message on a 401", async () => {
     mockFetch({
       "GET /auth/me": () =>
         jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
@@ -98,7 +98,7 @@ describe("login form", () => {
     expect(await screen.findByText("Incorrect email or password.")).toBeInTheDocument();
   });
 
-  it("shows the signed-in email and role and a Logout button on a successful login", async () => {
+  it("TEST-01.14 shows the signed-in email and role and a Logout button on a successful login", async () => {
     mockFetch({
       "GET /auth/me": () =>
         jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
@@ -119,7 +119,7 @@ describe("login form", () => {
 });
 
 describe("logout", () => {
-  it("calls POST /auth/logout and returns to the form", async () => {
+  it("TEST-01.15 calls POST /auth/logout and returns to the form", async () => {
     const logoutHandler = vi.fn(() => jsonResponse(200, { message: "logged out" }));
     mockFetch({
       "GET /auth/me": () => jsonResponse(200, { id: 1, email: "p1@example.com", role: "PARTICIPANT" }),
@@ -134,5 +134,68 @@ describe("logout", () => {
     await waitFor(() => expect(logoutHandler).toHaveBeenCalledTimes(1));
     expect(await screen.findByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+  });
+});
+
+describe("loading and error states on page load", () => {
+  it("TEST-01.17a shows a loading message while GET /auth/me is pending", async () => {
+    let resolveMe: (value: Response) => void = () => {};
+    const pending = new Promise<Response>((resolve) => {
+      resolveMe = resolve;
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => pending),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByText(/loading/i)).toBeInTheDocument();
+
+    resolveMe(
+      jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
+    );
+
+    expect(await screen.findByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+  });
+
+  it("TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() => Promise.reject(new Error("network error"))),
+    );
+
+    render(<App />);
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("in-flight login request", () => {
+  it("TEST-01.18 disables the submit button while the login request is in flight", async () => {
+    let resolveLogin: (value: Response) => void = () => {};
+    const pending = new Promise<Response>((resolve) => {
+      resolveLogin = resolve;
+    });
+    mockFetch({
+      "GET /auth/me": () =>
+        jsonResponse(401, { error: { code: "UNAUTHENTICATED", message: "Authentication required." } }),
+      "POST /auth/login": () => pending,
+    });
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await user.type(await screen.findByLabelText(/email/i), "p1@example.com");
+    await user.type(screen.getByLabelText(/password/i), "correct-password");
+    await user.click(screen.getByRole("button", { name: /log in/i }));
+
+    expect(screen.getByRole("button", { name: /log in/i })).toBeDisabled();
+
+    resolveLogin(jsonResponse(200, { id: 1, email: "p1@example.com", role: "PARTICIPANT" }));
+
+    expect(await screen.findByText(/p1@example.com/)).toBeInTheDocument();
   });
 });
