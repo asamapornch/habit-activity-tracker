@@ -1,0 +1,32 @@
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+ ❯ src/Templates.test.tsx (11 tests | 1 failed) 341ms
+   ❯ AC-02.16 / AC-02.17 create flow (4)
+     × TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings
+Error: [2mexpect([22m[31melement[39m[2m).toHaveAttribute([22m[32m[32m"step"[32m[39m[2m, [22m[32m[32m"0.01"[32m[39m[2m) // element.getAttribute("step") === "0.01"[22m
+
+Expected the element to have attribute:
+[32m  step="0.01"[39m
+Received:
+[31m  null[39m
+ ❯ src/Templates.test.tsx:137:49
+    135|
+    136|     const form = await screen.findByRole("form", { name: /create/i });
+    137|     expect(within(form).getByLabelText(/min/i)).toHaveAttribute("step"…
+       |                                                 ^
+    138|     expect(within(form).getByLabelText(/max/i)).toHaveAttribute("step"…
+    139|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 19 passed (20)
+   Start at  01:40:31
+   Duration  1.00s (environment 49%, tests 36%, import 6%, setup 5%, transform 3%)
+
