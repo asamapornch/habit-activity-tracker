@@ -322,6 +322,16 @@ describe("PUT /templates/:id", () => {
     expect(res.status).toBe(403);
     expect(res.body.error.code).toBe("FORBIDDEN");
   });
+
+  it("TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range", async () => {
+    const res = await request(app)
+      .put("/templates/99999999999")
+      .set("Cookie", managerCookie)
+      .send(VALID_TEMPLATE);
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
 });
 
 describe("GET /templates", () => {
