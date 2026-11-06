@@ -65,8 +65,11 @@ environment variables (`SEED_*`), never from source code. Automated tests do not
 ### 3.3 UI
 
 A login screen with email and password fields and a submit button. On `401` it shows the server's
-message; on success it shows the signed-in email and role and a Logout button. The UI is a
-convenience only; the API enforces access (NFR-02).
+message; on success it shows the signed-in email and role and a Logout button. On page load, while
+`GET /auth/me` is pending, a loading message is shown instead of the form or the signed-in view; if
+that request fails outright (e.g. the backend is unreachable), an error message is shown instead of
+an endless loading state. The submit button is disabled while a login request is in flight. The UI
+is a convenience only; the API enforces access (NFR-02).
 
 ## 4. Acceptance criteria
 
@@ -83,8 +86,17 @@ convenience only; the API enforces access (NFR-02).
 | AC-01.9 | An anonymous request to a `requireRole("MANAGER")` route returns 401 (not 403). | NFR-02 |
 | AC-01.10 | Logging in again while presenting an existing session cookie issues a new session id, and the old cookie no longer authenticates. | NFR-02 |
 | AC-01.11 | A malformed JSON request body (e.g. `{bad`) returns `400 VALIDATION_ERROR`, and an unexpected server error returns `500 INTERNAL_ERROR`; both use the standard `{ "error": { "code", "message" } }` body with no stack trace or HTML. | NFR-05 |
+| AC-01.12 | The login form renders email and password fields and a submit button. | FR-01 |
+| AC-01.13 | A `401` from the server shows the server's message verbatim (no UI paraphrasing). | NFR-05 |
+| AC-01.14 | A successful login shows the signed-in email, role and a Logout button. | FR-01, FR-02 |
+| AC-01.15 | Logout calls `POST /auth/logout` and returns to the login form. | FR-02 |
+| AC-01.16 | On page load, `GET /auth/me` decides whether the form or the signed-in view is shown. | FR-02 |
+| AC-01.17 | While that request is pending, a loading message is shown; if it fails (e.g. the backend is unreachable), an error message is shown instead of an endless loading state. | NFR-05 |
+| AC-01.18 | The submit button is disabled while a login request is in flight. | NFR-05 |
 
 ## 5. Software test specification (STS)
+
+### 5.1 Backend tests
 
 All tests are API-level (Vitest + Supertest) in `backend/tests/auth.test.ts`. A throwaway
 route guarded by `requireAuth`, one guarded by `requireRole("MANAGER")`, and one that calls
@@ -111,6 +123,21 @@ using bcrypt) instead of relying on the seed script. The seed script itself is c
 | TEST-01.10 | AC-01.10 | login (cookie A), login again presenting cookie A (cookie B), then `GET /auth/me` with A and with B | cookie B differs from A; `/auth/me` with A is 401; with B is 200 |
 | TEST-01.11 | AC-01.11 | (a) `POST /auth/login` with the raw malformed JSON body `{bad`; (b) request the throwaway error-handler test route, which calls `next(err)` with a plain `Error` | (a) 400, code `VALIDATION_ERROR`; (b) 500, code `INTERNAL_ERROR`; both bodies are `{ "error": { "code", "message" } }` with no stack trace or HTML |
 
+### 5.2 Frontend tests
+
+Component tests (Vitest + React Testing Library) in `frontend/src/App.test.tsx`, with `fetch`
+mocked per test.
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-01.12 | AC-01.12 | render the app with `GET /auth/me` mocked to 401 | an email field, a password field and a submit button are present |
+| TEST-01.13 | AC-01.13 | mock `POST /auth/login` to 401 with a given `error.message`; submit the form | that exact message text is shown |
+| TEST-01.14 | AC-01.14 | mock `POST /auth/login` to 200 with `id`/`email`/`role`; submit the form | the signed-in email and role are shown; a Logout button is present |
+| TEST-01.15 | AC-01.15 | from the signed-in view, click Logout | `POST /auth/logout` is called; the view returns to the login form |
+| TEST-01.16 | AC-01.16 | (a) mock `GET /auth/me` to 401 on page load; (b) mock it to 200 | (a) the login form is shown; (b) the signed-in view is shown directly, without the form ever appearing |
+| TEST-01.17 | AC-01.17 | (a) `GET /auth/me` left pending (unresolved); (b) `GET /auth/me` rejected (network failure) | (a) a loading message is shown before the form or signed-in view appears; (b) an error message is shown, not an endless loading state |
+| TEST-01.18 | AC-01.18 | mock `POST /auth/login` with a delayed 200 response; submit the form | the submit button is disabled while the request is in flight |
+
 ## 6. Definition of done
 
 - [ ] This contract is committed before any implementation code (separate earlier commit).
@@ -130,3 +157,4 @@ using bcrypt) instead of relying on the seed script. The seed script itself is c
 | 1.0 | 2026-11-06 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-06 | Tests create their own users instead of using the seed; added AC-01.9, AC-01.10 and cookie-flag check; session regeneration and dummy-hash behaviour added | PR review: reset-per-test setup would delete seeded users; hardening suggestions |
 | 1.2 | 2026-11-06 | Added AC-01.11/TEST-01.11 (malformed JSON and unexpected errors use the standard error body with an `INTERNAL_ERROR` code); clarified TEST-01.3 to capture and replay the exact login cookie; stated the 8-hour session lifetime (cookie `maxAge` and store TTL) | PR #9 review |
+| 1.3 | 2026-11-07 | Added AC-01.12 to AC-01.18 and TEST-01.12 to TEST-01.18 (§5.2, frontend component tests): form fields/button, verbatim 401 message, signed-in view, logout, GET /auth/me on load, loading/error states, disabled submit button while in flight | login-screen PR review |
