@@ -68,11 +68,11 @@ validation; progress and own history; access-control tests.
 | BR-05 | A goal's daily target must lie within the template range, and its end date must not be before its start date. | 400 | F-03 |
 | BR-06 | Only a Manager can create or update templates. | 403 | F-02 |
 | BR-07 | A template's minimum must be strictly less than its maximum. | 400 | F-02 |
-| BR-08 | A Participant's goals and entries are private. Other Participants and Managers cannot read them. | 404 | F-05 |
+| BR-08 | A Participant's goals and entries are private. Another Participant gets 404; a Manager gets 403 (role gate). | 404 / 403 | F-05 |
 | BR-09 | Progress = (number of days with a recorded value at or above the daily target) ÷ (number of days elapsed from goal start to today, capped at goal end date, counting both ends). | — | F-04 |
 
-Note on BR-08: access to another participant's goal returns 404 (not 403) so the response does not
-reveal whether the record exists.
+Note on BR-08: a Manager is stopped at the role gate (403) because these endpoints are Participant-only.
+Another Participant's record returns 404 (not 403) so the response does not reveal whether it exists.
 
 ## 5. Non-functional requirements
 
@@ -87,9 +87,10 @@ reveal whether the record exists.
 ## 6. Assumptions
 
 - A-01: One daily value per goal per date is sufficient (accumulation across several entries is not needed).
-- A-02: Dates are calendar dates in a single server-defined time zone; time of day is not recorded.
+- A-02: Dates are calendar dates; time of day is not recorded. "Today" is always the current date in the Asia/Bangkok time zone, computed by the server.
 - A-03: Accounts are seeded: one Manager and two Participants.
 - A-04: A template's range applies to the daily value; the unit is a free-text label.
+- A-05: Values and daily targets have at most two decimal places; more decimals are rejected with 400.
 
 ## 7. Decisions
 
@@ -99,4 +100,6 @@ reveal whether the record exists.
 | D-02 | Back-dating allowed within the goal period; future dates rejected (BR-03). | Participants may forget to record; future entries are meaningless. |
 | D-03 | Goal changes are deferred to Sprint 2. | The brief lists goal revisions as a later sprint item. |
 | D-04 | Participant history is private with no sharing in Sprint 1 (BR-08). | The brief says Managers do not automatically gain access to private records. |
-| D-05 | Another user's record returns 404, missing role returns 403, missing session returns 401. | Avoid leaking existence; keep codes consistent. |
+| D-05 | Another Participant's record returns 404; a wrong role (including a Manager reading participant data) returns 403; no session returns 401. | Avoid leaking existence; keep codes consistent with the role gate. |
+| D-06 | Changing a template's range applies only to new input. Existing goals and entries are not revalidated; progress uses each goal's stored daily target. | Keeps history stable and avoids retroactive invalidation. |
+| D-07 | Numeric values are stored as floats limited to two decimal places and compared after rounding to two decimals. | Avoids floating-point surprises in the target comparison (BR-09). |

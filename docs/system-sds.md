@@ -75,7 +75,16 @@ Constraints:
 - `User.email` is unique.
 - `Entry` has a unique constraint on (`goalId`, `date`). This is the database backstop for BR-01;
   the API checks first and returns 409.
-- Dates (`startDate`, `endDate`, `Entry.date`) are calendar dates without time of day (SRS A-02).
+- Dates (`startDate`, `endDate`, `Entry.date`) are calendar dates without time of day (SRS A-02). "Today"
+  for BR-03, BR-04 and BR-09 is the current date in the **Asia/Bangkok** time zone, computed by the server.
+- Numbers: `value`, `dailyTarget`, `minValue`, `maxValue` are floats limited to two decimal places
+  (input with more is rejected with 400) and are compared after rounding to two decimals (SRS D-07).
+- BR-04 (one active goal per template) cannot be a plain unique constraint because activity depends
+  on date ranges. It is enforced inside a database transaction that first takes a per-(user, template)
+  advisory lock (`pg_advisory_xact_lock`), then checks for an active goal and inserts. Two concurrent
+  requests are therefore serialised and the second receives 409.
+- Changing a template's min/max affects only new input (SRS D-06); existing goals and entries are not
+  revalidated.
 - "Active goal" (BR-04) is derived: a goal whose start date ≤ today ≤ end date. It is not stored.
 - Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
 
@@ -92,11 +101,17 @@ Constraints:
 | Read another user's goal, entries, progress | no (401) | no (404) | no (403) |
 | Create entry on own goal | no (401) | yes | no (403) |
 
-Status-code policy (SRS D-05): 401 = no valid session; 403 = signed in but role not allowed;
-404 = the record belongs to someone else or does not exist (so existence is not revealed).
+Status-code policy (SRS D-05): 401 = no valid session; 403 = signed in but role not allowed (this
+includes a Manager calling Participant-only endpoints, so the role gate answers before any lookup);
+404 = a Participant asks for a record that belongs to someone else or does not exist (so existence is
+not revealed).
 
 ## 5. Authentication and session design
 
+- The session cookie is `HttpOnly` and `SameSite=Lax`, plus `Secure` when deployed over HTTPS. `SameSite=Lax`
+  is the CSRF protection for the cookie-authenticated POST/PUT endpoints; the API accepts JSON only and
+  CORS allows only the configured frontend origin (no wildcard).
+- Login rate limiting and account lockout are out of scope for Sprint 1 and recorded as a known limitation.
 - `POST /auth/login` checks email and password with bcrypt. On success it stores the user id and
   role in the server-side session and sets an HTTP-only cookie. On any failure it returns 401 with
   one generic message (does not say whether the email or the password was wrong).
@@ -138,6 +153,7 @@ Status-code policy (SRS D-05): 401 = no valid session; 403 = signed in but role 
 | `PUT /templates/:id` | Manager | F-02 | FR-04, BR-06, BR-07 |
 | `POST /goals` | Participant | F-03 | FR-06, BR-04, BR-05 |
 | `GET /goals` | Participant | F-03 | FR-06, BR-08 |
+| `GET /goals/:id` | Participant (owner) | F-03 | FR-06, BR-08 |
 | `POST /goals/:id/entries` | Participant (owner) | F-04 | FR-07, BR-01, BR-02, BR-03 |
 | `GET /goals/:id/entries` | Participant (owner) | F-04 | FR-09, BR-08 |
 | `GET /goals/:id/progress` | Participant (owner) | F-04 | FR-08, BR-09 |
@@ -166,7 +182,8 @@ Detailed request/response shapes, acceptance criteria and tests are in the featu
 | `SEED_*` | Passwords for seeded accounts, read only by the seed script |
 
 Real values live in a local `.env` that is git-ignored. `.env.example` contains placeholders only
-(NFR-03). Tests reset only the database named by `DATABASE_URL_TEST`.
+(NFR-03). Tests reset only the database named by `DATABASE_URL_TEST`, and the test setup refuses to run
+if `DATABASE_URL_TEST` is missing or equal to `DATABASE_URL`, so a test reset can never wipe the dev database.
 
 ## 9. Testing strategy
 
