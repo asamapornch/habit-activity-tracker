@@ -211,6 +211,12 @@ Sprint 1 runs locally. The design keeps later deployment simple:
 - Lab 5 note: once the app sits behind a proxy or load balancer (GCP deployment), Express must be
   configured with `app.set("trust proxy", 1)`, otherwise Express sees the proxy's plain-HTTP
   connection and never sends the session cookie's `Secure` attribute, even over real HTTPS.
+- Lab 5 note: `SameSite=Lax` cookies are not sent on cross-site requests, including a frontend and
+  API served from different registrable domains (e.g. `app.example.com` and `api.example-two.com`).
+  Same-site subdomains of one registrable domain (e.g. `app.example.com` and `api.example.com`) are
+  fine under `Lax`. If the deployed frontend and API end up on different registrable domains, either
+  serve both from one origin (e.g. the API under `/api` behind the same host) or switch the cookie to
+  `SameSite=None; Secure`.
 
 ## 11. Repository layout
 
