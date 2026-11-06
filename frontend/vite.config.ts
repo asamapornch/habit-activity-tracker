@@ -6,5 +6,5 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   // Env vars live in the repo-root .env, same file the backend reads.
-  envDir: path.resolve(__dirname, '..'),
+  envDir: path.resolve(import.meta.dirname, '..'),
 })

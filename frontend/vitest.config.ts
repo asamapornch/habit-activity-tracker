@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
-  envDir: path.resolve(__dirname, ".."),
+  envDir: path.resolve(import.meta.dirname, ".."),
   test: {
     environment: "jsdom",
     setupFiles: ["./src/test/setup.ts"],
