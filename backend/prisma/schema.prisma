@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  MANAGER
+  PARTICIPANT
+}
+
+model User {
+  id           Int        @id @default(autoincrement())
+  email        String     @unique
+  passwordHash String
+  role         Role
+  templates    Template[] @relation("TemplateCreatedBy")
+  goals        Goal[]
+
+  @@map("users")
+}
+
+model Template {
+  id          Int    @id @default(autoincrement())
+  name        String
+  unit        String
+  minValue    Float
+  maxValue    Float
+  createdById Int
+  createdBy   User   @relation("TemplateCreatedBy", fields: [createdById], references: [id])
+  goals       Goal[]
+
+  @@map("templates")
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  templateId  Int
+  template    Template @relation(fields: [templateId], references: [id])
+  dailyTarget Float
+  startDate   DateTime @db.Date
+  endDate     DateTime @db.Date
+  entries     Entry[]
+
+  @@map("goals")
+}
+
+model Entry {
+  id     Int      @id @default(autoincrement())
+  goalId Int
+  goal   Goal     @relation(fields: [goalId], references: [id])
+  date   DateTime @db.Date
+  value  Float
+
+  @@unique([goalId, date])
+  @@map("entries")
+}
