@@ -6,15 +6,19 @@ export function LoginForm({ onLogin }: { onLogin: (user: CurrentUser) => void })
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setSubmitting(true);
     try {
       const user = await login(email, password);
       onLogin(user);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -40,7 +44,9 @@ export function LoginForm({ onLogin }: { onLogin: (user: CurrentUser) => void })
           required
         />
       </div>
-      <button type="submit">Log in</button>
+      <button type="submit" disabled={submitting}>
+        Log in
+      </button>
       {error && <p role="alert">{error}</p>}
     </form>
   );

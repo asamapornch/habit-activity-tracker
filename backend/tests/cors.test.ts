@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import request from "supertest";
 import { createApp } from "../src/app.js";
 import { config } from "../src/lib/config.js";
@@ -19,5 +19,22 @@ describe("CORS", () => {
     const res = await request(app).get("/health").set("Origin", "http://evil.example.com");
 
     expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+});
+
+describe("fail-fast on missing FRONTEND_ORIGIN", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it("throws at import time if FRONTEND_ORIGIN is empty (config.ts treats unset the same way)", async () => {
+    // A present-but-empty value, not `delete`: dotenv only fills in keys that are
+    // NOT already present in process.env, so this stays empty through re-import
+    // regardless of what the local .env file happens to contain.
+    vi.stubEnv("FRONTEND_ORIGIN", "");
+    vi.resetModules();
+
+    await expect(import("../src/lib/cors.js")).rejects.toThrow(/FRONTEND_ORIGIN/);
   });
 });
