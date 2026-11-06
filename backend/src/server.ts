@@ -1,5 +1,7 @@
-import { app } from "./app.js";
+import { createApp } from "./app.js";
 import { config } from "./lib/config.js";
+
+const app = createApp();
 
 app.listen(config.port, () => {
   console.log(`Backend listening on port ${config.port}`);
