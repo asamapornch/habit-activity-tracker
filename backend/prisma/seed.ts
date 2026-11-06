@@ -1,6 +1,6 @@
 import path from "node:path";
 import dotenv from "dotenv";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 
 dotenv.config({ path: path.resolve(import.meta.dirname, "../../.env") });

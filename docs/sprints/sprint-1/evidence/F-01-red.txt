@@ -1,0 +1,255 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/auth.test.ts (13 tests | 12 failed) 2054ms
+   ❯ POST /auth/login (5)
+     × TEST-01.1 logs in with correct credentials, returns id/email/role, and sets an HttpOnly SameSite=Lax cookie 213ms
+     × TEST-01.2a returns 401 INVALID_CREDENTIALS for a wrong password 151ms
+     × TEST-01.2b returns the same 401 code and message for an unknown email 152ms
+     × TEST-01.7a returns 400 VALIDATION_ERROR for an empty body 145ms
+     × TEST-01.7b returns 400 for non-string fields and the server still answers a later request 148ms
+   ❯ POST /auth/logout (1)
+     × TEST-01.3 invalidates the session so the same cookie later gets 401 from /auth/me 149ms
+   ❯ requireAuth / requireRole middleware (4)
+     × TEST-01.4 rejects a protected route with no session (401 UNAUTHENTICATED) 147ms
+     × TEST-01.5a rejects a Participant on a manager-only route (403 FORBIDDEN) 148ms
+     × TEST-01.5b allows a Manager on a manager-only route 146ms
+     × TEST-01.9 rejects an anonymous request to a manager-only route with 401, not 403 146ms
+   ❯ GET /auth/me (1)
+     × TEST-01.8 returns the same identity as login, with no passwordHash 147ms
+   ❯ session regeneration (1)
+     × TEST-01.10 issues a new session id on re-login and invalidates the old cookie 144ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/login > TEST-01.1 logs in with correct credentials, returns id/email/role, and sets an HttpOnly SameSite=Lax cookie
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/auth.test.ts:56:24
+     54|       .send({ email: manager.email, password: MANAGER_PASSWORD });
+     55|
+     56|     expect(res.status).toBe(200);
+       |                        ^
+     57|     expect(res.body).toEqual({ id: manager.id, email: manager.email, r…
+     58|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/login > TEST-01.2a returns 401 INVALID_CREDENTIALS for a wrong password
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/auth.test.ts:70:24
+     68|       .send({ email: manager.email, password: "wrong-password" });
+     69|
+     70|     expect(res.status).toBe(401);
+       |                        ^
+     71|     expect(res.body.error.code).toBe("INVALID_CREDENTIALS");
+     72|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/login > TEST-01.2b returns the same 401 code and message for an unknown email
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/auth.test.ts:83:36
+     81|       .send({ email: "nobody@example.com", password: "whatever" });
+     82|
+     83|     expect(unknownEmailRes.status).toBe(401);
+       |                                    ^
+     84|     expect(unknownEmailRes.body.error.code).toBe(wrongPasswordRes.body…
+     85|     expect(unknownEmailRes.body.error.message).toBe(wrongPasswordRes.b…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/login > TEST-01.7a returns 400 VALIDATION_ERROR for an empty body
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/auth.test.ts:91:24
+     89|     const res = await request(app).post("/auth/login").send({});
+     90|
+     91|     expect(res.status).toBe(400);
+       |                        ^
+     92|     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+     93|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/login > TEST-01.7b returns 400 for non-string fields and the server still answers a later request
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/auth.test.ts:100:24
+     98|       .send({ email: 123, password: null });
+     99|
+    100|     expect(res.status).toBe(400);
+       |                        ^
+    101|
+    102|     const followUp = await request(app).get("/health");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/auth.test.ts > POST /auth/logout > TEST-01.3 invalidates the session so the same cookie later gets 401 from /auth/me
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/auth.test.ts:113:30
+    111|
+    112|     const logoutRes = await agent.post("/auth/logout");
+    113|     expect(logoutRes.status).toBe(200);
+       |                              ^
+    114|
+    115|     const meRes = await agent.get("/auth/me");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.4 rejects a protected route with no session (401 UNAUTHENTICATED)
+AssertionError: expected 501 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 501
+
+ ❯ tests/auth.test.ts:124:24
+    122|     const res = await request(app).get("/__test/protected");
+    123|
+    124|     expect(res.status).toBe(401);
+       |                        ^
+    125|     expect(res.body.error.code).toBe("UNAUTHENTICATED");
+    126|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.5a rejects a Participant on a manager-only route (403 FORBIDDEN)
+AssertionError: expected 501 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 501
+
+ ❯ tests/auth.test.ts:136:24
+    134|     const res = await agent.get("/__test/manager-only");
+    135|
+    136|     expect(res.status).toBe(403);
+       |                        ^
+    137|     expect(res.body.error.code).toBe("FORBIDDEN");
+    138|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.5b allows a Manager on a manager-only route
+AssertionError: expected 501 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 501
+
+ ❯ tests/auth.test.ts:146:24
+    144|     const res = await agent.get("/__test/manager-only");
+    145|
+    146|     expect(res.status).toBe(200);
+       |                        ^
+    147|   });
+    148|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.9 rejects an anonymous request to a manager-only route with 401, not 403
+AssertionError: expected 501 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 501
+
+ ❯ tests/auth.test.ts:152:24
+    150|     const res = await request(app).get("/__test/manager-only");
+    151|
+    152|     expect(res.status).toBe(401);
+       |                        ^
+    153|     expect(res.body.error.code).toBe("UNAUTHENTICATED");
+    154|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  tests/auth.test.ts > GET /auth/me > TEST-01.8 returns the same identity as login, with no passwordHash
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/auth.test.ts:175:26
+    173|     const meRes = await agent.get("/auth/me");
+    174|
+    175|     expect(meRes.status).toBe(200);
+       |                          ^
+    176|     expect(meRes.body).toEqual(loginRes.body);
+    177|     expect(meRes.body.passwordHash).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  tests/auth.test.ts > session regeneration > TEST-01.10 issues a new session id on re-login and invalidates the old cookie
+AssertionError: expected undefined to be defined
+ ❯ tests/auth.test.ts:187:21
+    185|       .send({ email: manager.email, password: MANAGER_PASSWORD });
+    186|     const cookieA = firstLogin.headers["set-cookie"]?.[0];
+    187|     expect(cookieA).toBeDefined();
+       |                     ^
+    188|
+    189|     const secondLogin = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  12 failed | 2 passed (14)
+   Start at  22:37:43
+   Duration  2.29s (tests 88%, import 7%, setup 3%, transform 1%)
+

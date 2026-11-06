@@ -22,7 +22,9 @@ middleware that protects every other endpoint.
 1. **Login** validates the request body, finds the user by email, compares the password with the
    stored bcrypt hash, and on success **regenerates the session** (a new session id replaces any
    existing one, preventing session fixation) holding the user id and role. The response sets an
-   HTTP-only, `SameSite=Lax` session cookie and returns the user's id, email and role.
+   HTTP-only, `SameSite=Lax` session cookie and returns the user's id, email and role. The session
+   lasts **8 hours** (both the cookie's `maxAge` and the server-side store's TTL); it does not
+   auto-renew on activity and is not extended by any other request.
 2. **Failed login** (unknown email or wrong password) returns the same generic 401 for both cases so
    an attacker cannot tell which part was wrong. For an unknown email the server still performs a
    bcrypt comparison against a fixed dummy hash, so response time does not reveal which emails exist.
@@ -47,7 +49,10 @@ Out of scope: self-registration, password reset, account lockout, "remember me".
 | `GET /auth/me` | none | `200 { "id", "email", "role" }` | `401` no valid session |
 
 Error body for every error: `{ "error": { "code": "<CODE>", "message": "<text>" } }` with codes
-`VALIDATION_ERROR`, `INVALID_CREDENTIALS`, `UNAUTHENTICATED`, `FORBIDDEN`.
+`VALIDATION_ERROR`, `INVALID_CREDENTIALS`, `UNAUTHENTICATED`, `FORBIDDEN`, `INTERNAL_ERROR`. This
+applies even when the request body is malformed JSON (`400 VALIDATION_ERROR`) or an unexpected
+error occurs while handling the request (`500 INTERNAL_ERROR`) — the client always gets the
+standard error body, never a stack trace or an HTML error page.
 
 The response never contains `passwordHash`.
 
@@ -77,11 +82,13 @@ convenience only; the API enforces access (NFR-02).
 | AC-01.8 | `GET /auth/me` while logged in returns the same id, email and role as the login response, and no `passwordHash`. | FR-02 |
 | AC-01.9 | An anonymous request to a `requireRole("MANAGER")` route returns 401 (not 403). | NFR-02 |
 | AC-01.10 | Logging in again while presenting an existing session cookie issues a new session id, and the old cookie no longer authenticates. | NFR-02 |
+| AC-01.11 | A malformed JSON request body (e.g. `{bad`) returns `400 VALIDATION_ERROR`, and an unexpected server error returns `500 INTERNAL_ERROR`; both use the standard `{ "error": { "code", "message" } }` body with no stack trace or HTML. | NFR-05 |
 
 ## 5. Software test specification (STS)
 
 All tests are API-level (Vitest + Supertest) in `backend/tests/auth.test.ts`. A throwaway
-route guarded by `requireAuth` and one guarded by `requireRole("MANAGER")` is registered inside the
+route guarded by `requireAuth`, one guarded by `requireRole("MANAGER")`, and one that calls
+`next(err)` with a plain `Error` (to exercise the `INTERNAL_ERROR` path) are registered inside the
 test file to exercise the middleware before F-02 exists. The shared test setup (`backend/tests/setup.ts`) resets the test database before every test, so
 **each test creates its own users in `beforeEach`** (a Manager and a Participant, with passwords hashed
 using bcrypt) instead of relying on the seed script. The seed script itself is checked separately by the
@@ -92,7 +99,7 @@ using bcrypt) instead of relying on the seed script. The seed script itself is c
 | TEST-01.1 | AC-01.1 | `POST /auth/login` with the manager created in `beforeEach` | 200; body has `id`, `email`, `role = MANAGER`; `Set-Cookie` present and contains `HttpOnly` and `SameSite=Lax` |
 | TEST-01.2a | AC-01.2 | login with correct email, wrong password | 401, code `INVALID_CREDENTIALS` |
 | TEST-01.2b | AC-01.2 | login with unknown email | 401, same code and message as TEST-01.2a |
-| TEST-01.3 | AC-01.3 | login, then `POST /auth/logout`, then `GET /auth/me` with the same cookie | logout 200; `/auth/me` 401 |
+| TEST-01.3 | AC-01.3 | login and capture the `Set-Cookie` value from the response; `POST /auth/logout`; replay the exact captured login cookie (not whatever the test client's cookie jar currently holds) on `GET /auth/me` | logout 200; `/auth/me` with the replayed cookie is 401 |
 | TEST-01.4 | AC-01.4 | request the `requireAuth` test route with no cookie | 401, code `UNAUTHENTICATED` |
 | TEST-01.5a | AC-01.5 | log in as a Participant, call the manager-only test route | 403, code `FORBIDDEN` |
 | TEST-01.5b | AC-01.5 | log in as the Manager, call the manager-only test route | 200 |
@@ -102,6 +109,7 @@ using bcrypt) instead of relying on the seed script. The seed script itself is c
 | TEST-01.8 | AC-01.8 | login, then `GET /auth/me` | 200; id, email, role equal the login response; no `passwordHash` key |
 | TEST-01.9 | AC-01.9 | request the manager-only test route with no cookie | 401, code `UNAUTHENTICATED` |
 | TEST-01.10 | AC-01.10 | login (cookie A), login again presenting cookie A (cookie B), then `GET /auth/me` with A and with B | cookie B differs from A; `/auth/me` with A is 401; with B is 200 |
+| TEST-01.11 | AC-01.11 | (a) `POST /auth/login` with the raw malformed JSON body `{bad`; (b) request the throwaway error-handler test route, which calls `next(err)` with a plain `Error` | (a) 400, code `VALIDATION_ERROR`; (b) 500, code `INTERNAL_ERROR`; both bodies are `{ "error": { "code", "message" } }` with no stack trace or HTML |
 
 ## 6. Definition of done
 
@@ -121,3 +129,4 @@ using bcrypt) instead of relying on the seed script. The seed script itself is c
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-06 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-06 | Tests create their own users instead of using the seed; added AC-01.9, AC-01.10 and cookie-flag check; session regeneration and dummy-hash behaviour added | PR review: reset-per-test setup would delete seeded users; hardening suggestions |
+| 1.2 | 2026-11-06 | Added AC-01.11/TEST-01.11 (malformed JSON and unexpected errors use the standard error body with an `INTERNAL_ERROR` code); clarified TEST-01.3 to capture and replay the exact login cookie; stated the 8-hour session lifetime (cookie `maxAge` and store TTL) | PR #9 review |
