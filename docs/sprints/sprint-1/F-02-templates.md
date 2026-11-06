@@ -73,7 +73,7 @@ shown as returned. Participant: a read-only list. The UI is a convenience; the A
 | AC-02.5 | Missing fields, an empty or whitespace-only name or unit, non-numeric values, more than two decimals, or unknown fields return 400 and nothing is stored. | NFR-05 |
 | AC-02.6 | A Manager updating an existing template receives 200 with the new values, `createdById` unchanged, and a later `GET /templates` shows them. | FR-04 |
 | AC-02.7 | A Participant updating a template receives 403 and the template is unchanged. | BR-06 |
-| AC-02.8 | A Manager updating a template id that does not exist receives 404; an id that is not a positive integer returns 400. | NFR-05 |
+| AC-02.8 | A Manager updating a template id that does not exist receives 404; an id that is not a positive integer, or is greater than 2147483647, returns 400. | NFR-05 |
 | AC-02.9 | Both a Manager and a Participant calling `GET /templates` receive 200 with all stored templates. | FR-05 |
 | AC-02.10 | A Participant updating a template id that does not exist receives 403 (not 404), so existence is not revealed. | BR-06, NFR-02 |
 | AC-02.11 | Template `name` and `unit` are trimmed and stored trimmed; a name over 100 or a unit over 20 characters (after trimming) returns 400. | NFR-05 |
@@ -113,6 +113,7 @@ every test.
 | TEST-02.8a | AC-02.8 | Manager `PUT /templates/99999` with a valid body | 404 `NOT_FOUND` |
 | TEST-02.8b | AC-02.8 | Manager `PUT /templates/abc` | 400 |
 | TEST-02.8c | AC-02.10 | Participant `PUT /templates/99999` with a valid body | 403 `FORBIDDEN` (not 404) |
+| TEST-02.8d | AC-02.8 | Manager `PUT /templates/99999999999` (exceeds Postgres's 32-bit `integer` range) | 400 `VALIDATION_ERROR`, not 500 |
 | TEST-02.9a | AC-02.9 | Two templates exist; Manager `GET /templates` | 200; list has both, ordered by `id` ascending |
 | TEST-02.9b | AC-02.9 | same, as Participant | 200; list has both |
 
@@ -133,3 +134,4 @@ every test.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-06 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-06 | Participant PUT on a missing id returns 403 (AC-02.10); trimming and length limits, numeric limits and string rejection (AC-02.11, AC-02.12); any Manager may update, `createdById` unchanged, list ordered by id; `NOT_FOUND` added to `ErrorCode` | PR #11 review |
+| 1.2 | 2026-11-06 | AC-02.8 now also rejects an id greater than 2147483647 (Postgres's 32-bit `integer` max) with 400, instead of letting it reach the database and surface as 500; added TEST-02.8d | PR #12 review |
