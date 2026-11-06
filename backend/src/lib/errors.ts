@@ -5,7 +5,8 @@ export type ErrorCode =
   | "INVALID_CREDENTIALS"
   | "UNAUTHENTICATED"
   | "FORBIDDEN"
-  | "INTERNAL_ERROR";
+  | "INTERNAL_ERROR"
+  | "NOT_FOUND";
 
 export function sendError(res: Response, status: number, code: ErrorCode, message: string) {
   res.status(status).json({ error: { code, message } });
