@@ -56,9 +56,15 @@ function parseTemplateInput(body: unknown): TemplateInput | null {
   return { name: trimmedName, unit: trimmedUnit, minValue, maxValue };
 }
 
+// Postgres's `integer` (int4) column max; a larger id would reach the
+// database and surface as a 500 instead of a clean 400 (F-02 contract AC-02.8).
+const MAX_POSTGRES_INT4 = 2147483647;
+
 function parsePositiveIntId(raw: string): number | null {
   if (!/^[1-9]\d*$/.test(raw)) return null;
-  return Number(raw);
+  const value = Number(raw);
+  if (value > MAX_POSTGRES_INT4) return null;
+  return value;
 }
 
 templatesRouter.get("/templates", requireAuth, async (_req, res, next) => {
