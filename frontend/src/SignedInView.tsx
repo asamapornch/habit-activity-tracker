@@ -1,4 +1,5 @@
 import { logout, type CurrentUser } from "./api";
+import { Templates } from "./Templates";
 
 export function SignedInView({ user, onLogout }: { user: CurrentUser; onLogout: () => void }) {
   async function handleLogout() {
@@ -14,6 +15,7 @@ export function SignedInView({ user, onLogout }: { user: CurrentUser; onLogout: 
       <button type="button" onClick={handleLogout}>
         Logout
       </button>
+      <Templates role={user.role} onUnauthorized={onLogout} />
     </div>
   );
 }

@@ -1,0 +1,416 @@
+=== backend: npm test ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/access.test.ts (23 tests | 19 failed) 10159ms
+   ❯ AC-05.1 anonymous access (4)
+     × TEST-05.1c no cookie: POST /goals, GET /goals, GET /goals/:id each return 401 439ms
+     × TEST-05.1d no cookie: POST/GET entries and GET progress each return 401 439ms
+   ❯ AC-05.3 Manager cannot use Participant-only endpoints (5)
+     × TEST-05.3a Manager GET /goals/:id returns 403 (not 200, not 404) 445ms
+     × TEST-05.3b Manager GET /goals returns 403 446ms
+     × TEST-05.3c Manager POST /goals returns 403 and goal count is unchanged 439ms
+     × TEST-05.3d Manager GET /goals/:id/entries and GET /goals/:id/progress each return 403 442ms
+     × TEST-05.3e Manager POST /goals/:id/entries returns 403 and entry count is unchanged 443ms
+   ❯ AC-05.4 / AC-05.8 ownership on reads (3)
+     × TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same GET /goals/:id 436ms
+     × TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404 on GET /goals/:id/entries 434ms
+     × TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goals/:id/progress 444ms
+   ❯ AC-05.5 / AC-05.8 ownership on writes (1)
+     × TEST-05.5 owner P1 gets 201 (control); P2 gets 404 and no entry is created 435ms
+   ❯ AC-05.6 own goals only (1)
+     × TEST-05.6 P1's list has only G1; P2's list has only their own goal G2 437ms
+   ❯ AC-05.7 identical response for another's goal and a missing goal (4)
+     × TEST-05.7a P2 control on GET /goals/:id then identical 404 for G1 and for a missing id 438ms
+     × TEST-05.7b P2 control on GET /goals/:id/entries then identical 404 for G1 and for a missing id 434ms
+     × TEST-05.7c P2 control on GET /goals/:id/progress then identical 404 for G1 and for a missing id 438ms
+     × TEST-05.7d P2 control on POST /goals/:id/entries then identical 404 for G1 and for a missing id 435ms
+   ❯ AC-05.9 ownership checked before goal-dependent validation (3)
+     × TEST-05.9a control P1 gets 400 for a date before the goal start; P2 gets identical 404 on G1 and a missing id 434ms
+     × TEST-05.9b control P1 gets 400 for a value above the template maximum; P2 gets identical 404 on G1 and a missing id 437ms
+     × TEST-05.9c control P1 gets 409 for a date that already has an entry; P2 gets identical 404 on G1 and a missing id 434ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 19 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1c no cookie: POST /goals, GET /goals, GET /goals/:id each return 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/access.test.ts:117:28
+    115|     const getRes = await request(app).get(`/goals/${goal1.id}`);
+    116|
+    117|     expect(postRes.status).toBe(401);
+       |                            ^
+    118|     expect(postRes.body.error.code).toBe("UNAUTHENTICATED");
+    119|     expect(listRes.status).toBe(401);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1d no cookie: POST/GET entries and GET progress each return 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/access.test.ts:130:28
+    128|     const progressRes = await request(app).get(`/goals/${goal1.id}/pro…
+    129|
+    130|     expect(postRes.status).toBe(401);
+       |                            ^
+    131|     expect(postRes.body.error.code).toBe("UNAUTHENTICATED");
+    132|     expect(listRes.status).toBe(401);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3a Manager GET /goals/:id returns 403 (not 200, not 404)
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:173:24
+    171|     const res = await request(app).get(`/goals/${goal1.id}`).set("Cook…
+    172|
+    173|     expect(res.status).toBe(403);
+       |                        ^
+    174|     expect(res.body.error.code).toBe("FORBIDDEN");
+    175|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3b Manager GET /goals returns 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:180:24
+    178|     const res = await request(app).get("/goals").set("Cookie", manager…
+    179|
+    180|     expect(res.status).toBe(403);
+       |                        ^
+    181|     expect(res.body.error.code).toBe("FORBIDDEN");
+    182|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3c Manager POST /goals returns 403 and goal count is unchanged
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:192:24
+    190|       .send({ ...VALID_GOAL_BODY, templateId: template.id });
+    191|
+    192|     expect(res.status).toBe(403);
+       |                        ^
+    193|     expect(res.body.error.code).toBe("FORBIDDEN");
+    194|     await expect(prisma.goal.count()).resolves.toBe(countBefore);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3d Manager GET /goals/:id/entries and GET /goals/:id/progress each return 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:205:31
+    203|       .set("Cookie", managerCookie);
+    204|
+    205|     expect(entriesRes.status).toBe(403);
+       |                               ^
+    206|     expect(entriesRes.body.error.code).toBe("FORBIDDEN");
+    207|     expect(progressRes.status).toBe(403);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3e Manager POST /goals/:id/entries returns 403 and entry count is unchanged
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:219:24
+    217|       .send(VALID_ENTRY_BODY);
+    218|
+    219|     expect(res.status).toBe(403);
+       |                        ^
+    220|     expect(res.body.error.code).toBe("FORBIDDEN");
+    221|     await expect(prisma.entry.count()).resolves.toBe(countBefore);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same GET /goals/:id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:228:26
+    226|   it("TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same …
+    227|     const p1Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+    228|     expect(p1Res.status).toBe(200);
+       |                          ^
+    229|
+    230|     const p2Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404 on GET /goals/:id/entries
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:237:26
+    235|   it("TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404…
+    236|     const p1Res = await request(app).get(`/goals/${goal1.id}/entries`)…
+    237|     expect(p1Res.status).toBe(200);
+       |                          ^
+    238|     expect(p1Res.body).toHaveLength(1);
+    239|     expect(p1Res.body[0]).toMatchObject({ value: 5 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goals/:id/progress
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:248:26
+    246|   it("TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goal…
+    247|     const p1Res = await request(app).get(`/goals/${goal1.id}/progress`…
+    248|     expect(p1Res.status).toBe(200);
+       |                          ^
+    249|
+    250|     const p2Res = await request(app).get(`/goals/${goal1.id}/progress`…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.5 / AC-05.8 ownership on writes > TEST-05.5 owner P1 gets 201 (control); P2 gets 404 and no entry is created
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/access.test.ts:262:26
+    260|       .set("Cookie", p1Cookie)
+    261|       .send({ date: "2026-02-02", value: 5 });
+    262|     expect(p1Res.status).toBe(201);
+       |                          ^
+    263|
+    264|     const countBeforeP2 = await prisma.entry.count();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.6 own goals only > TEST-05.6 P1's list has only G1; P2's list has only their own goal G2
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:292:26
+    290|     const p2Res = await request(app).get("/goals").set("Cookie", p2Coo…
+    291|
+    292|     expect(p1Res.status).toBe(200);
+       |                          ^
+    293|     expect(p1Res.body.map((g: { id: number }) => g.id)).toEqual([goal1…
+    294|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7a P2 control on GET /goals/:id then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:303:26
+    301|   it("TEST-05.7a P2 control on GET /goals/:id then identical 404 for G…
+    302|     const p1Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+    303|     expect(p1Res.status).toBe(200);
+       |                          ^
+    304|
+    305|     const onG1 = await request(app).get(`/goals/${goal1.id}`).set("Coo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7b P2 control on GET /goals/:id/entries then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:312:26
+    310|   it("TEST-05.7b P2 control on GET /goals/:id/entries then identical 4…
+    311|     const p1Res = await request(app).get(`/goals/${goal1.id}/entries`)…
+    312|     expect(p1Res.status).toBe(200);
+       |                          ^
+    313|
+    314|     const onG1 = await request(app).get(`/goals/${goal1.id}/entries`).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7c P2 control on GET /goals/:id/progress then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:321:26
+    319|   it("TEST-05.7c P2 control on GET /goals/:id/progress then identical …
+    320|     const p1Res = await request(app).get(`/goals/${goal1.id}/progress`…
+    321|     expect(p1Res.status).toBe(200);
+       |                          ^
+    322|
+    323|     const onG1 = await request(app).get(`/goals/${goal1.id}/progress`)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7d P2 control on POST /goals/:id/entries then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/access.test.ts:333:26
+    331|       .set("Cookie", p1Cookie)
+    332|       .send({ date: "2026-03-01", value: 5 });
+    333|     expect(p1Res.status).toBe(201);
+       |                          ^
+    334|
+    335|     const onG1 = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9a control P1 gets 400 for a date before the goal start; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/access.test.ts:353:26
+    351|       .set("Cookie", p1Cookie)
+    352|       .send({ date: "2025-12-31", value: 5 });
+    353|     expect(p1Res.status).toBe(400);
+       |                          ^
+    354|     expect(p1Res.body.error.code).toBe("VALIDATION_ERROR");
+    355|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9b control P1 gets 400 for a value above the template maximum; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/access.test.ts:372:26
+    370|       .set("Cookie", p1Cookie)
+    371|       .send({ date: "2026-04-01", value: 11 });
+    372|     expect(p1Res.status).toBe(400);
+       |                          ^
+    373|     expect(p1Res.body.error.code).toBe("VALIDATION_ERROR");
+    374|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/19]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9c control P1 gets 409 for a date that already has an entry; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/access.test.ts:391:26
+    389|       .set("Cookie", p1Cookie)
+    390|       .send({ date: "2026-01-15", value: 5 });
+    391|     expect(p1Res.status).toBe(409);
+       |                          ^
+    392|
+    393|     const onG1 = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/19]⎯
+
+
+ Test Files  1 failed | 4 passed (5)
+      Tests  19 failed | 51 passed (70)
+   Start at  01:28:11
+   Duration  22.85s (tests 96%, import 3%)
+
+
+=== frontend: npx vitest run ===
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  01:28:34
+   Duration  1.00s (environment 49%, tests 36%, setup 8%, import 6%, transform 2%)
+
