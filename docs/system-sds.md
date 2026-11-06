@@ -123,6 +123,8 @@ not revealed).
   rejects a wrong role (403). Ownership checks (BR-08) happen in the service layer and return 404.
 - Sprint 1 uses the in-memory session store. This is acceptable for a single process and is
   recorded as a known limitation; a PostgreSQL-backed store replaces it before deployment (Lab 5).
+- A session lasts **8 hours**: both the cookie's `maxAge` and the store's TTL are set to 8 hours.
+  It does not auto-renew on activity.
 - Accounts are seeded (one Manager, two Participants). Passwords come from environment variables
   at seed time, never from source code.
 
@@ -204,6 +206,9 @@ Sprint 1 runs locally. The design keeps later deployment simple:
 - Backend exposes `GET /health` for liveness checks.
 - Lab 5 adds Dockerfiles for backend and frontend, a CI pipeline running `npm test`, and deployment
   to GCP with a managed PostgreSQL instance and a persistent session store.
+- Lab 5 note: once the app sits behind a proxy or load balancer (GCP deployment), Express must be
+  configured with `app.set("trust proxy", 1)`, otherwise Express sees the proxy's plain-HTTP
+  connection and never sends the session cookie's `Secure` attribute, even over real HTTPS.
 
 ## 11. Repository layout
 
