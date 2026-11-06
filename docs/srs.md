@@ -64,7 +64,7 @@ validation; progress and own history; access-control tests.
 | BR-01 | A goal accepts at most one entry per calendar date. | 409 | F-04 |
 | BR-02 | An entry value must lie within the template's minimum and maximum (inclusive). | 400 | F-04 |
 | BR-03 | An entry date must not be in the future, before the goal start date, or after the goal end date. | 400 | F-04 |
-| BR-04 | A Participant has at most one active goal per template. A goal is active while the current date is within its start and end dates. | 409 | F-03 |
+| BR-04 | A Participant cannot have two goals for the same template whose date ranges overlap (start and end dates inclusive). | 409 | F-03 |
 | BR-05 | A goal's daily target must lie within the template range, and its end date must not be before its start date. | 400 | F-03 |
 | BR-06 | Only a Manager can create or update templates. | 403 | F-02 |
 | BR-07 | A template's minimum must be strictly less than its maximum. | 400 | F-02 |
@@ -76,13 +76,13 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 
 ## 5. Non-functional requirements
 
-| ID | Requirement | How it is measured |
-| --- | --- | --- |
-| NFR-01 | Passwords are stored only as salted hashes. | Inspection of the stored value; test asserts it differs from the plaintext. |
-| NFR-02 | Authorization is enforced on the server for every protected endpoint. | Direct API calls with a wrong role or no session are rejected (401/403/404) in automated tests, independent of the UI. |
-| NFR-03 | No real secrets are committed. Configuration is read from environment variables; `.env.example` has placeholders only. | Repository inspection. |
-| NFR-04 | The full automated test suite runs with one documented command. | README command succeeds on a clean checkout. |
-| NFR-05 | Invalid input returns a clear error message and an appropriate 4xx status; the server does not crash. | Negative-case tests for each endpoint. |
+| ID | Requirement | How it is measured | Sprint |
+| --- | --- | --- | --- |
+| NFR-01 | Passwords are stored only as salted hashes. | Inspection of the stored value; test asserts it differs from the plaintext. | 1 |
+| NFR-02 | Authorization is enforced on the server for every protected endpoint. | Direct API calls with a wrong role or no session are rejected (401/403/404) in automated tests, independent of the UI. | 1 |
+| NFR-03 | No real secrets are committed. Configuration is read from environment variables; `.env.example` has placeholders only. | Repository inspection. | 1 |
+| NFR-04 | The full automated test suite runs with one documented command. | README command succeeds on a clean checkout. | 1 |
+| NFR-05 | Invalid input returns a clear error message and an appropriate 4xx status; the server does not crash. | Negative-case tests for each endpoint. | 1 (extended in 2 and 3 as endpoints are added) |
 
 ## 6. Assumptions
 
@@ -103,3 +103,4 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-05 | Another Participant's record returns 404; a wrong role (including a Manager reading participant data) returns 403; no session returns 401. | Avoid leaking existence; keep codes consistent with the role gate. |
 | D-06 | Changing a template's range applies only to new input. Existing goals and entries are not revalidated; progress uses each goal's stored daily target. | Keeps history stable and avoids retroactive invalidation. |
 | D-07 | Numeric values are stored as floats limited to two decimal places and compared after rounding to two decimals. | Avoids floating-point surprises in the target comparison (BR-09). |
+| D-08 | Goals for the same template may not overlap in date range, including future goals (BR-04). | A check on "active today" would let two future goals become active together later. |
