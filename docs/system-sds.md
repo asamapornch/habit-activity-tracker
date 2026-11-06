@@ -105,7 +105,9 @@ Constraints:
 Status-code policy (SRS D-05): 401 = no valid session; 403 = signed in but role not allowed (this
 includes a Manager calling Participant-only endpoints, so the role gate answers before any lookup);
 404 = a Participant asks for a record that belongs to someone else or does not exist (so existence is
-not revealed).
+not revealed). Check order on every endpoint: 401, 403, 400 for body-shape validation only, 404 for
+ownership or existence, then validation that depends on the goal's or template's data (BR-01, BR-02,
+BR-03).
 
 ## 5. Authentication and session design
 
