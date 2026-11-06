@@ -143,9 +143,11 @@ mocked per test.
 | TEST-02.14 | AC-02.14 | render as a signed-in Participant, `GET /templates` returns a list | the list is shown; no create form and no edit control is present |
 | TEST-02.15 | AC-02.15 | render as a signed-in Manager, `GET /templates` returns a list | a create form is shown; each list row has an edit control |
 | TEST-02.16 | AC-02.16 | Manager fills the create form with valid fields and submits | `POST /templates` is called with that body; the new template appears in the list |
+| TEST-02.16b | AC-02.16 | Manager types `0.5` in Min value and `2.25` in Max value and submits | `POST /templates` is called with `minValue: 0.5` and `maxValue: 2.25` as JSON numbers (not strings); succeeds |
 | TEST-02.17 | AC-02.17 | Manager submits the create form; `POST /templates` mocked to 400 with a given `error.message` | that exact message is shown; the fields still hold what was typed |
+| TEST-02.17b | AC-02.17 | Manager opens the edit control, changes a value, submits; `PUT /templates/:id` mocked to 400 with a given `error.message` | that exact message is shown; the edit form keeps the values the Manager had typed (it is not closed or reset) |
 | TEST-02.18 | AC-02.18 | Manager opens the edit control for an existing template, changes a value, submits | the form is pre-filled with the template's current values before editing; `PUT /templates/:id` is called; the list shows the new values |
-| TEST-02.19 | AC-02.19 | any template request mocked to 401 | the login form is shown (the app returns to the signed-out view) |
+| TEST-02.19 | AC-02.19 | rendered through the signed-in view (`SignedInView`/`App`, not `Templates` standalone), any template request mocked to 401 | the login form is shown (the app returns to the signed-out view) |
 | TEST-02.20 | AC-02.20 | Manager submits the create form; `POST /templates` left pending | the submit button is disabled until the request resolves |
 
 ## 6. Definition of done
@@ -167,3 +169,4 @@ mocked per test.
 | 1.1 | 2026-11-06 | Participant PUT on a missing id returns 403 (AC-02.10); trimming and length limits, numeric limits and string rejection (AC-02.11, AC-02.12); any Manager may update, `createdById` unchanged, list ordered by id; `NOT_FOUND` added to `ErrorCode` | PR #11 review |
 | 1.2 | 2026-11-06 | AC-02.8 now also rejects an id greater than 2147483647 (Postgres's 32-bit `integer` max) with 400, instead of letting it reach the database and surface as 500; added TEST-02.8d | PR #12 review |
 | 1.3 | 2026-11-07 | Added AC-02.13 to AC-02.20 and TEST-02.13 to TEST-02.20 (§5.2, frontend component tests): list with loading/error states, role-based controls, create/edit flows, verbatim validation errors with the form preserved, 401 returns to login, disabled submit button while in flight | template UI |
+| 1.4 | 2026-11-07 | Added TEST-02.16b (decimal Min/Max values sent as JSON numbers) and TEST-02.17b (verbatim 400 message and preserved values on update, not just create); clarified TEST-02.19 to render through the signed-in view rather than `Templates` standalone | PR #21 review |
