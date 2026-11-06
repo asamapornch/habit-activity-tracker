@@ -1,15 +1,24 @@
 import type { NextFunction, Request, Response } from "express";
+import { sendError } from "../lib/errors.js";
 
-/**
- * Stub — real session/token verification lands with F-01, written against
- * failing tests first. Until then every protected route reports "not implemented".
- */
-export function requireAuth(_req: Request, res: Response, _next: NextFunction) {
-  res.status(501).json({ error: "Not implemented" });
+export function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (!req.session.userId) {
+    sendError(res, 401, "UNAUTHENTICATED", "Authentication required.");
+    return;
+  }
+  next();
 }
 
-export function requireRole(_role: "MANAGER" | "PARTICIPANT") {
-  return (_req: Request, res: Response, _next: NextFunction) => {
-    res.status(501).json({ error: "Not implemented" });
+export function requireRole(role: "MANAGER" | "PARTICIPANT") {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session.userId) {
+      sendError(res, 401, "UNAUTHENTICATED", "Authentication required.");
+      return;
+    }
+    if (req.session.role !== role) {
+      sendError(res, 403, "FORBIDDEN", "You do not have permission to perform this action.");
+      return;
+    }
+    next();
   };
 }
