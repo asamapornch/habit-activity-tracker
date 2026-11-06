@@ -85,6 +85,7 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
         <input
           id={`${idPrefix}-min`}
           type="number"
+          step="0.01"
           value={minValue}
           onChange={(event) => setMinValue(event.target.value)}
           required
@@ -95,6 +96,7 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
         <input
           id={`${idPrefix}-max`}
           type="number"
+          step="0.01"
           value={maxValue}
           onChange={(event) => setMaxValue(event.target.value)}
           required
@@ -149,7 +151,6 @@ export function Templates({
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function handleCreated(template: Template) {
@@ -189,7 +190,11 @@ export function Templates({
                 {template.minValue}–{template.maxValue}
               </span>
               {role === "MANAGER" && (
-                <button type="button" onClick={() => setEditingId(template.id)}>
+                <button
+                  type="button"
+                  aria-label={`Edit ${template.name}`}
+                  onClick={() => setEditingId(template.id)}
+                >
                   Edit
                 </button>
               )}
