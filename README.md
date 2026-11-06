@@ -21,9 +21,36 @@ cd ../frontend && npm install
 cp .env.example .env
 ```
 
-Fill in real values in `.env` (never commit this file). It is read by the backend from the
-repo root and provides `DATABASE_URL`, `DATABASE_URL_TEST`, `SESSION_SECRET`, `PORT`, and the
-seed script passwords.
+Fill in real values in `.env` (never commit this file). It is read by both the backend and the
+frontend from the repo root (the frontend's `vite.config.ts` points `envDir` here, so there is one
+shared `.env`, not a separate one per app). It provides:
+
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Dev database connection |
+| `DATABASE_URL_TEST` | Separate database used only by the backend test suite |
+| `SESSION_SECRET` | Signs the session cookie; the backend refuses to start if this is empty |
+| `PORT` | Backend HTTP port |
+| `FRONTEND_ORIGIN` | Exact origin the frontend is served from; CORS allows only this origin (no wildcard). The backend refuses to start if this is empty |
+| `VITE_API_URL` | Base URL the frontend uses to call the backend API |
+| `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` / `POSTGRES_PORT` | `docker-compose` dev Postgres credentials and host port |
+| `SEED_PASSWORD_MANAGER` / `SEED_PASSWORD_PARTICIPANT_1` / `SEED_PASSWORD_PARTICIPANT_2` | Seed script passwords |
+
+Example values for local development:
+
+```bash
+DATABASE_URL="postgresql://habit:habit@localhost:5432/habit_tracker"
+DATABASE_URL_TEST="postgresql://habit:habit@localhost:5432/habit_tracker_test"
+SESSION_SECRET="some-long-random-string"
+PORT=4000
+FRONTEND_ORIGIN="http://localhost:5173"
+VITE_API_URL="http://localhost:4000"
+```
+
+**Port note:** if port `5432` (Postgres), `4000` (backend) or `5173` (frontend) is already taken by
+something else on your machine, change `POSTGRES_PORT` (and the port in `DATABASE_URL`/
+`DATABASE_URL_TEST`), `PORT`, or pass `--port` to `vite`/`vite dev` — and update `FRONTEND_ORIGIN`
+and `VITE_API_URL` to match whatever ports you actually end up running on, or login will fail CORS.
 
 ## 3. Start a local PostgreSQL (optional, via Docker)
 
@@ -31,8 +58,8 @@ seed script passwords.
 docker compose up -d
 ```
 
-This starts a dev Postgres on `localhost:5432` matching the defaults in `.env.example`. Create
-the test database once (same instance, separate database):
+This starts a dev Postgres on `localhost:5432` (or `POSTGRES_PORT` if you overrode it) matching the
+defaults in `.env.example`. Create the test database once (same instance, separate database):
 
 ```bash
 docker compose exec db createdb -U habit habit_tracker_test
@@ -45,6 +72,17 @@ cd backend
 npm run db:migrate
 ```
 
+This applies migrations to `DATABASE_URL` (the dev database) only. The test suite uses a
+**separate** database (`DATABASE_URL_TEST`), which `db:migrate`'s interactive `prisma migrate dev`
+does not touch — migrate it too, once, with:
+
+```bash
+DATABASE_URL="$DATABASE_URL_TEST" npx prisma migrate deploy
+```
+
+(run with the same `.env` sourced into your shell, e.g. `set -a && source ../.env && set +a`
+first, or substitute the real `DATABASE_URL_TEST` value from your `.env`).
+
 ## 5. Seed the database
 
 ```bash
@@ -52,25 +90,40 @@ npm run db:seed
 ```
 
 Creates one manager and two participant accounts using the `SEED_PASSWORD_*` values from `.env`.
+Re-running this after changing `SEED_PASSWORD_*` does **not** update an already-seeded account's
+password (it's an upsert that only fills in missing rows) — delete the existing rows first if you
+need to rotate a seeded password locally.
 
 ## 6. Run the apps
 
 ```bash
-# backend (http://localhost:4000)
+# backend (http://localhost:4000, or your PORT)
 cd backend && npm run dev
 
-# frontend (http://localhost:5173)
+# frontend (http://localhost:5173, or wherever Vite picks if that port is busy)
 cd frontend && npm run dev
 ```
+
+Open the frontend URL in a browser; it calls the backend at `VITE_API_URL` with
+`credentials: "include"`, so `FRONTEND_ORIGIN` must match the frontend's actual origin exactly.
 
 ## 7. Run tests
 
 ```bash
 cd backend && npm test
+cd frontend && npm test
 ```
 
-Runs the backend Vitest suite once against `DATABASE_URL_TEST`, resetting only the test
-database between runs. The frontend has no tests yet in Sprint 1.
+`backend`'s suite runs once (Vitest + Supertest) against `DATABASE_URL_TEST`, resetting the test
+database before every test; spec files run one at a time (`fileParallelism: false`) since they
+share that one database. `frontend`'s suite runs once (Vitest + React Testing Library) with `fetch`
+mocked — it needs no backend or database running.
+
+**Expected result on `sprint-1-staging` right now:** the backend suite reports 19 failing tests,
+all in `backend/tests/access.test.ts` (F-05, Stage A). These are intentionally red — they exercise
+`/goals` and `/goals/:id/entries` endpoints that belong to F-03 and F-04, which are not merged yet
+(see `docs/sprints/sprint-1/F-05-access-control.md` §1.1). Everything else, and the whole frontend
+suite, should pass. If any other test fails, that's a real regression.
 
 ## Branching & PR workflow
 
