@@ -23,31 +23,38 @@ export function LoginForm({ onLogin }: { onLogin: (user: CurrentUser) => void })
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
+    <form onSubmit={handleSubmit} className="card login-card">
+      <h2 className="card-title">Sign in</h2>
+      <div className="field">
         <label htmlFor="email">Email</label>
         <input
           id="email"
           type="email"
+          className="input"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           required
         />
       </div>
-      <div>
+      <div className="field">
         <label htmlFor="password">Password</label>
         <input
           id="password"
           type="password"
+          className="input"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           required
         />
       </div>
-      <button type="submit" disabled={submitting}>
+      <button type="submit" className="btn btn--primary btn--block" disabled={submitting}>
         Log in
       </button>
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className="error-box">
+          {error}
+        </p>
+      )}
     </form>
   );
 }
