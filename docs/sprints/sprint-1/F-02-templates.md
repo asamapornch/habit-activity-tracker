@@ -61,6 +61,11 @@ Table `Template`: `id`, `name`, `unit`, `minValue`, `maxValue`, `createdById` (f
 
 Manager: a template screen with a list, a create form and an edit form; server error messages are
 shown as returned. Participant: a read-only list. The UI is a convenience; the API enforces access.
+While the list is being fetched a loading message is shown; if the request fails an error message
+is shown instead of an endless loading state. The create/edit submit button is disabled while a
+request is in flight. A server validation error on create or update is shown with the server's
+message verbatim and the form keeps whatever the user typed (it is not cleared). A `401` from any
+template request returns the user to the login screen (the session has ended).
 
 ## 4. Acceptance criteria
 
@@ -78,8 +83,18 @@ shown as returned. Participant: a read-only list. The UI is a convenience; the A
 | AC-02.10 | A Participant updating a template id that does not exist receives 403 (not 404), so existence is not revealed. | BR-06, NFR-02 |
 | AC-02.11 | Template `name` and `unit` are trimmed and stored trimmed; a name over 100 or a unit over 20 characters (after trimming) returns 400. | NFR-05 |
 | AC-02.12 | A numeric string, a non-finite number, or a value outside -1,000,000 to 1,000,000 returns 400. | NFR-05 |
+| AC-02.13 | A signed-in user sees the template list; a loading message is shown while it is fetched, and an error message if the request fails. | FR-05 |
+| AC-02.14 | A Participant sees the list only, with no create or edit controls. | BR-06 |
+| AC-02.15 | A Manager sees a create form and an edit control for each template. | FR-03, FR-04 |
+| AC-02.16 | A Manager creating a valid template sends `POST /templates`, and the new template appears in the list. | FR-03 |
+| AC-02.17 | A server validation error (400) on create or update is shown with the server's message verbatim, and the form keeps what was typed. | NFR-05 |
+| AC-02.18 | A Manager editing a template sees the form pre-filled with its current values, sends `PUT /templates/:id`, and the list shows the new values. | FR-04 |
+| AC-02.19 | A `401` from any template request returns the user to the login screen. | NFR-02 |
+| AC-02.20 | The submit button is disabled while a create or update request is in flight. | NFR-05 |
 
 ## 5. Software test specification (STS)
+
+### 5.1 Backend tests
 
 All tests are API-level (Vitest + Supertest) in `backend/tests/templates.test.ts`. Each test creates
 its own Manager and Participant in `beforeEach` (bcrypt-hashed) and logs in through the real
@@ -117,6 +132,22 @@ every test.
 | TEST-02.9a | AC-02.9 | Two templates exist; Manager `GET /templates` | 200; list has both, ordered by `id` ascending |
 | TEST-02.9b | AC-02.9 | same, as Participant | 200; list has both |
 
+### 5.2 Frontend tests
+
+Component tests (Vitest + React Testing Library) in `frontend/src/Templates.test.tsx`, with `fetch`
+mocked per test.
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-02.13 | AC-02.13 | (a) `GET /templates` left pending; (b) `GET /templates` rejected | (a) a loading message is shown before the list appears; (b) an error message is shown, not an endless loading state |
+| TEST-02.14 | AC-02.14 | render as a signed-in Participant, `GET /templates` returns a list | the list is shown; no create form and no edit control is present |
+| TEST-02.15 | AC-02.15 | render as a signed-in Manager, `GET /templates` returns a list | a create form is shown; each list row has an edit control |
+| TEST-02.16 | AC-02.16 | Manager fills the create form with valid fields and submits | `POST /templates` is called with that body; the new template appears in the list |
+| TEST-02.17 | AC-02.17 | Manager submits the create form; `POST /templates` mocked to 400 with a given `error.message` | that exact message is shown; the fields still hold what was typed |
+| TEST-02.18 | AC-02.18 | Manager opens the edit control for an existing template, changes a value, submits | the form is pre-filled with the template's current values before editing; `PUT /templates/:id` is called; the list shows the new values |
+| TEST-02.19 | AC-02.19 | any template request mocked to 401 | the login form is shown (the app returns to the signed-out view) |
+| TEST-02.20 | AC-02.20 | Manager submits the create form; `POST /templates` left pending | the submit button is disabled until the request resolves |
+
 ## 6. Definition of done
 
 - [ ] This contract is committed before any implementation code (separate earlier commit).
@@ -135,3 +166,4 @@ every test.
 | 1.0 | 2026-11-06 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-06 | Participant PUT on a missing id returns 403 (AC-02.10); trimming and length limits, numeric limits and string rejection (AC-02.11, AC-02.12); any Manager may update, `createdById` unchanged, list ordered by id; `NOT_FOUND` added to `ErrorCode` | PR #11 review |
 | 1.2 | 2026-11-06 | AC-02.8 now also rejects an id greater than 2147483647 (Postgres's 32-bit `integer` max) with 400, instead of letting it reach the database and surface as 500; added TEST-02.8d | PR #12 review |
+| 1.3 | 2026-11-07 | Added AC-02.13 to AC-02.20 and TEST-02.13 to TEST-02.20 (§5.2, frontend component tests): list with loading/error states, role-based controls, create/edit flows, verbatim validation errors with the form preserved, 401 returns to login, disabled submit button while in flight | template UI |
