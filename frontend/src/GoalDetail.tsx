@@ -1,20 +1,181 @@
-// Stub: goal screen is not implemented yet (F-04 v1.2 red phase).
-import type { Template } from "./api";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import {
+  errorMessage,
+  getProgress,
+  isUnauthorized,
+  listEntries,
+  recordEntry,
+  type Entry,
+  type Goal,
+  type Progress,
+  type Template,
+} from "./api";
 
-export interface Goal {
-  id: number;
-  userId: number;
-  templateId: number;
-  dailyTarget: number;
-  startDate: string;
-  endDate: string;
-}
-
-export function GoalDetail(_props: {
+interface GoalDetailProps {
   goal: Goal;
   template: Template;
   onBack: () => void;
   onUnauthorized: () => void;
-}) {
-  return null;
+}
+
+const byDate = (a: Entry, b: Entry) => a.date.localeCompare(b.date);
+
+export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetailProps) {
+  const [entries, setEntries] = useState<Entry[] | null>(null);
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [date, setDate] = useState("");
+  const [value, setValue] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([listEntries(goal.id), getProgress(goal.id)])
+      .then(([list, prog]) => {
+        if (cancelled) return;
+        setEntries(list);
+        setProgress(prog);
+        setDate((current) => current || prog.today);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (isUnauthorized(err)) onUnauthorized();
+        else setLoadError("Could not load this goal.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [goal.id]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
+    try {
+      const entry = await recordEntry(goal.id, { date, value: Number(value) });
+      setEntries((current) => [...(current ?? []), entry].sort(byDate));
+      setValue("");
+      setProgress(await getProgress(goal.id));
+    } catch (err) {
+      if (isUnauthorized(err)) {
+        onUnauthorized();
+        return;
+      }
+      setFormError(errorMessage(err));
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const header = (
+    <div className="goal-detail__header">
+      <button type="button" className="btn btn--secondary btn--small" onClick={onBack}>
+        Back to goals
+      </button>
+      <h3 className="card-title">{template.name}</h3>
+      <span className="goal-list__meta">
+        {goal.dailyTarget} {template.unit} a day · {goal.startDate} → {goal.endDate}
+      </span>
+    </div>
+  );
+
+  if (loadError)
+    return (
+      <section className="goal-detail">
+        {header}
+        <p role="alert" className="error-box">
+          {loadError}
+        </p>
+      </section>
+    );
+  if (!entries || !progress)
+    return (
+      <section className="goal-detail">
+        {header}
+        <p className="status-message">Loading goal…</p>
+      </section>
+    );
+
+  return (
+    <section className="goal-detail">
+      {header}
+      <div className="card progress-card" aria-label="Progress">
+        <p className="progress-card__pct">{progress.progress}%</p>
+        <p className="progress-card__days">
+          {progress.daysMet} of {progress.daysElapsed} days met
+        </p>
+        <div className="progress-bar" aria-hidden="true">
+          <div className="progress-bar__fill" style={{ width: `${Math.min(progress.progress, 100)}%` }} />
+        </div>
+        <p className="progress-card__today">Today (Asia/Bangkok): {progress.today}</p>
+      </div>
+
+      <form onSubmit={handleSubmit} aria-label="Record entry" className="card template-form">
+        <h3 className="card-title">Record entry</h3>
+        <div className="field-grid">
+          <div className="field">
+            <label htmlFor="entry-date">Date</label>
+            <input
+              id="entry-date"
+              type="date"
+              className="input"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="entry-value">Value ({template.unit})</label>
+            <input
+              id="entry-value"
+              type="number"
+              step="0.01"
+              className="input"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div className="template-form__actions">
+          <button type="submit" className="btn btn--primary" disabled={submitting}>
+            Record
+          </button>
+        </div>
+        {formError && (
+          <p role="alert" className="error-box">
+            {formError}
+          </p>
+        )}
+      </form>
+
+      <h3 className="section-subtitle">History</h3>
+      {entries.length === 0 ? (
+        <p className="status-message">No entries yet.</p>
+      ) : (
+        <table className="card history-table" aria-label="Entry history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Value</th>
+              <th scope="col">Target met</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                <td>{entry.date}</td>
+                <td>
+                  {entry.value} {template.unit}
+                </td>
+                <td>{entry.value >= goal.dailyTarget ? "Yes" : "No"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
 }

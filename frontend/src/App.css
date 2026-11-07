@@ -312,3 +312,77 @@
     align-items: stretch;
   }
 }
+
+/* Goals and goal screen */
+
+.goals {
+  margin-top: var(--space-6);
+}
+
+.section-subtitle {
+  font-size: 1.0625rem;
+  margin: var(--space-5) 0 var(--space-3);
+}
+
+.goal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.goal-detail__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.goal-detail__header .card-title {
+  margin: 0;
+}
+
+.goal-list__meta,
+.progress-card__today {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.progress-card p {
+  margin: 0 0 var(--space-2);
+}
+
+.progress-card__pct {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-border);
+  overflow: hidden;
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--color-accent);
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  padding: 0;
+  overflow: hidden;
+}
+
+.history-table th,
+.history-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.history-table tbody tr:last-child td {
+  border-bottom: none;
+}

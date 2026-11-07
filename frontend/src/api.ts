@@ -94,3 +94,59 @@ export async function updateTemplate(id: number, input: TemplateInput): Promise<
     body: JSON.stringify(input),
   }) as Promise<Template>;
 }
+
+export interface Goal {
+  id: number;
+  userId: number;
+  templateId: number;
+  dailyTarget: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface GoalInput {
+  templateId: number;
+  dailyTarget: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface Entry {
+  id: number;
+  goalId: number;
+  date: string;
+  value: number;
+}
+
+export interface EntryInput {
+  date: string;
+  value: number;
+}
+
+export interface Progress {
+  goalId: number;
+  today: string;
+  daysElapsed: number;
+  daysMet: number;
+  progress: number;
+}
+
+function postJson(path: string, body: unknown): Promise<unknown> {
+  return apiRequest(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export const listGoals = () => apiRequest("/goals") as Promise<Goal[]>;
+export const createGoal = (input: GoalInput) => postJson("/goals", input) as Promise<Goal>;
+export const listEntries = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/entries`) as Promise<Entry[]>;
+export const recordEntry = (goalId: number, input: EntryInput) =>
+  postJson(`/goals/${goalId}/entries`, input) as Promise<Entry>;
+export const getProgress = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/progress`) as Promise<Progress>;
+
+export const isUnauthorized = (err: unknown) => err instanceof ApiError && err.status === 401;
+export const errorMessage = (err: unknown) => (err instanceof Error ? err.message : "Request failed.");
