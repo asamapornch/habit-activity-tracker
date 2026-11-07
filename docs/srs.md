@@ -105,3 +105,4 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-07 | Numeric values are stored as floats limited to two decimal places and compared after rounding to two decimals. | Avoids floating-point surprises in the target comparison (BR-09). |
 | D-08 | Goals for the same template may not overlap in date range, including future goals (BR-04). | A check on "active today" would let two future goals become active together later. |
 | D-09 | A goal's start date may be in the past (a goal may be created after it started); no goal rule depends on "today". | Matches back-dating for entries (D-02); a Participant may set up a goal a few days late. |
+| D-10 | Progress (BR-09) is returned as a percentage, `daysMet ÷ daysElapsed × 100`, rounded half up to two decimals (e.g. 2 of 3 days = 66.67); it is 0 when no day has elapsed. | Easier to read than a ratio in the UI and in the evidence; two decimals match the precision of values (A-05). |

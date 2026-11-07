@@ -41,7 +41,8 @@ the Sprint 1 journey: template → goal → daily entry → progress.
    range or entries (F-05 AC-05.9).
 5. **"Today"** is the current calendar date in the **Asia/Bangkok** time zone, computed by the server
    (SRS A-02, system SDS §3). A date equal to today is allowed. The server's own time zone setting
-   does not matter.
+   (`TZ`) does not matter. Inside BR-03 the future check comes first: a date that is both after today
+   and after the goal's end returns `Entry date must not be in the future.`
 6. **BR-01** is checked in the API first and backed by the database unique constraint on
    (`goalId`, `date`). If two requests race past the API check, the constraint violation is turned
    into the same 409 response, never a 500.
@@ -55,8 +56,8 @@ the Sprint 1 journey: template → goal → daily entry → progress.
      today is before `S`;
    - `daysMet` = the number of the goal's entries dated from `S` to `lastDay` whose value, rounded to
      two decimals, is **at or above** the goal's `dailyTarget` rounded to two decimals;
-   - `progress` = `daysMet ÷ daysElapsed × 100`, rounded to two decimals (a percentage); `0` when
-     `daysElapsed` is `0`.
+   - `progress` = `daysMet ÷ daysElapsed × 100`, rounded half up to two decimals (a percentage,
+     SRS D-10); `0` when `daysElapsed` is `0`.
    Days with no entry count as not met. The goal's stored `dailyTarget` is used even if the template
    range has changed since (SRS D-06). Example: target 5 km, 1–30 November, today 5 November,
    entries 5, 3, 6 on 1–3 November and 5 on 5 November: `daysMet` 3, `daysElapsed` 5, `progress` 60.
@@ -109,10 +110,9 @@ Error body: `{ "error": { "code", "message" } }`.
 | 404 | `NOT_FOUND` | `Goal not found.` (same as F-03) | goal does not exist or belongs to another Participant |
 | 409 | `CONFLICT` | `An entry already exists for this date.` | BR-01 (API check or unique constraint) |
 
-`CONFLICT` was added to `ErrorCode` in F-03; F-04 reuses it. This contract defines it as the code for
-the BR-01 409, so TEST-05.9c in `backend/tests/access.test.ts` is tightened in the F-04 code PR to also
-assert `error.code` `CONFLICT` for the owner's control request (it currently asserts only the 409
-status). This is the only change to an existing test file and it makes the test stricter, not looser.
+`CONFLICT` was added to `ErrorCode` in F-03; F-04 reuses it as the code for the BR-01 409, asserted by
+TEST-04.10a and TEST-04.11. Existing test files, including `backend/tests/access.test.ts` (owned by
+Student 1), are not changed.
 
 ### 3.2 Data
 
@@ -134,15 +134,15 @@ version together with the F-03 goal screens, tracked in Issue #26.
 | AC-04.3 | A Manager calling any of the three endpoints receives 403, including for an existing goal, and no entry is stored. | BR-08, NFR-02 |
 | AC-04.4 | A body that is not an object, missing or unknown fields, a wrongly typed value (including a numeric string), more than two decimals, or a malformed or impossible date return 400 `Invalid entry fields.` and nothing is stored; a malformed goal id returns 400 `Invalid goal id.`; two-decimal values such as 0.07 and 1.15 are accepted. | NFR-05, SRS A-05 |
 | AC-04.5 | A goal that does not exist and another Participant's goal return the same 404 on all three endpoints, and no entry is stored. | BR-08 |
-| AC-04.6 | An entry dated after today (Asia/Bangkok) returns 400 `Entry date must not be in the future.` and nothing is stored; an entry dated today is accepted. | BR-03 |
+| AC-04.6 | An entry dated after today (Asia/Bangkok) returns 400 `Entry date must not be in the future.` and nothing is stored, including a date that is also after the goal's end (the future check comes first); an entry dated today is accepted. | BR-03 |
 | AC-04.7 | An entry dated before the goal's start or after its end returns 400 `Entry date must be within the goal's start and end dates.` and nothing is stored; entries on the start and end dates are accepted. | BR-03 |
-| AC-04.8 | "Today" follows Asia/Bangkok, not UTC: at 00:30 on 8 November in Bangkok (17:30 UTC on 7 November) an entry for 8 November is accepted, and at 23:59 on 7 November in Bangkok an entry for 8 November is rejected as future. | BR-03, SRS A-02 |
+| AC-04.8 | "Today" follows Asia/Bangkok, not UTC and not the server's `TZ`: at 00:30 on 8 November in Bangkok (17:30 UTC on 7 November) an entry for 8 November is accepted, and at 23:59 on 7 November in Bangkok an entry for 8 November is rejected as future, with the process running in a time zone other than Bangkok. | BR-03, SRS A-02 |
 | AC-04.9 | A value below the template minimum or above the template maximum returns 400 `Value must be within the template range.` and nothing is stored; values equal to the minimum and the maximum are accepted. | BR-02 |
 | AC-04.10 | A second entry on a date that already has an entry for the goal returns 409 `CONFLICT` `An entry already exists for this date.` and the first entry is unchanged; the same date on a different goal is accepted. | BR-01 |
 | AC-04.11 | Concurrent entries for the same goal and date result in exactly one 201, the rest 409 `CONFLICT`, and one stored entry (no 500). | BR-01 |
 | AC-04.12 | After a Manager changes a template's range, existing entries are unchanged, and a new entry is validated against the new range. | SRS D-06 |
 | AC-04.13 | `GET /goals/:id/entries` returns 200 with exactly that goal's entries, ordered by date, and an empty list when there are none. | FR-09, BR-08 |
-| AC-04.14 | `GET /goals/:id/progress` returns `daysElapsed`, `daysMet` and `progress` as defined in Behaviour 9, including the 3-of-5 = 60 example, rounding to two decimals, a value exactly equal to the target counting as met, and `today` in Asia/Bangkok. | FR-08, BR-09 |
+| AC-04.14 | `GET /goals/:id/progress` returns `daysElapsed`, `daysMet` and `progress` as defined in Behaviour 9, including the 3-of-5 = 60 example, rounding to two decimals (down for 1 of 3 = 33.33, up for 2 of 3 = 66.67), a value exactly equal to the target counting as met, and `today` in Asia/Bangkok. | FR-08, BR-09, SRS D-10 |
 | AC-04.15 | Progress before the goal starts is `daysElapsed` 0, `daysMet` 0, `progress` 0; after the goal ends, `daysElapsed` stops at the end date. | BR-09 |
 | AC-04.16 | Progress uses the goal's stored `dailyTarget`, even after the template's range has changed. | BR-09, SRS D-06 |
 | AC-04.17 | The check order of Behaviour 4 holds when a request has several faults: 401 before 400, 403 before 400, 404 before BR-03/BR-02/BR-01, BR-03 before BR-02, and BR-02 before BR-01. | NFR-02, NFR-05, BR-08 |
@@ -158,6 +158,18 @@ inserted directly through Prisma. The shared setup resets the test database befo
 (only `Date` is faked, so timers used by Supertest, Express and Prisma keep running), and restore it
 in `afterEach`. Unless a test says otherwise, now is **2026-11-05T05:00:00Z** (12:00 on 5 November in
 Bangkok), so today is `2026-11-05`.
+
+**Clock before login.** A session lasts 8 hours (`SESSION_LIFETIME_MS`, system SDS §5) and its expiry
+is computed from `Date` at login. Each test therefore sets its clock **first** and logs in **after**:
+`beforeEach` creates the users and fixtures but does not log in; each test calls `setNow(...)` (default
+2026-11-05T05:00:00Z) and then `loginAll()`, which logs in `M`, `P1` and `P2` through the real
+`POST /auth/login`. A test that needs a different time (TEST-04.7b/c, 04.8a/b, 04.14b to 04.16) sets that
+time before `loginAll()` and does not move the clock afterwards.
+
+**Server time zone.** TEST-04.8a, 04.8b and 04.14d set `process.env.TZ = "America/Los_Angeles"` before
+the request and restore the previous value in `afterEach`. At 17:30 UTC on 7 November the local date
+there is still 7 November while Bangkok is on 8 November, so an implementation that uses local time
+(or UTC) instead of Asia/Bangkok fails these tests on any machine.
 
 **Fixtures.** Template `T` is `{ "Running", "km", 0, 50 }`. Goal `G1` is owned by `P1` on `T` with
 `dailyTarget` 5, `2026-11-01`..`2026-11-30`. Goal `G2` is owned by `P2` on `T` with the same dates.
@@ -191,11 +203,12 @@ Tests marked **control** first send the request with only one fault and assert t
 | TEST-04.5b | AC-04.5 | **control** `P1` `GET /goals/:G1/entries` and `/progress` (200); then `P2` the same on `G1` and on goal 99999 | `P2` gets 404 `NOT_FOUND` `GOAL404` for all four, identical |
 | TEST-04.6a | AC-04.6 | `P1` posts `date` `2026-11-06` (tomorrow) | 400 `VALIDATION_ERROR` `FUTURE`; nothing stored |
 | TEST-04.6b | AC-04.6 | `P1` posts `date` `2026-11-05` (today) | 201 |
+| TEST-04.6c | AC-04.6, AC-04.17 | today 2026-11-05; `P1` posts `date` `2026-12-01` to `G1` (after today **and** after the goal's end) | 400 `VALIDATION_ERROR` `FUTURE` (not `OUTSIDE`); nothing stored |
 | TEST-04.7a | AC-04.7 | `P1` posts `date` `2026-10-31` (day before start) | 400 `VALIDATION_ERROR` `OUTSIDE`; nothing stored |
 | TEST-04.7b | AC-04.7 | now 2026-12-10T05:00:00Z; `P1` posts `date` `2026-12-01` (after the end, not future) | 400 `VALIDATION_ERROR` `OUTSIDE`; nothing stored |
 | TEST-04.7c | AC-04.7 | now 2026-12-10T05:00:00Z; `P1` posts `date` `2026-11-01` (start) and `2026-11-30` (end) | 201 for each |
-| TEST-04.8a | AC-04.8 | now 2026-11-07T17:30:00Z (00:30 on 8 Nov in Bangkok); `P1` posts `date` `2026-11-08` | 201 |
-| TEST-04.8b | AC-04.8 | now 2026-11-07T16:59:00Z (23:59 on 7 Nov in Bangkok); `P1` posts `date` `2026-11-08` | 400 `VALIDATION_ERROR` `FUTURE`; nothing stored |
+| TEST-04.8a | AC-04.8 | `TZ` `America/Los_Angeles`; now 2026-11-07T17:30:00Z (00:30 on 8 Nov in Bangkok); `P1` posts `date` `2026-11-08` | 201 |
+| TEST-04.8b | AC-04.8 | `TZ` `America/Los_Angeles`; now 2026-11-07T16:59:00Z (23:59 on 7 Nov in Bangkok); `P1` posts `date` `2026-11-08` | 400 `VALIDATION_ERROR` `FUTURE`; nothing stored |
 | TEST-04.9a | AC-04.9 | `P1` posts `value` 51 | 400 `VALIDATION_ERROR` `RANGE`; nothing stored |
 | TEST-04.9b | AC-04.9 | `P1` posts `value` -0.01 | 400 `VALIDATION_ERROR` `RANGE`; nothing stored |
 | TEST-04.9c | AC-04.9 | `P1` posts `value` 0 on 1 Nov and 50 on 2 Nov | 201 for each |
@@ -208,7 +221,8 @@ Tests marked **control** first send the request with only one fault and assert t
 | TEST-04.14a | AC-04.14 | today 2026-11-05; `G1` entries 1 Nov 5, 2 Nov 3, 3 Nov 6, 5 Nov 5 | 200 `{ goalId: G1, today: "2026-11-05", daysElapsed: 5, daysMet: 3, progress: 60 }` |
 | TEST-04.14b | AC-04.14 | today 2026-11-03; `G1` entry 1 Nov value 5 only | `daysElapsed` 3, `daysMet` 1, `progress` 33.33 |
 | TEST-04.14c | AC-04.14 | goal `G4` of `P1` on `T2` with `dailyTarget` 1.15, 1–30 Nov; today 2026-11-02; entries 1 Nov 1.15, 2 Nov 1.14 | `daysMet` 1 (equal counts as met), `daysElapsed` 2, `progress` 50 |
-| TEST-04.14d | AC-04.14 | now 2026-11-07T17:30:00Z (8 Nov in Bangkok); `G1` with no entries | `today` `"2026-11-08"`, `daysElapsed` 8, `daysMet` 0, `progress` 0 |
+| TEST-04.14d | AC-04.14 | `TZ` `America/Los_Angeles`; now 2026-11-07T17:30:00Z (8 Nov in Bangkok); `G1` with no entries | `today` `"2026-11-08"`, `daysElapsed` 8, `daysMet` 0, `progress` 0 |
+| TEST-04.14e | AC-04.14 | today 2026-11-03; `G1` entries 1 Nov 5 and 2 Nov 6 | `daysElapsed` 3, `daysMet` 2, `progress` 66.67 (rounded up) |
 | TEST-04.15a | AC-04.15 | today 2026-10-20 (before `G1` starts) | `daysElapsed` 0, `daysMet` 0, `progress` 0 |
 | TEST-04.15b | AC-04.15 | goal `G5` of `P1` on `T2`, 1–10 Nov, target 5; entries 1 Nov 5 and 10 Nov 5; now 2026-11-20T05:00:00Z | `daysElapsed` 10, `daysMet` 2, `progress` 20 |
 | TEST-04.16 | AC-04.16 | `G1` (target 5) has entry 1 Nov value 5; today 2026-11-01; `M` `PUT /templates/:T` to range 10–50; `P1` `GET /goals/:G1/progress` | `daysMet` 1, `daysElapsed` 1, `progress` 100 (stored target 5 used) |
@@ -218,10 +232,12 @@ Tests marked **control** first send the request with only one fault and assert t
 | TEST-04.17d | AC-04.17 | **control** `P1` posts `{ date: "2026-11-03", value: 999 }` to `G1` (400 `RANGE`); then `P1` posts `{ date: "2026-10-31", value: 999 }` to `G1` | 400 `VALIDATION_ERROR` `OUTSIDE` (BR-03 before BR-02); nothing stored |
 | TEST-04.17e | AC-04.17 | `G1` has an entry on `2026-11-03`; **control** `P1` posts `B` (409 `DUP`); then `P1` posts `{ date: "2026-11-03", value: 999 }` | 400 `VALIDATION_ERROR` `RANGE` (BR-02 before BR-01); still one entry |
 
-### 5.1 Changes to existing tests and expected F-05 state
+### 5.1 Existing tests and expected F-05 state
 
-- TEST-05.9c (`backend/tests/access.test.ts`) gains one assertion: the owner's control response has
-  `error.code` `CONFLICT`. No other line of any existing test file changes.
+- No existing test file is changed. `CONFLICT` for BR-01 is asserted by TEST-04.10a and TEST-04.11.
+- AC-04.17 "404 before BR-02 and BR-01" is covered by F-05: TEST-05.9b (value out of range on another
+  Participant's goal → 404) and TEST-05.9c (duplicate date on another Participant's goal → 404). The F-04
+  tests cover 404 before BR-03 (TEST-04.17c) and the order inside the data checks (TEST-04.6c, 04.17d, 04.17e).
 - With this feature the remaining 12 F-05 tests turn green (TEST-05.1d, 05.3d, 05.3e, 05.4b, 05.4c,
   05.5, 05.7b, 05.7c, 05.7d, 05.9a, 05.9b, 05.9c), so all 23 TEST-05.* pass (F-05 Stage B). The full run
   is saved as `docs/sprints/sprint-1/evidence/F-05-green.txt` as well as the F-04 green evidence.
@@ -238,10 +254,9 @@ Tests marked **control** first send the request with only one fault and assert t
       missing, not because of compile or configuration errors, with the failing output saved under
       `docs/sprints/sprint-1/evidence/`.
 - [ ] Implementation makes all TEST-04.* pass (green), with the passing output saved.
-- [ ] TEST-05.9c is tightened as in §5.1; all 23 TEST-05.* pass and the run is saved as
-      `F-05-green.txt`.
+- [ ] All 23 TEST-05.* pass (F-05 Stage B) and the run is saved as `F-05-green.txt`.
 - [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No other existing test file or test is edited.
+- [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
@@ -251,3 +266,4 @@ Tests marked **control** first send the request with only one fault and assert t
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-07 | Initial contract | Written before implementation |
+| 1.1 | 2026-11-07 | Each test sets its clock before logging in (8-hour session); progress percentage and rounding recorded as SRS D-10; TEST-04.6c (future before outside); TEST-04.8a/b and 04.14d run with `TZ` America/Los_Angeles; TEST-05.9c change dropped (no existing test edited); note that TEST-05.9b/c cover 404 before BR-02/BR-01; TEST-04.14e (2 of 3 = 66.67) | PR #29 review |
