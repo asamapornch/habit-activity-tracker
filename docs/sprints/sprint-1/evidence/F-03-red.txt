@@ -1,0 +1,1201 @@
+
+ RUN  v5.1.0 /Users/tnnntst/Developer/GitHub/habit-activity-tracker/backend
+
+ ❯ tests/goals.test.ts (38 tests | 38 failed) 17626ms
+   ❯ AC-03.1 create a goal (2)
+     × TEST-03.1a P1 creates a goal and receives 201 with the stored goal 496ms
+     × TEST-03.1b accepts two-decimal targets 2.5, 0.07 and 1.15 450ms
+   ❯ AC-03.2 anonymous access (1)
+     × TEST-03.2 no cookie: POST /goals, GET /goals, GET /goals/1 each return 401 440ms
+   ❯ AC-03.3 Manager is stopped at the role gate (2)
+     × TEST-03.3a M POST /goals returns 403 and stores nothing 448ms
+     × TEST-03.3b M GET /goals and GET /goals/:id of P1's goal return 403 443ms
+   ❯ AC-03.4 body shape (9)
+     × TEST-03.4a {} returns 400 and stores nothing 442ms
+     × TEST-03.4b an unknown field returns 400 and stores nothing 426ms
+     × TEST-03.4c templateId as a numeric string returns 400 and stores nothing 422ms
+     × TEST-03.4d dailyTarget as a numeric string returns 400 and stores nothing 426ms
+     × TEST-03.4e dailyTarget with three decimals returns 400 and stores nothing 435ms
+     × TEST-03.4f a non-YYYY-MM-DD startDate (slashes, timestamp) returns 400 and stores nothing 430ms
+     × TEST-03.4g an impossible calendar date returns 400 and stores nothing 443ms
+     × TEST-03.4h templateId 0, -1, 1.5 and 99999999999 return 400 (not 404 or 500) 445ms
+     × TEST-03.4i a JSON array or null body returns 400 and stores nothing 543ms
+   ❯ AC-03.5 end date not before start date (BR-05) (2)
+     × TEST-03.5a endDate before startDate returns 400 DATES and stores nothing 591ms
+     × TEST-03.5b a one-day goal (startDate = endDate) is accepted 521ms
+   ❯ AC-03.6 template must exist (1)
+     × TEST-03.6 templateId 99999 returns 404 and stores nothing 494ms
+   ❯ AC-03.7 daily target within template range (BR-05) (3)
+     × TEST-03.7a target above the template maximum returns 400 RANGE 551ms
+     × TEST-03.7b target below the template minimum returns 400 RANGE 551ms
+     × TEST-03.7c targets equal to the bounds (0, 300, -20) are accepted 451ms
+   ❯ AC-03.8 overlapping goals on the same template (BR-04) (4)
+     × TEST-03.8a a partly overlapping range returns 409 460ms
+     × TEST-03.8b a range sharing only the last day returns 409 453ms
+     × TEST-03.8c overlapping a future goal returns 409 447ms
+     × TEST-03.8d a range enclosing an existing goal returns 409 436ms
+   ❯ AC-03.9 non-overlapping goals are accepted (BR-04) (3)
+     × TEST-03.9a ranges that start the day after or end the day before are accepted 521ms
+     × TEST-03.9b the same dates on another template are accepted 488ms
+     × TEST-03.9c another Participant may use the same template and dates 460ms
+   ❯ AC-03.10 concurrent overlapping creates (BR-04) (1)
+     × TEST-03.10 five concurrent overlapping requests give one 201 and four 409 431ms
+   ❯ AC-03.11 list own goals (1)
+     × TEST-03.11 each Participant lists only their own goals, ordered by id 430ms
+   ❯ AC-03.12 read one goal (3)
+     × TEST-03.12a the owner reads their goal with 200 427ms
+     × TEST-03.12b control P1 gets 200; P2 gets identical 404 for P1's goal and a missing id 469ms
+     × TEST-03.12c malformed ids (abc, 0, 99999999999) return 400 542ms
+   ❯ AC-03.13 template range change applies only to new goals (D-06) (1)
+     × TEST-03.13 existing goal keeps its target; a new goal uses the new range 451ms
+   ❯ AC-03.14 check order (5)
+     × TEST-03.14a no cookie with an invalid body returns 401, not 400 427ms
+     × TEST-03.14b Manager with an invalid body or malformed id returns 403, not 400 446ms
+     × TEST-03.14c control; missing template with an out-of-range target returns 404, not 400 433ms
+     × TEST-03.14d control; missing template with endDate before startDate returns 404, not 400 426ms
+     × TEST-03.14e control; overlap with an out-of-range target returns 400, not 409 432ms
+ ❯ tests/access.test.ts (23 tests | 19 failed) 10386ms
+   ❯ AC-05.1 anonymous access (4)
+     × TEST-05.1c no cookie: POST /goals, GET /goals, GET /goals/:id each return 401 445ms
+     × TEST-05.1d no cookie: POST/GET entries and GET progress each return 401 431ms
+   ❯ AC-05.3 Manager cannot use Participant-only endpoints (5)
+     × TEST-05.3a Manager GET /goals/:id returns 403 (not 200, not 404) 437ms
+     × TEST-05.3b Manager GET /goals returns 403 438ms
+     × TEST-05.3c Manager POST /goals returns 403 and goal count is unchanged 459ms
+     × TEST-05.3d Manager GET /goals/:id/entries and GET /goals/:id/progress each return 403 491ms
+     × TEST-05.3e Manager POST /goals/:id/entries returns 403 and entry count is unchanged 461ms
+   ❯ AC-05.4 / AC-05.8 ownership on reads (3)
+     × TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same GET /goals/:id 450ms
+     × TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404 on GET /goals/:id/entries 428ms
+     × TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goals/:id/progress 421ms
+   ❯ AC-05.5 / AC-05.8 ownership on writes (1)
+     × TEST-05.5 owner P1 gets 201 (control); P2 gets 404 and no entry is created 423ms
+   ❯ AC-05.6 own goals only (1)
+     × TEST-05.6 P1's list has only G1; P2's list has only their own goal G2 434ms
+   ❯ AC-05.7 identical response for another's goal and a missing goal (4)
+     × TEST-05.7a P2 control on GET /goals/:id then identical 404 for G1 and for a missing id 441ms
+     × TEST-05.7b P2 control on GET /goals/:id/entries then identical 404 for G1 and for a missing id 445ms
+     × TEST-05.7c P2 control on GET /goals/:id/progress then identical 404 for G1 and for a missing id 446ms
+     × TEST-05.7d P2 control on POST /goals/:id/entries then identical 404 for G1 and for a missing id 462ms
+   ❯ AC-05.9 ownership checked before goal-dependent validation (3)
+     × TEST-05.9a control P1 gets 400 for a date before the goal start; P2 gets identical 404 on G1 and a missing id 489ms
+     × TEST-05.9b control P1 gets 400 for a value above the template maximum; P2 gets identical 404 on G1 and a missing id 436ms
+     × TEST-05.9c control P1 gets 409 for a date that already has an entry; P2 gets identical 404 on G1 and a missing id 439ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 57 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1c no cookie: POST /goals, GET /goals, GET /goals/:id each return 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/access.test.ts:117:28
+    115|     const getRes = await request(app).get(`/goals/${goal1.id}`);
+    116|
+    117|     expect(postRes.status).toBe(401);
+       |                            ^
+    118|     expect(postRes.body.error.code).toBe("UNAUTHENTICATED");
+    119|     expect(listRes.status).toBe(401);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1d no cookie: POST/GET entries and GET progress each return 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ tests/access.test.ts:130:28
+    128|     const progressRes = await request(app).get(`/goals/${goal1.id}/pro…
+    129|
+    130|     expect(postRes.status).toBe(401);
+       |                            ^
+    131|     expect(postRes.body.error.code).toBe("UNAUTHENTICATED");
+    132|     expect(listRes.status).toBe(401);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3a Manager GET /goals/:id returns 403 (not 200, not 404)
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:173:24
+    171|     const res = await request(app).get(`/goals/${goal1.id}`).set("Cook…
+    172|
+    173|     expect(res.status).toBe(403);
+       |                        ^
+    174|     expect(res.body.error.code).toBe("FORBIDDEN");
+    175|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3b Manager GET /goals returns 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:180:24
+    178|     const res = await request(app).get("/goals").set("Cookie", manager…
+    179|
+    180|     expect(res.status).toBe(403);
+       |                        ^
+    181|     expect(res.body.error.code).toBe("FORBIDDEN");
+    182|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3c Manager POST /goals returns 403 and goal count is unchanged
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:192:24
+    190|       .send({ ...VALID_GOAL_BODY, templateId: template.id });
+    191|
+    192|     expect(res.status).toBe(403);
+       |                        ^
+    193|     expect(res.body.error.code).toBe("FORBIDDEN");
+    194|     await expect(prisma.goal.count()).resolves.toBe(countBefore);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3d Manager GET /goals/:id/entries and GET /goals/:id/progress each return 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:205:31
+    203|       .set("Cookie", managerCookie);
+    204|
+    205|     expect(entriesRes.status).toBe(403);
+       |                               ^
+    206|     expect(entriesRes.body.error.code).toBe("FORBIDDEN");
+    207|     expect(progressRes.status).toBe(403);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3e Manager POST /goals/:id/entries returns 403 and entry count is unchanged
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ tests/access.test.ts:219:24
+    217|       .send(VALID_ENTRY_BODY);
+    218|
+    219|     expect(res.status).toBe(403);
+       |                        ^
+    220|     expect(res.body.error.code).toBe("FORBIDDEN");
+    221|     await expect(prisma.entry.count()).resolves.toBe(countBefore);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same GET /goals/:id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:228:26
+    226|   it("TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same …
+    227|     const p1Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+    228|     expect(p1Res.status).toBe(200);
+       |                          ^
+    229|
+    230|     const p2Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404 on GET /goals/:id/entries
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:237:26
+    235|   it("TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404…
+    236|     const p1Res = await request(app).get(`/goals/${goal1.id}/entries`)…
+    237|     expect(p1Res.status).toBe(200);
+       |                          ^
+    238|     expect(p1Res.body).toHaveLength(1);
+    239|     expect(p1Res.body[0]).toMatchObject({ value: 5 });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goals/:id/progress
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:248:26
+    246|   it("TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goal…
+    247|     const p1Res = await request(app).get(`/goals/${goal1.id}/progress`…
+    248|     expect(p1Res.status).toBe(200);
+       |                          ^
+    249|
+    250|     const p2Res = await request(app).get(`/goals/${goal1.id}/progress`…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.5 / AC-05.8 ownership on writes > TEST-05.5 owner P1 gets 201 (control); P2 gets 404 and no entry is created
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/access.test.ts:262:26
+    260|       .set("Cookie", p1Cookie)
+    261|       .send({ date: "2026-02-02", value: 5 });
+    262|     expect(p1Res.status).toBe(201);
+       |                          ^
+    263|
+    264|     const countBeforeP2 = await prisma.entry.count();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.6 own goals only > TEST-05.6 P1's list has only G1; P2's list has only their own goal G2
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:292:26
+    290|     const p2Res = await request(app).get("/goals").set("Cookie", p2Coo…
+    291|
+    292|     expect(p1Res.status).toBe(200);
+       |                          ^
+    293|     expect(p1Res.body.map((g: { id: number }) => g.id)).toEqual([goal1…
+    294|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7a P2 control on GET /goals/:id then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:303:26
+    301|   it("TEST-05.7a P2 control on GET /goals/:id then identical 404 for G…
+    302|     const p1Res = await request(app).get(`/goals/${goal1.id}`).set("Co…
+    303|     expect(p1Res.status).toBe(200);
+       |                          ^
+    304|
+    305|     const onG1 = await request(app).get(`/goals/${goal1.id}`).set("Coo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7b P2 control on GET /goals/:id/entries then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:312:26
+    310|   it("TEST-05.7b P2 control on GET /goals/:id/entries then identical 4…
+    311|     const p1Res = await request(app).get(`/goals/${goal1.id}/entries`)…
+    312|     expect(p1Res.status).toBe(200);
+       |                          ^
+    313|
+    314|     const onG1 = await request(app).get(`/goals/${goal1.id}/entries`).…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7c P2 control on GET /goals/:id/progress then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/access.test.ts:321:26
+    319|   it("TEST-05.7c P2 control on GET /goals/:id/progress then identical …
+    320|     const p1Res = await request(app).get(`/goals/${goal1.id}/progress`…
+    321|     expect(p1Res.status).toBe(200);
+       |                          ^
+    322|
+    323|     const onG1 = await request(app).get(`/goals/${goal1.id}/progress`)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7d P2 control on POST /goals/:id/entries then identical 404 for G1 and for a missing id
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/access.test.ts:333:26
+    331|       .set("Cookie", p1Cookie)
+    332|       .send({ date: "2026-03-01", value: 5 });
+    333|     expect(p1Res.status).toBe(201);
+       |                          ^
+    334|
+    335|     const onG1 = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9a control P1 gets 400 for a date before the goal start; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/access.test.ts:353:26
+    351|       .set("Cookie", p1Cookie)
+    352|       .send({ date: "2025-12-31", value: 5 });
+    353|     expect(p1Res.status).toBe(400);
+       |                          ^
+    354|     expect(p1Res.body.error.code).toBe("VALIDATION_ERROR");
+    355|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9b control P1 gets 400 for a value above the template maximum; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ tests/access.test.ts:372:26
+    370|       .set("Cookie", p1Cookie)
+    371|       .send({ date: "2026-04-01", value: 11 });
+    372|     expect(p1Res.status).toBe(400);
+       |                          ^
+    373|     expect(p1Res.body.error.code).toBe("VALIDATION_ERROR");
+    374|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/57]⎯
+
+ FAIL  tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9c control P1 gets 409 for a date that already has an entry; P2 gets identical 404 on G1 and a missing id
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/access.test.ts:391:26
+    389|       .set("Cookie", p1Cookie)
+    390|       .send({ date: "2026-01-15", value: 5 });
+    391|     expect(p1Res.status).toBe(409);
+       |                          ^
+    392|
+    393|     const onG1 = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.1 create a goal > TEST-03.1a P1 creates a goal and receives 201 with the stored goal
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:136:24
+    134|     const res = await postGoal(p1Cookie, body);
+    135|
+    136|     expect(res.status).toBe(201);
+       |                        ^
+    137|     expect(typeof res.body.id).toBe("number");
+    138|     expect(res.body).toEqual({ ...body, id: res.body.id, userId: p1.id…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.1 create a goal > TEST-03.1b accepts two-decimal targets 2.5, 0.07 and 1.15
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:151:22
+    149|     const c = await postGoal(p1Cookie, validBody({ templateId: T3.id, …
+    150|
+    151|     expect(a.status).toBe(201);
+       |                      ^
+    152|     expect(a.body.dailyTarget).toBe(2.5);
+    153|     expect(b.status).toBe(201);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.2 anonymous access > TEST-03.2 no cookie: POST /goals, GET /goals, GET /goals/1 each return 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:167:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.3 Manager is stopped at the role gate > TEST-03.3a M POST /goals returns 403 and stores nothing
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:178:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.3 Manager is stopped at the role gate > TEST-03.3b M GET /goals and GET /goals/:id of P1's goal return 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:188:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4a {} returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:195:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4b an unknown field returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:201:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4c templateId as a numeric string returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:207:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4d dailyTarget as a numeric string returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:213:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4e dailyTarget with three decimals returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:219:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4f a non-YYYY-MM-DD startDate (slashes, timestamp) returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:227:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4g an impossible calendar date returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:234:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4h templateId 0, -1, 1.5 and 99999999999 return 400 (not 404 or 500)
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:241:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.4 body shape > TEST-03.4i a JSON array or null body returns 400 and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:258:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.5 end date not before start date (BR-05) > TEST-03.5a endDate before startDate returns 400 DATES and stores nothing
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:270:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.5 end date not before start date (BR-05) > TEST-03.5b a one-day goal (startDate = endDate) is accepted
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:279:24
+    277|       validBody({ startDate: "2026-11-15", endDate: "2026-11-15" }),
+    278|     );
+    279|     expect(res.status).toBe(201);
+       |                        ^
+    280|     expect(await goalCount()).toBe(1);
+    281|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[35/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.6 template must exist > TEST-03.6 templateId 99999 returns 404 and stores nothing
+AssertionError: expected undefined to be 'NOT_FOUND' // Object.is equality
+
+- Expected:
+"NOT_FOUND"
+
++ Received:
+undefined
+
+ ❯ expectError tests/goals.test.ts:48:32
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+     48|   expect(res.body.error?.code).toBe(code);
+       |                                ^
+     49|   expect(res.body.error?.message).toBe(message);
+     50| }
+ ❯ tests/goals.test.ts:287:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[36/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7a target above the template maximum returns 400 RANGE
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:295:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[37/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7b target below the template minimum returns 400 RANGE
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:301:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[38/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7c targets equal to the bounds (0, 300, -20) are accepted
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:310:22
+    308|     const c = await postGoal(p1Cookie, validBody({ templateId: T3.id, …
+    309|
+    310|     expect(a.status).toBe(201);
+       |                      ^
+    311|     expect(b.status).toBe(201);
+    312|     expect(c.status).toBe(201);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8a a partly overlapping range returns 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:324:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[40/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8b a range sharing only the last day returns 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:334:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[41/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8c overlapping a future goal returns 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:344:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[42/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8d a range enclosing an existing goal returns 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:354:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[43/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9a ranges that start the day after or end the day before are accepted
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:371:26
+    369|     );
+    370|
+    371|     expect(after.status).toBe(201);
+       |                          ^
+    372|     expect(before.status).toBe(201);
+    373|     expect(await goalCount()).toBe(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[44/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9b the same dates on another template are accepted
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:379:24
+    377|     await insertGoal(p1.id, T.id, "2026-11-01", "2026-11-30");
+    378|     const res = await postGoal(p1Cookie, validBody({ templateId: T2.id…
+    379|     expect(res.status).toBe(201);
+       |                        ^
+    380|   });
+    381|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[45/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9c another Participant may use the same template and dates
+AssertionError: expected 404 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 404
+
+ ❯ tests/goals.test.ts:385:24
+    383|     await insertGoal(p1.id, T.id, "2026-11-01", "2026-11-30");
+    384|     const res = await postGoal(p2Cookie, validBody());
+    385|     expect(res.status).toBe(201);
+       |                        ^
+    386|     expect(res.body.userId).toBe(p2.id);
+    387|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[46/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.10 concurrent overlapping creates (BR-04) > TEST-03.10 five concurrent overlapping requests give one 201 and four 409
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/goals.test.ts:407:21
+    405|     const created = results.filter((r) => r.status === 201);
+    406|     const conflicts = results.filter((r) => r.status === 409);
+    407|     expect(created).toHaveLength(1);
+       |                     ^
+    408|     expect(conflicts).toHaveLength(4);
+    409|     for (const r of conflicts) expectError(r, 409, "CONFLICT", OVERLAP…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[47/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.11 list own goals > TEST-03.11 each Participant lists only their own goals, ordered by id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goals.test.ts:423:26
+    421|     const p2Res = await request(app).get("/goals").set("Cookie", p2Coo…
+    422|
+    423|     expect(p1Res.status).toBe(200);
+       |                          ^
+    424|     expect(p1Res.body.map((g: { id: number }) => g.id)).toEqual([g1.id…
+    425|     expect(p1Res.body.every((g: { userId: number }) => g.userId === p1…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[48/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12a the owner reads their goal with 200
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goals.test.ts:436:24
+    434|     const res = await request(app).get(`/goals/${goal.id}`).set("Cooki…
+    435|
+    436|     expect(res.status).toBe(200);
+       |                        ^
+    437|     expect(res.body).toEqual({
+    438|       id: goal.id,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[49/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12b control P1 gets 200; P2 gets identical 404 for P1's goal and a missing id
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goals.test.ts:451:28
+    449|
+    450|     const control = await request(app).get(`/goals/${goal.id}`).set("C…
+    451|     expect(control.status).toBe(200);
+       |                            ^
+    452|
+    453|     const others = await request(app).get(`/goals/${goal.id}`).set("Co…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[50/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12c malformed ids (abc, 0, 99999999999) return 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:464:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[51/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.13 template range change applies only to new goals (D-06) > TEST-03.13 existing goal keeps its target; a new goal uses the new range
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goals.test.ts:480:28
+    478|
+    479|     const readRes = await request(app).get(`/goals/${goal.id}`).set("C…
+    480|     expect(readRes.status).toBe(200);
+       |                            ^
+    481|     expect(readRes.body.dailyTarget).toBe(40);
+    482|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[52/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.14 check order > TEST-03.14a no cookie with an invalid body returns 401, not 400
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:494:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[53/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.14 check order > TEST-03.14b Manager with an invalid body or malformed id returns 403, not 400
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:501:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[54/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.14 check order > TEST-03.14c control; missing template with an out-of-range target returns 404, not 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:507:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[55/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.14 check order > TEST-03.14d control; missing template with endDate before startDate returns 404, not 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:519:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[56/57]⎯
+
+ FAIL  tests/goals.test.ts > AC-03.14 check order > TEST-03.14e control; overlap with an out-of-range target returns 400, not 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goals.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goals.test.ts:531:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[57/57]⎯
+
+
+ Test Files  2 failed | 4 passed (6)
+      Tests  57 failed | 51 passed (108)
+   Start at  14:19:20
+   Duration  41.42s (tests 97%, import 2%)
+

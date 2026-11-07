@@ -44,3 +44,21 @@ hash.
     `backend/tests/templates.test.ts` were not edited.
   - Verified stable: the full suite was run twice in a row (identical `19 failed | 48 passed`) and
     `tests/access.test.ts` was run alone (`19 failed | 4 passed (23)`, same split).
+
+# F-03 evidence notes
+
+- `F-03-red.txt`: run for F-03 (goals, contract v1.1) with `backend/tests/goals.test.ts` committed
+  and no goal routes. Result: `Test Files 2 failed | 4 passed (6)` / `Tests 57 failed | 51 passed (108)`.
+  All 38 `TEST-03.*` fail plus the 19 F-05 Stage-A tests; every failure is an assertion mismatch
+  (Express's default 404 instead of 201/400/401/403/409, or a missing `error.code`), not a compile,
+  config or fixture error. No `TEST-03.*` passes vacuously: every rejection test also asserts
+  `error.code` and `error.message`, which a missing route does not return.
+- `F-03-green.txt`: run after the goal routes. Result: `Test Files 1 failed | 5 passed (6)` /
+  `Tests 12 failed | 96 passed (108)` (96 = 51 earlier + 38 `TEST-03.*` + 7 F-05). The 12 red tests
+  are exactly the F-04 set in `F-03-goals.md` §5.1 (`TEST-05.1d`, `05.3d`, `05.3e`, `05.4b`, `05.4c`,
+  `05.5`, `05.7b`–`d`, `05.9a`–`c`), each failing with `expected 404 to be <200|201|400|401|403|409>`
+  because the entry/progress routes are missing. Run three times in a row with identical results
+  (TEST-03.10 concurrency is stable).
+- Both runs used Node 22. An earlier attempt on Node 20 crashed Vitest's reporter
+  (`Map.groupBy is not a function`) and another with the dev database stopped failed every test;
+  both were discarded, not saved as evidence. README now says Node 22+.
