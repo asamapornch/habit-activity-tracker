@@ -9,7 +9,7 @@
 | Needed by | F-04, F-05 |
 | Owner | Student 2 |
 | Reviewer | Student 1 |
-| Status | Contract written before implementation |
+| Status | Implemented and merged into `sprint-1-staging` (PR #25, #27, #31) |
 
 ## 1. Purpose
 
@@ -235,19 +235,19 @@ the exact counts recorded in the green evidence.
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (separate earlier commit).
-- [ ] Tests TEST-03.* are committed and fail first (red) because the goal routes are missing, not
+- [x] This contract is committed before any implementation code (separate earlier commit).
+- [x] Tests TEST-03.* are committed and fail first (red) because the goal routes are missing, not
       because of compile or configuration errors, with the failing output saved under
       `docs/sprints/sprint-1/evidence/`.
-- [ ] Implementation makes all TEST-03.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` from a clean checkout: all F-01, F-02 and TEST-03.* tests pass, the 7
+- [x] Implementation makes all TEST-03.* pass (green), with the passing output saved.
+- [x] `npm test` in `backend/` from a clean checkout: all F-01, F-02 and TEST-03.* tests pass, the 7
       F-05 tests in §5.3 pass, and exactly the 12 F-05 tests listed in §5.3 are red for the stated reason.
-- [ ] No existing test file is edited.
-- [ ] `CONFLICT` is added to the shared `ErrorCode` type used by the error handler.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+- [x] No existing test file is edited.
+- [x] `CONFLICT` is added to the shared `ErrorCode` type used by the error handler.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
-- [ ] (v1.2) TEST-03.15 to TEST-03.20 are committed red before the goal screens, then green;
+- [x] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] (v1.2) TEST-03.15 to TEST-03.20 are committed red before the goal screens, then green;
       `npm test` in `frontend/` passes; screenshots of the goal journey are saved under
       `docs/sprints/sprint-1/evidence/ui-goals/`.
 
@@ -258,3 +258,4 @@ the exact counts recorded in the green evidence.
 | 1.0 | 2026-11-07 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-07 | Check order tested (AC-03.14, TEST-03.14a to e, with positive controls); `endDate` before `startDate` moved from the 400 shape step to BR-05 after the template 404, with its own message; exact code and message (including F-01's 401/403 messages) and "nothing stored" in every rejection test; D-09 (past start date) added to the SRS, `dailyTarget` 0/negative and "no rule depends on today" stated; 5 concurrent requests in TEST-03.10; 0.07/1.15, `templateId` -1, array/null body and timestamp date cases; TEST-03.8c uses 2099; expected F-05 red set listed (§5.1); UI tracked in Issue #26 | PR #25 review |
 | 1.2 | 2026-11-07 | Added §3.3 UI, AC-03.15 to AC-03.20 and TEST-03.15 to TEST-03.20 (§5.2, frontend component tests): own goal list with loading/error states, Participant-only section, create flow with numeric JSON, verbatim 400/404/409 with the form kept, 401 returns to login, disabled submit while in flight; F-05 section renumbered §5.3 | goal UI, Issue #26 |
+| 1.3 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |

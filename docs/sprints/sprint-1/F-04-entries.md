@@ -9,7 +9,7 @@
 | Needed by | F-05 (Stage B), release |
 | Owner | Student 2 |
 | Reviewer | Student 1 |
-| Status | Contract written before implementation |
+| Status | Implemented and merged into `sprint-1-staging` (PR #29, #30, #31) |
 
 ## 1. Purpose
 
@@ -280,18 +280,18 @@ progress `today` is `2026-11-05`.
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (separate earlier commit).
-- [ ] Tests TEST-04.* are committed and fail first (red) because the entry and progress routes are
+- [x] This contract is committed before any implementation code (separate earlier commit).
+- [x] Tests TEST-04.* are committed and fail first (red) because the entry and progress routes are
       missing, not because of compile or configuration errors, with the failing output saved under
       `docs/sprints/sprint-1/evidence/`.
-- [ ] Implementation makes all TEST-04.* pass (green), with the passing output saved.
-- [ ] All 23 TEST-05.* pass (F-05 Stage B) and the run is saved as `F-05-green.txt`.
-- [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No existing test file is edited.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+- [x] Implementation makes all TEST-04.* pass (green), with the passing output saved.
+- [x] All 23 TEST-05.* pass (F-05 Stage B) and the run is saved as `F-05-green.txt`.
+- [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
+- [x] No existing test file is edited.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
-- [ ] (v1.2) TEST-04.18 to TEST-04.23 are committed red before the entry screens, then green;
+- [x] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] (v1.2) TEST-04.18 to TEST-04.23 are committed red before the entry screens, then green;
       `npm test` in `frontend/` passes; screenshots of the entry, history and progress journey are
       saved under `docs/sprints/sprint-1/evidence/ui-goals/`.
 
@@ -303,3 +303,4 @@ progress `today` is `2026-11-05`.
 | 1.1 | 2026-11-07 | Each test sets its clock before logging in (8-hour session); progress percentage and rounding recorded as SRS D-10; TEST-04.6c (future before outside); TEST-04.8a/b and 04.14d run with `TZ` America/Los_Angeles; TEST-05.9c change dropped (no existing test edited); note that TEST-05.9b/c cover 404 before BR-02/BR-01; TEST-04.14e (2 of 3 = 66.67) | PR #29 review |
 | 1.2 | 2026-11-07 | Added §3.3 UI, AC-04.18 to AC-04.23 and TEST-04.18 to TEST-04.23 (§5.2, frontend component tests): goal screen with history and progress, empty state, record flow with numeric JSON and progress refreshed from the server, verbatim 400/409 with the form kept, 401 returns to login, disabled submit while in flight; existing-tests section renumbered §5.3 | entry UI, Issue #26 |
 | 1.3 | 2026-11-07 | History shows date and value only (no UI-side "target met", BR-09 stays on the server); TEST-04.20 renamed TEST-04.20a; TEST-04.20c added: a failed progress refresh after a saved entry no longer looks like a failed save | PR #31 review |
+| 1.4 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |

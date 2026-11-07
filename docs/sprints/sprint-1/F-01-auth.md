@@ -9,7 +9,7 @@
 | Needed by | F-02, F-03, F-04, F-05 |
 | Owner | Student 1 |
 | Reviewer | Student 2 |
-| Status | Contract written before implementation |
+| Status | Implemented and merged into `sprint-1-staging` (PR #5, #9, #19) |
 
 ## 1. Purpose
 
@@ -140,15 +140,15 @@ mocked per test.
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (separate earlier commit).
-- [ ] Tests TEST-01.* are committed and fail first (red), with the failing output saved.
-- [ ] Implementation makes all TEST-01.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` passes from a clean checkout.
-- [ ] No secrets are committed; seeded passwords come from environment variables.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, and is
+- [x] This contract is committed before any implementation code (separate earlier commit).
+- [x] Tests TEST-01.* are committed and fail first (red), with the failing output saved.
+- [x] Implementation makes all TEST-01.* pass (green), with the passing output saved.
+- [x] `npm test` in `backend/` passes from a clean checkout.
+- [x] No secrets are committed; seeded passwords come from environment variables.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, and is
       reviewed and approved by the other student with comments describing what was checked.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
-- [ ] Code review confirms the dummy bcrypt comparison for unknown emails.
+- [x] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Code review confirms the dummy bcrypt comparison for unknown emails.
 
 ## 7. Version history
 
@@ -158,3 +158,4 @@ mocked per test.
 | 1.1 | 2026-11-06 | Tests create their own users instead of using the seed; added AC-01.9, AC-01.10 and cookie-flag check; session regeneration and dummy-hash behaviour added | PR review: reset-per-test setup would delete seeded users; hardening suggestions |
 | 1.2 | 2026-11-06 | Added AC-01.11/TEST-01.11 (malformed JSON and unexpected errors use the standard error body with an `INTERNAL_ERROR` code); clarified TEST-01.3 to capture and replay the exact login cookie; stated the 8-hour session lifetime (cookie `maxAge` and store TTL) | PR #9 review |
 | 1.3 | 2026-11-07 | Added AC-01.12 to AC-01.18 and TEST-01.12 to TEST-01.18 (§5.2, frontend component tests): form fields/button, verbatim 401 message, signed-in view, logout, GET /auth/me on load, loading/error states, disabled submit button while in flight | login-screen PR review |
+| 1.4 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |

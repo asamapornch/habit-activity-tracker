@@ -9,7 +9,7 @@
 | Needed by | Release (these tests must pass before the release PR to `main`) |
 | Owner | Student 1 writes and owns all TEST-05.* tests (see §1.1) |
 | Reviewer | Student 2 |
-| Status | Contract written before implementation |
+| Status | Stage A and Stage B complete, merged into `sprint-1-staging` (PR #16, #17; Stage B with #30) |
 
 ## 1. Purpose
 
@@ -114,21 +114,21 @@ All tests are API-level (Vitest + Supertest) in `backend/tests/access.test.ts`.
 ## 6. Definition of done
 
 **Stage A (now, Student 1)**
-- [ ] This contract is committed before any test code (separate earlier commit).
-- [ ] TEST-05.1a, 05.1b, 05.2a, 05.2b are committed and their run saved. They exercise merged code
+- [x] This contract is committed before any test code (separate earlier commit).
+- [x] TEST-05.1a, 05.1b, 05.2a, 05.2b are committed and their run saved. They exercise merged code
       (F-01, F-02), so a failing first run is not expected; if any fails, the cause is fixed in the owning
       feature through its own Issue and PR.
-- [ ] Tests for goals and entries (the rest of TEST-05.*) are committed with their failing run saved
+- [x] Tests for goals and entries (the rest of TEST-05.*) are committed with their failing run saved
       (red); they fail because the F-03 and F-04 endpoints are missing, not because of errors.
 
 **Stage B (release gate, after F-03 and F-04 are merged)**
-- [ ] All TEST-05.* pass (green) with the passing output saved.
-- [ ] Any rule violation found by these tests is fixed in the owning feature through its own
+- [x] All TEST-05.* pass (green) with the passing output saved.
+- [x] Any rule violation found by these tests is fixed in the owning feature through its own
       Issue and PR, and recorded in the evidence report.
-- [ ] `npm test` in `backend/` passes from a clean checkout, including all earlier features.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+- [x] `npm test` in `backend/` passes from a clean checkout, including all earlier features.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
 
@@ -136,3 +136,4 @@ All tests are API-level (Vitest + Supertest) in `backend/tests/access.test.ts`.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-06 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-07 | Check order: ownership before goal-dependent validation (AC-05.9, TEST-05.9a to c); AC-05.7 extended to entries, progress and POST (TEST-05.7a to d); ownership and staging section (§1.1) with staged Definition of Done; positive-control wording corrected; former AC-05.9 (logout) removed as a duplicate of TEST-01.3 | PR #16 review |
+| 1.2 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |
