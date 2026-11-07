@@ -104,3 +104,4 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-06 | Changing a template's range applies only to new input. Existing goals and entries are not revalidated; progress uses each goal's stored daily target. | Keeps history stable and avoids retroactive invalidation. |
 | D-07 | Numeric values are stored as floats limited to two decimal places and compared after rounding to two decimals. | Avoids floating-point surprises in the target comparison (BR-09). |
 | D-08 | Goals for the same template may not overlap in date range, including future goals (BR-04). | A check on "active today" would let two future goals become active together later. |
+| D-09 | A goal's start date may be in the past (a goal may be created after it started); no goal rule depends on "today". | Matches back-dating for entries (D-02); a Participant may set up a goal a few days late. |
