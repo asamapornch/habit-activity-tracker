@@ -5,7 +5,8 @@ backend, Prisma ORM, PostgreSQL.
 
 ## Prerequisites
 
-- Node.js 20+ and npm
+- Node.js 22+ and npm (Vitest 5 uses `Map.groupBy`, which Node 20 lacks: on Node 20 the test
+  reporter crashes with `Map.groupBy is not a function` whenever a test fails)
 - Docker (for the local dev PostgreSQL via `docker-compose`) — or your own PostgreSQL instance
 
 ## 1. Install dependencies
@@ -119,11 +120,11 @@ database before every test; spec files run one at a time (`fileParallelism: fals
 share that one database. `frontend`'s suite runs once (Vitest + React Testing Library) with `fetch`
 mocked — it needs no backend or database running.
 
-**Expected result on `sprint-1-staging` right now:** the backend suite reports 19 failing tests,
+**Expected result on `sprint-1-staging` right now:** the backend suite reports 12 failing tests,
 all in `backend/tests/access.test.ts` (F-05, Stage A). These are intentionally red — they exercise
-`/goals` and `/goals/:id/entries` endpoints that belong to F-03 and F-04, which are not merged yet
-(see `docs/sprints/sprint-1/F-05-access-control.md` §1.1). Everything else, and the whole frontend
-suite, should pass. If any other test fails, that's a real regression.
+`/goals/:id/entries` and `/goals/:id/progress`, which belong to F-04 and are not merged yet (see
+`docs/sprints/sprint-1/F-05-access-control.md` §1.1 and `F-03-goals.md` §5.1). Everything else, and
+the whole frontend suite, should pass. If any other test fails, that's a real regression.
 
 ## Branching & PR workflow
 
