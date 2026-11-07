@@ -96,3 +96,8 @@ hash.
   10 BR-01 duplicate (409) · 11 BR-03 future date · 12 BR-03 outside goal dates · 13 BR-02 value range ·
   14 goal screen at phone width · 15 Manager view without the Goals section.
   Every error text is the server's message shown verbatim.
+- After the PR #31 review (contract F-04 v1.3): `F-03-04-ui-red-2.txt` is `2 failed | 36 passed (38)`:
+  TEST-04.18a fails because the history still has a "Target met" column, and TEST-04.20c fails because
+  a failed progress refresh looked like a failed save. `F-03-04-ui-green-2.txt` is `38 passed (38)`.
+  `ui-goals/` was retaken after the fix with a fresh local demo Participant (`participant3@example.com`,
+  added to the local dev database only so the journey starts from no goals; not part of the seed).
