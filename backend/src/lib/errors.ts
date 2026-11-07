@@ -6,7 +6,8 @@ export type ErrorCode =
   | "UNAUTHENTICATED"
   | "FORBIDDEN"
   | "INTERNAL_ERROR"
-  | "NOT_FOUND";
+  | "NOT_FOUND"
+  | "CONFLICT";
 
 export function sendError(res: Response, status: number, code: ErrorCode, message: string) {
   res.status(status).json({ error: { code, message } });
