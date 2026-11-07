@@ -126,7 +126,8 @@ Added in v1.2 (Issue #26). Opening a goal from the F-03 goal list shows a goal s
 **progress** panel (`daysMet of daysElapsed days met` and `progress` as a percentage, from
 `GET /goals/:id/progress`), a **record entry** form (date input prefilled with the progress `today`,
 value with step 0.01), and the **history** table of the goal's entries in date order (from
-`GET /goals/:id/entries`). A **Back to goals** control returns to the list. Server messages are shown as
+`GET /goals/:id/entries`, date and value only: whether a day met the target is BR-09 and is shown
+only through the server's progress). A **Back to goals** control returns to the list. Server messages are shown as
 returned; a `401` returns to the login screen. The UI never decides a rule itself: the server checks
 BR-01, BR-02 and BR-03.
 
@@ -153,7 +154,7 @@ BR-01, BR-02 and BR-03.
 | AC-04.17 | The check order of Behaviour 4 holds when a request has several faults: 401 before 400, 403 before 400, 404 before BR-03/BR-02/BR-01, BR-03 before BR-02, and BR-02 before BR-01. | NFR-02, NFR-05, BR-08 |
 | AC-04.18 | Opening a goal shows its history in date order and its progress (`daysMet`, `daysElapsed`, `progress` %); a loading message is shown while they are fetched, and an error message if a request fails. | FR-08, FR-09 |
 | AC-04.19 | A goal with no entries shows an empty-history message and 0 % progress. | FR-09 |
-| AC-04.20 | Recording an entry sends `POST /goals/:id/entries` with `date` as `YYYY-MM-DD` (prefilled with the progress `today`) and `value` as a JSON number; the entry appears in the history in date order and the progress shown is refreshed from the server. | FR-07, FR-08 |
+| AC-04.20 | Recording an entry sends `POST /goals/:id/entries` with `date` as `YYYY-MM-DD` (prefilled with the progress `today`) and `value` as a JSON number; the entry appears in the history in date order and the progress shown is refreshed from the server; if only the refresh fails, the entry is still shown as saved. | FR-07, FR-08 |
 | AC-04.21 | A 400 or 409 from `POST /goals/:id/entries` is shown with the server's message verbatim, and the form keeps what was typed. | BR-01, BR-02, BR-03, NFR-05 |
 | AC-04.22 | A `401` from any entry or progress request returns the user to the login screen. | NFR-02 |
 | AC-04.23 | The record button is disabled while the request is in flight. | NFR-05 |
@@ -251,11 +252,12 @@ progress `today` is `2026-11-05`.
 
 | Test ID | Covers | Input | Expected result |
 | --- | --- | --- | --- |
-| TEST-04.18a | AC-04.18 | entries `[{2026-11-01, 5}, {2026-11-03, 6}]` (server order); progress `{ daysElapsed: 5, daysMet: 2, progress: 40 }` | history rows in order `2026-11-01`, `2026-11-03` with values and unit; progress shows `2 of 5 days met` and `40%` |
+| TEST-04.18a | AC-04.18 | entries `[{2026-11-01, 5}, {2026-11-03, 6}]` (server order); progress `{ daysElapsed: 5, daysMet: 2, progress: 40 }` | history rows in order `2026-11-01`, `2026-11-03` with values and unit; progress shows `2 of 5 days met` and `40%`; the history has only Date and Value columns (no UI-side target check) |
 | TEST-04.18b | AC-04.18 | (a) both requests left pending; (b) `GET /goals/:id/entries` rejected | (a) a loading message first; (b) an error message (`role="alert"`), not an endless loading state |
 | TEST-04.19 | AC-04.19 | entries `[]`, progress `{ daysElapsed: 5, daysMet: 0, progress: 0 }` | an empty-history message (`No entries yet.`) and `0%` |
-| TEST-04.20 | AC-04.20 | entries `[{2026-11-01, 5}]`, progress `{ 5, 1, 20 }`; user changes the date to `2026-11-03`, types value `7.25`, submits; POST returns 201; the next progress call returns `{ 5, 2, 40 }` | the date input was prefilled with `2026-11-05`; POST called with `{ date: "2026-11-03", value: 7.25 }` (number); history shows `2026-11-01` then `2026-11-03`; progress updates to `40%` from the second progress call |
+| TEST-04.20a | AC-04.20 | entries `[{2026-11-01, 5}]`, progress `{ 5, 1, 20 }`; user changes the date to `2026-11-03`, types value `7.25`, submits; POST returns 201; the next progress call returns `{ 5, 2, 40 }` | the date input was prefilled with `2026-11-05`; POST called with `{ date: "2026-11-03", value: 7.25 }` (number); history shows `2026-11-01` then `2026-11-03`; progress updates to `40%` from the second progress call |
 | TEST-04.20b | AC-04.20 | **Open** on a goal in the F-03 goal list, then **Back to goals** | the goal screen for that goal is shown (its progress panel and history); back returns to the goal list |
+| TEST-04.20c | AC-04.20 | POST returns 201; the progress refresh after it is rejected | the entry appears in the history; the form shows no error and is not kept for a retry; a separate message `Entry saved, but progress could not be refreshed.` is shown |
 | TEST-04.21a | AC-04.21 | POST mocked to 409 `An entry already exists for this date.` | that exact message is shown; date and value still hold what was typed; history unchanged |
 | TEST-04.21b | AC-04.21 | POST mocked to 400 `Entry date must not be in the future.` | that exact message is shown; the form keeps its values |
 | TEST-04.22 | AC-04.22 | `App` as a Participant, Open a goal; `GET /goals/:id/progress` mocked to 401 | the login form is shown |
@@ -300,3 +302,4 @@ progress `today` is `2026-11-05`.
 | 1.0 | 2026-11-07 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-07 | Each test sets its clock before logging in (8-hour session); progress percentage and rounding recorded as SRS D-10; TEST-04.6c (future before outside); TEST-04.8a/b and 04.14d run with `TZ` America/Los_Angeles; TEST-05.9c change dropped (no existing test edited); note that TEST-05.9b/c cover 404 before BR-02/BR-01; TEST-04.14e (2 of 3 = 66.67) | PR #29 review |
 | 1.2 | 2026-11-07 | Added §3.3 UI, AC-04.18 to AC-04.23 and TEST-04.18 to TEST-04.23 (§5.2, frontend component tests): goal screen with history and progress, empty state, record flow with numeric JSON and progress refreshed from the server, verbatim 400/409 with the form kept, 401 returns to login, disabled submit while in flight; existing-tests section renumbered §5.3 | entry UI, Issue #26 |
+| 1.3 | 2026-11-07 | History shows date and value only (no UI-side "target met", BR-09 stays on the server); TEST-04.20 renamed TEST-04.20a; TEST-04.20c added: a failed progress refresh after a saved entry no longer looks like a failed save | PR #31 review |

@@ -59,6 +59,10 @@ describe("AC-04.18 history and progress", () => {
     expect(screen.getByText("40%")).toBeInTheDocument();
     expect(historyDates()).toEqual(["2026-11-01", "2026-11-03"]);
     expect(screen.getByRole("table", { name: /history/i })).toHaveTextContent("6 km");
+    const headers = within(screen.getByRole("table", { name: /history/i }))
+      .getAllByRole("columnheader")
+      .map((h) => h.textContent);
+    expect(headers).toEqual(["Date", "Value"]);
   });
 
   it("TEST-04.18b (a) shows a loading message while pending; (b) an error message if GET entries fails", async () => {
@@ -99,7 +103,7 @@ describe("AC-04.19 empty history", () => {
 });
 
 describe("AC-04.20 record flow", () => {
-  it("TEST-04.20 prefills today, sends a numeric value, inserts by date and refreshes progress from the server", async () => {
+  it("TEST-04.20a prefills today, sends a numeric value, inserts by date and refreshes progress from the server", async () => {
     const createHandler = vi.fn((_init?: RequestInit) => jsonResponse(201, NEW_ENTRY));
     const progressHandler = vi
       .fn()
@@ -126,6 +130,30 @@ describe("AC-04.20 record flow", () => {
     expect(await screen.findByText("40%")).toBeInTheDocument();
     expect(progressHandler).toHaveBeenCalledTimes(2);
     expect(historyDates()).toEqual(["2026-11-01", "2026-11-03"]);
+  });
+
+  it("TEST-04.20c a saved entry stays saved when only the progress refresh fails", async () => {
+    const createHandler = vi.fn(() => jsonResponse(201, NEW_ENTRY));
+    const progressHandler = vi
+      .fn()
+      .mockImplementationOnce(() => jsonResponse(200, progress(5, 1, 20)))
+      .mockImplementationOnce(() => Promise.reject(new Error("network error")));
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, [E1]),
+      "GET /goals/11/progress": progressHandler,
+      "POST /goals/11/entries": createHandler,
+    });
+
+    const user = userEvent.setup();
+    renderDetail();
+    await screen.findByText("1 of 5 days met");
+    const form = await submitEntry(user, "2026-11-03", "7.25");
+
+    expect(await screen.findByText("Entry saved, but progress could not be refreshed.")).toBeInTheDocument();
+    expect(historyDates()).toEqual(["2026-11-01", "2026-11-03"]);
+    expect(within(form).queryByRole("alert")).not.toBeInTheDocument();
+    expect(within(form).getByLabelText(/value/i)).toHaveValue(null);
+    expect(createHandler).toHaveBeenCalledTimes(1);
   });
 
   it("TEST-04.20b Open on a goal shows its goal screen and Back returns to the goal list", async () => {
