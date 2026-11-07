@@ -81,3 +81,23 @@ hash.
 - `F-05-green.txt`: full suite after F-03 and F-04, run with `--reporter=verbose` so every test name
   is listed. Result: `Test Files 7 passed (7)` / `Tests 152 passed (152)`; all 23 `TEST-05.*` pass.
   `backend/tests/access.test.ts` is unchanged since PR #17.
+
+## F-03 / F-04 UI (contract v1.2, Issue #26)
+
+- `F-03-04-ui-red.txt`: frontend suite after the tests commit, with `Goals` and `GoalDetail` as stubs
+  that render nothing: `17 failed | 20 passed (37)`. All 17 new tests (TEST-03.15 to 03.20, TEST-04.18
+  to 04.23) fail on an assertion (element not found); none fail on compile or import errors. The 20
+  existing F-01/F-02 UI tests stay green.
+- `F-03-04-ui-green.txt`: after the screens are implemented, `37 passed (37)`, verbose.
+- `ui-goals/`: screenshots of the whole Participant journey against the real backend and dev database
+  (Asia/Bangkok today 2026-11-07), taken with headless Chrome:
+  01 empty goals · 02–03 create a goal · 04 BR-04 overlap (409) · 05 BR-05 target range (400) ·
+  06 goal screen with no entries · 07–08 record an entry · 09 history and progress (3 of 7 days, 42.86%) ·
+  10 BR-01 duplicate (409) · 11 BR-03 future date · 12 BR-03 outside goal dates · 13 BR-02 value range ·
+  14 goal screen at phone width · 15 Manager view without the Goals section.
+  Every error text is the server's message shown verbatim.
+- After the PR #31 review (contract F-04 v1.3): `F-03-04-ui-red-2.txt` is `2 failed | 36 passed (38)`:
+  TEST-04.18a fails because the history still has a "Target met" column, and TEST-04.20c fails because
+  a failed progress refresh looked like a failed save. `F-03-04-ui-green-2.txt` is `38 passed (38)`.
+  `ui-goals/` was retaken after the fix with a fresh local demo Participant (`participant3@example.com`,
+  added to the local dev database only so the journey starts from no goals; not part of the seed).

@@ -1,0 +1,191 @@
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import {
+  errorMessage,
+  getProgress,
+  isUnauthorized,
+  listEntries,
+  recordEntry,
+  type Entry,
+  type Goal,
+  type Progress,
+  type Template,
+} from "./api";
+
+interface GoalDetailProps {
+  goal: Goal;
+  template: Template;
+  onBack: () => void;
+  onUnauthorized: () => void;
+}
+
+const byDate = (a: Entry, b: Entry) => a.date.localeCompare(b.date);
+
+export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetailProps) {
+  const [entries, setEntries] = useState<Entry[] | null>(null);
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [date, setDate] = useState("");
+  const [value, setValue] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([listEntries(goal.id), getProgress(goal.id)])
+      .then(([list, prog]) => {
+        if (cancelled) return;
+        setEntries(list);
+        setProgress(prog);
+        setDate((current) => current || prog.today);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (isUnauthorized(err)) onUnauthorized();
+        else setLoadError("Could not load this goal.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [goal.id]);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFormError(null);
+    setRefreshError(null);
+    setSubmitting(true);
+    try {
+      const entry = await recordEntry(goal.id, { date, value: Number(value) });
+      setEntries((current) => [...(current ?? []), entry].sort(byDate));
+      setValue("");
+    } catch (err) {
+      if (isUnauthorized(err)) onUnauthorized();
+      else setFormError(errorMessage(err));
+      return;
+    } finally {
+      setSubmitting(false);
+    }
+
+    // The entry is saved; a failed refresh must not look like a failed save.
+    try {
+      setProgress(await getProgress(goal.id));
+    } catch (err) {
+      if (isUnauthorized(err)) onUnauthorized();
+      else setRefreshError("Entry saved, but progress could not be refreshed.");
+    }
+  }
+
+  const header = (
+    <div className="goal-detail__header">
+      <button type="button" className="btn btn--secondary btn--small" onClick={onBack}>
+        Back to goals
+      </button>
+      <h3 className="card-title">{template.name}</h3>
+      <span className="goal-list__meta">
+        {goal.dailyTarget} {template.unit} a day · {goal.startDate} → {goal.endDate}
+      </span>
+    </div>
+  );
+
+  if (loadError)
+    return (
+      <section className="goal-detail">
+        {header}
+        <p role="alert" className="error-box">
+          {loadError}
+        </p>
+      </section>
+    );
+  if (!entries || !progress)
+    return (
+      <section className="goal-detail">
+        {header}
+        <p className="status-message">Loading goal…</p>
+      </section>
+    );
+
+  return (
+    <section className="goal-detail">
+      {header}
+      <div className="card progress-card" aria-label="Progress">
+        <p className="progress-card__pct">{progress.progress}%</p>
+        <p className="progress-card__days">
+          {progress.daysMet} of {progress.daysElapsed} days met
+        </p>
+        <div className="progress-bar" aria-hidden="true">
+          <div className="progress-bar__fill" style={{ width: `${Math.min(progress.progress, 100)}%` }} />
+        </div>
+        <p className="progress-card__today">Today (Asia/Bangkok): {progress.today}</p>
+        {refreshError && (
+          <p role="status" className="error-box">
+            {refreshError}
+          </p>
+        )}
+      </div>
+
+      <form onSubmit={handleSubmit} aria-label="Record entry" className="card template-form">
+        <h3 className="card-title">Record entry</h3>
+        <div className="field-grid">
+          <div className="field">
+            <label htmlFor="entry-date">Date</label>
+            <input
+              id="entry-date"
+              type="date"
+              className="input"
+              value={date}
+              onChange={(event) => setDate(event.target.value)}
+              required
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="entry-value">Value ({template.unit})</label>
+            <input
+              id="entry-value"
+              type="number"
+              step="0.01"
+              className="input"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              required
+            />
+          </div>
+        </div>
+        <div className="template-form__actions">
+          <button type="submit" className="btn btn--primary" disabled={submitting}>
+            Record
+          </button>
+        </div>
+        {formError && (
+          <p role="alert" className="error-box">
+            {formError}
+          </p>
+        )}
+      </form>
+
+      <h3 className="section-subtitle">History</h3>
+      {entries.length === 0 ? (
+        <p className="status-message">No entries yet.</p>
+      ) : (
+        <table className="card history-table" aria-label="Entry history">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                <td>{entry.date}</td>
+                <td>
+                  {entry.value} {template.unit}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}

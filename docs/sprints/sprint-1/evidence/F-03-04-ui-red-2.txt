@@ -1,0 +1,856 @@
+
+ RUN  v5.1.0 ~/Developer/GitHub/habit-activity-tracker/frontend
+
+ ✓ src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15a shows a loading message, then the Participant's goals with template, target and dates 43ms
+ ✓ src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15b shows an error message if GET /goals fails, not endless loading 28ms
+ ✓ src/App.test.tsx > on page load > TEST-01.16a shows the login form when GET /auth/me is unauthenticated 65ms
+ ✓ src/App.test.tsx > on page load > TEST-01.16b shows the signed-in view directly when GET /auth/me is authenticated 11ms
+ ✓ src/App.test.tsx > login form > TEST-01.12 renders email and password fields and a submit button 12ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 31ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 26ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls 8ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template 23ms
+ × src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18a shows the history in date order and the progress from the server 90ms
+   → expected [ 'Date', 'Value', 'Target met' ] to deeply equal [ 'Date', 'Value' ]
+ ✓ src/Goals.test.tsx > AC-03.16 Participant-only section > TEST-03.16 a Participant sees the Goals section; a Manager does not and never calls GET /goals 52ms
+ ✓ src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18b (a) shows a loading message while pending; (b) an error message if GET entries fails 19ms
+ ✓ src/GoalDetail.test.tsx > AC-04.19 empty history > TEST-04.19 shows an empty-history message and 0% 8ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 119ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 91ms
+ ✓ src/App.test.tsx > login form > TEST-01.13 shows the server's message on a 401 137ms
+ ✓ src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20a prefills today, sends a numeric value, inserts by date and refreshes progress from the server 123ms
+ ✓ src/Goals.test.tsx > AC-03.17 create flow > TEST-03.17 sends POST /goals with numeric templateId and dailyTarget and date strings; the goal appears 139ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed 83ms
+ ✓ src/App.test.tsx > login form > TEST-01.14 shows the signed-in email and role and a Logout button on a successful login 108ms
+ ✓ src/App.test.tsx > logout > TEST-01.15 calls POST /auth/logout and returns to the form 18ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17a shows a loading message while GET /auth/me is pending 6ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading 5ms
+ ✓ src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18a shows a 409 overlap message verbatim and keeps what was typed 101ms
+ ✓ src/App.test.tsx > in-flight login request > TEST-01.18 disables the submit button while the login request is in flight 103ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values 42ms
+ ✓ src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 47ms
+ ✓ src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form 9ms
+ ✓ src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight 71ms
+ ✓ src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18b shows a 400 range message verbatim, keeps the target and adds no goal 102ms
+ ✓ src/Goals.test.tsx > AC-03.19 session expiry > TEST-03.19 rendered through App, a 401 from GET /goals shows the login form 7ms
+ ✓ src/Goals.test.tsx > AC-03.20 in-flight submit > TEST-03.20 disables the create button while POST /goals is in flight 96ms
+ × src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20c a saved entry stays saved when only the progress refresh fails 1082ms
+   → Unable to find an element with the text: Entry saved, but progress could not be refreshed.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m20[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m1[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 20%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-03"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"error-box"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0mnetwork error[0m
+        [36m</p>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<table[39m
+        [33maria-label[39m=[32m"Entry history"[39m
+        [33mclass[39m=[32m"card history-table"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mValue[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mTarget met[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-01[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m5[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-03[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m7.25[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+        [36m</tbody>[39m
+      [36m</table>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m20[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m1[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 20%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-03"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"error-box"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0mnetwork error[0m
+        [36m</p>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<table[39m
+        [33maria-label[39m=[32m"Entry history"[39m
+        [33mclass[39m=[32m"card history-table"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mValue[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mTarget met[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-01[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m5[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-03[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m7.25[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+        [36m</tbody>[39m
+      [36m</table>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20b Open on a goal shows its goal screen and Back returns to the goal list 40ms
+ ✓ src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21a shows a 409 duplicate message verbatim, keeps the form and leaves the history unchanged 59ms
+ ✓ src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21b shows a 400 future-date message verbatim and keeps the form 58ms
+ ✓ src/GoalDetail.test.tsx > AC-04.22 session expiry > TEST-04.22 rendered through App, a 401 from GET progress shows the login form 35ms
+ ✓ src/GoalDetail.test.tsx > AC-04.23 in-flight submit > TEST-04.23 disables the record button while POST entries is in flight 80ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18a shows the history in date order and the progress from the server
+AssertionError: expected [ 'Date', 'Value', 'Target met' ] to deeply equal [ 'Date', 'Value' ]
+
+- Expected
++ Received
+
+  [
+    "Date",
+    "Value",
++   "Target met",
+  ]
+
+ ❯ src/GoalDetail.test.tsx:65:21
+     63|       .getAllByRole("columnheader")
+     64|       .map((h) => h.textContent);
+     65|     expect(headers).toEqual(["Date", "Value"]);
+       |                     ^
+     66|   });
+     67|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20c a saved entry stays saved when only the progress refresh fails
+TestingLibraryElementError: Unable to find an element with the text: Entry saved, but progress could not be refreshed.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m20[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m1[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 20%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-03"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"error-box"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0mnetwork error[0m
+        [36m</p>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<table[39m
+        [33maria-label[39m=[32m"Entry history"[39m
+        [33mclass[39m=[32m"card history-table"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mValue[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mTarget met[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-01[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m5[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-03[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m7.25[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+        [36m</tbody>[39m
+      [36m</table>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m20[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m1[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 20%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-03"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"error-box"[39m
+          [33mrole[39m=[32m"alert"[39m
+        [36m>[39m
+          [0mnetwork error[0m
+        [36m</p>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<table[39m
+        [33maria-label[39m=[32m"Entry history"[39m
+        [33mclass[39m=[32m"card history-table"[39m
+      [36m>[39m
+        [36m<thead>[39m
+          [36m<tr>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mValue[0m
+            [36m</th>[39m
+            [36m<th[39m
+              [33mscope[39m=[32m"col"[39m
+            [36m>[39m
+              [0mTarget met[0m
+            [36m</th>[39m
+          [36m</tr>[39m
+        [36m</thead>[39m
+        [36m<tbody>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-01[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m5[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+          [36m<tr>[39m
+            [36m<td>[39m
+              [0m2026-11-03[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0m7.25[0m
+              [0m [0m
+              [0mkm[0m
+            [36m</td>[39m
+            [36m<td>[39m
+              [0mYes[0m
+            [36m</td>[39m
+          [36m</tr>[39m
+        [36m</tbody>[39m
+      [36m</table>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:152:25
+    150|     const form = await submitEntry(user, "2026-11-03", "7.25");
+    151|
+    152|     expect(await screen.findByText("Entry saved, but progress could no…
+       |                         ^
+    153|     expect(historyDates()).toEqual(["2026-11-01", "2026-11-03"]);
+    154|     expect(within(form).queryByRole("alert")).not.toBeInTheDocument();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  2 failed | 36 passed (38)
+   Start at  21:50:55
+   Duration  2.59s (tests 47%, environment 37%, setup 7%, import 6%, transform 3%)
+

@@ -112,8 +112,12 @@ database constraint (system SDS §3).
 
 ### 3.3 UI
 
-Not part of this contract version. The goal screens are added in a later version together with the
-F-04 entry and progress screens, tracked in Issue #26.
+Added in v1.2 (Issue #26). A signed-in Participant sees a **Goals** section under the template list,
+with a create form (template select, daily target with step 0.01, start and end date inputs) and a
+list of their own goals (template name, daily target with the template unit, start to end date),
+each with an **Open** control that shows the F-04 goal screen. A Manager does not see the Goals
+section. Server messages are shown as returned; a `401` returns to the login screen. The UI is a
+convenience; the API enforces every rule.
 
 ## 4. Acceptance criteria
 
@@ -133,6 +137,12 @@ F-04 entry and progress screens, tracked in Issue #26.
 | AC-03.12 | `GET /goals/:id` returns the owner's goal with 200; another Participant's goal and a non-existent id return the same 404 (status, code and message); a malformed id returns 400 `Invalid goal id.` | FR-06, BR-08 |
 | AC-03.13 | After a Manager changes a template's range, an existing goal on that template is unchanged (same `dailyTarget`), and a new goal is validated against the new range. | SRS D-06 |
 | AC-03.14 | The check order of Behaviour 4 holds when a request has several faults: 401 before 400, 403 before 400, 404 before BR-05 400, and BR-05 400 before BR-04 409. | NFR-02, NFR-05, BR-08 |
+| AC-03.15 | A signed-in Participant sees their own goals with template name, daily target and unit, and dates; a loading message is shown while they are fetched, and an error message if the request fails. | FR-06 |
+| AC-03.16 | Only a Participant sees the Goals section; a Manager does not. | BR-06, FR-06 |
+| AC-03.17 | Creating a goal sends `POST /goals` with `templateId` and `dailyTarget` as JSON numbers and both dates as `YYYY-MM-DD`; the new goal appears in the list. | FR-06 |
+| AC-03.18 | A 400, 404 or 409 from `POST /goals` is shown with the server's message verbatim, and the form keeps what was typed. | BR-04, BR-05, NFR-05 |
+| AC-03.19 | A `401` from any goal request returns the user to the login screen. | NFR-02 |
+| AC-03.20 | The create button is disabled while the request is in flight. | NFR-05 |
 
 ## 5. Software test specification (STS)
 
@@ -198,7 +208,23 @@ so a 404 from a missing route cannot make them pass.
 | TEST-03.14d | AC-03.14 | **control** `P1` posts `B` with `startDate` `"2026-11-30"`, `endDate` `"2026-11-01"` (400 `DATES`); then the same dates with `templateId` 99999 | combined request gives 404 `NOT_FOUND` `TPL404` (not 400); nothing stored |
 | TEST-03.14e | AC-03.14 | `P1` has a goal on `T` 2026-11-01..2026-11-30; **control** `P1` posts `T` 2026-11-15..2026-12-15 with `dailyTarget` 5 (409 `OVERLAP`); then the same range with `dailyTarget` 999 | combined request gives 400 `VALIDATION_ERROR` `RANGE` (not 409); still one goal |
 
-### 5.1 Expected F-05 state after this feature
+### 5.2 Frontend tests
+
+Component tests (Vitest + React Testing Library) in `frontend/src/Goals.test.tsx`, with `fetch`
+mocked per test. Templates: `T` Running (km, 0–50), `T2` Reading (minutes, 0–300).
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-03.15a | AC-03.15 | `GET /goals` left pending, then resolved with one goal on `T` | a loading message is shown first; then the goal row shows `Running`, `5 km` and `2026-11-01 → 2026-11-30`; the loading message is gone |
+| TEST-03.15b | AC-03.15 | `GET /goals` rejected | an error message (`role="alert"`) is shown, not an endless loading state |
+| TEST-03.16 | AC-03.16 | `App` rendered as a Participant, then (fresh render) as a Manager; `GET /templates` and `GET /goals` return lists | Participant: a `Goals` heading and the create-goal form are shown; Manager: neither is shown and `GET /goals` is never called |
+| TEST-03.17 | AC-03.17 | Participant selects `T2`, types target `2.5`, start `2026-11-01`, end `2026-11-30`, submits; `POST /goals` returns 201 | `POST /goals` called once with `{ templateId: 2, dailyTarget: 2.5, startDate: "2026-11-01", endDate: "2026-11-30" }` (numbers are JSON numbers); the new goal appears in the list |
+| TEST-03.18a | AC-03.18 | `POST /goals` mocked to 409 `You already have a goal for this template that overlaps these dates.` | that exact message is shown; the target and date fields still hold what was typed |
+| TEST-03.18b | AC-03.18 | `POST /goals` mocked to 400 `Daily target must be within the template range.` | that exact message is shown; the target field still holds what was typed; no goal is added |
+| TEST-03.19 | AC-03.19 | `App` as a Participant; `GET /goals` mocked to 401 | the login form is shown |
+| TEST-03.20 | AC-03.20 | `POST /goals` left pending | the create button is disabled until the request resolves |
+
+### 5.3 Expected F-05 state after this feature
 
 The F-05 tests that exercise only F-03 endpoints turn green: TEST-05.1c, 05.3a, 05.3b, 05.3c, 05.4a,
 05.6, 05.7a (7 tests). The other 12 stay red because the F-04 endpoints are still missing, each
@@ -215,12 +241,15 @@ the exact counts recorded in the green evidence.
       `docs/sprints/sprint-1/evidence/`.
 - [ ] Implementation makes all TEST-03.* pass (green), with the passing output saved.
 - [ ] `npm test` in `backend/` from a clean checkout: all F-01, F-02 and TEST-03.* tests pass, the 7
-      F-05 tests in §5.1 pass, and exactly the 12 F-05 tests listed in §5.1 are red for the stated reason.
+      F-05 tests in §5.3 pass, and exactly the 12 F-05 tests listed in §5.3 are red for the stated reason.
 - [ ] No existing test file is edited.
 - [ ] `CONFLICT` is added to the shared `ErrorCode` type used by the error handler.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [ ] (v1.2) TEST-03.15 to TEST-03.20 are committed red before the goal screens, then green;
+      `npm test` in `frontend/` passes; screenshots of the goal journey are saved under
+      `docs/sprints/sprint-1/evidence/ui-goals/`.
 
 ## 7. Version history
 
@@ -228,3 +257,4 @@ the exact counts recorded in the green evidence.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-07 | Initial contract | Written before implementation |
 | 1.1 | 2026-11-07 | Check order tested (AC-03.14, TEST-03.14a to e, with positive controls); `endDate` before `startDate` moved from the 400 shape step to BR-05 after the template 404, with its own message; exact code and message (including F-01's 401/403 messages) and "nothing stored" in every rejection test; D-09 (past start date) added to the SRS, `dailyTarget` 0/negative and "no rule depends on today" stated; 5 concurrent requests in TEST-03.10; 0.07/1.15, `templateId` -1, array/null body and timestamp date cases; TEST-03.8c uses 2099; expected F-05 red set listed (§5.1); UI tracked in Issue #26 | PR #25 review |
+| 1.2 | 2026-11-07 | Added §3.3 UI, AC-03.15 to AC-03.20 and TEST-03.15 to TEST-03.20 (§5.2, frontend component tests): own goal list with loading/error states, Participant-only section, create flow with numeric JSON, verbatim 400/404/409 with the form kept, 401 returns to login, disabled submit while in flight; F-05 section renumbered §5.3 | goal UI, Issue #26 |
