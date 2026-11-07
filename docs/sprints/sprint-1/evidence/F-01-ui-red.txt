@@ -1,0 +1,277 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:24). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+ ❯ src/App.test.tsx (6 tests | 6 failed) 6082ms
+   ❯ on page load (2)
+     × shows the login form when GET /auth/me is unauthenticated 1026ms
+     × shows the signed-in view directly when GET /auth/me is authenticated 1010ms
+   ❯ login form (3)
+     × renders email and password fields and a submit button 1011ms
+     × shows the server's message on a 401 1014ms
+     × shows the signed-in email and role and a Logout button on a successful login 1009ms
+   ❯ logout (1)
+     × calls POST /auth/logout and returns to the form 1009ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.test.tsx > on page load > shows the login form when GET /auth/me is unauthenticated
+TestingLibraryElementError: Unable to find a label with the text of: /email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:51:25
+     49|     render(<App />);
+     50|
+     51|     expect(await screen.findByLabelText(/email/i)).toBeInTheDocument();
+       |                         ^
+     52|     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+     53|     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  src/App.test.tsx > on page load > shows the signed-in view directly when GET /auth/me is authenticated
+TestingLibraryElementError: Unable to find an element with the text: /p1@example.com/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:63:25
+     61|     render(<App />);
+     62|
+     63|     expect(await screen.findByText(/p1@example.com/)).toBeInTheDocumen…
+       |                         ^
+     64|     expect(screen.getByText(/participant/i)).toBeInTheDocument();
+     65|     expect(screen.getByRole("button", { name: /log ?out/i })).toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  src/App.test.tsx > login form > renders email and password fields and a submit button
+TestingLibraryElementError: Unable to find a label with the text of: /email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:78:25
+     76|     render(<App />);
+     77|
+     78|     expect(await screen.findByLabelText(/email/i)).toBeInTheDocument();
+       |                         ^
+     79|     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+     80|     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  src/App.test.tsx > login form > shows the server's message on a 401
+TestingLibraryElementError: Unable to find a label with the text of: /email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:94:34
+     92|     render(<App />);
+     93|
+     94|     await user.type(await screen.findByLabelText(/email/i), "p1@exampl…
+       |                                  ^
+     95|     await user.type(screen.getByLabelText(/password/i), "wrong-passwor…
+     96|     await user.click(screen.getByRole("button", { name: /log in/i }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  src/App.test.tsx > login form > shows the signed-in email and role and a Logout button on a successful login
+TestingLibraryElementError: Unable to find a label with the text of: /email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:111:34
+    109|     render(<App />);
+    110|
+    111|     await user.type(await screen.findByLabelText(/email/i), "p1@exampl…
+       |                                  ^
+    112|     await user.type(screen.getByLabelText(/password/i), "correct-passw…
+    113|     await user.click(screen.getByRole("button", { name: /log in/i }));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  src/App.test.tsx > logout > calls POST /auth/logout and returns to the form
+TestingLibraryElementError: Unable to find role="button" and name `/log ?out/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+      [36m<p>[39m
+        [0mSprint 1 skeleton — UI not implemented yet.[0m
+      [36m</p>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:132:35
+    130|     render(<App />);
+    131|
+    132|     await user.click(await screen.findByRole("button", { name: /log ?o…
+       |                                   ^
+    133|
+    134|     await waitFor(() => expect(logoutHandler).toHaveBeenCalledTimes(1)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  00:37:14
+   Duration  6.76s (tests 92%, environment 6%, setup 1%, import 1%)
+

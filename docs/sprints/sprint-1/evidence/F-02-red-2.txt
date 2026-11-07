@@ -1,0 +1,38 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/templates.test.ts (28 tests | 1 failed) 8350ms
+   ❯ PUT /templates/:id (7)
+     × TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range 292ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/templates.test.ts > PUT /templates/:id > TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ tests/templates.test.ts:332:24
+    330|       .send(VALID_TEMPLATE);
+    331|
+    332|     expect(res.status).toBe(400);
+       |                        ^
+    333|     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    334|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 43 passed (44)
+   Start at  23:48:09
+   Duration  12.07s (tests 96%, import 3%)
+

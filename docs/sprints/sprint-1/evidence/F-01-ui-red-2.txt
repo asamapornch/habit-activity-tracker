@@ -1,0 +1,138 @@
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+ ❯ src/App.test.tsx (9 tests | 3 failed) 2354ms
+   ❯ loading and error states on page load (2)
+     × TEST-01.17a shows a loading message while GET /auth/me is pending 1011ms
+     × TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading 1006ms
+   ❯ in-flight login request (1)
+     × TEST-01.18 disables the submit button while the login request is in flight 112ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/App.test.tsx > loading and error states on page load > TEST-01.17a shows a loading message while GET /auth/me is pending
+TestingLibraryElementError: Unable to find an element with the text: /loading/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:153:25
+    151|     render(<App />);
+    152|
+    153|     expect(await screen.findByText(/loading/i)).toBeInTheDocument();
+       |                         ^
+    154|
+    155|     resolveMe(
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/App.test.tsx > loading and error states on page load > TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<main>[39m
+      [36m<h1>[39m
+        [0mHabit & Activity Tracker[0m
+      [36m</h1>[39m
+    [36m</main>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/App.test.tsx:171:25
+    169|     render(<App />);
+    170|
+    171|     expect(await screen.findByRole("alert")).toBeInTheDocument();
+       |                         ^
+    172|     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    173|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/App.test.tsx > in-flight login request > TEST-01.18 disables the submit button while the login request is in flight
+Error: [2mexpect([22m[31melement[39m[2m).toBeDisabled()[22m
+
+Received element is not disabled:
+  [31m<button
+  type="submit"
+/>[39m
+ ❯ src/App.test.tsx:195:61
+    193|     await user.click(screen.getByRole("button", { name: /log in/i }));
+    194|
+    195|     expect(screen.getByRole("button", { name: /log in/i })).toBeDisabl…
+       |                                                             ^
+    196|
+    197|     resolveLogin(jsonResponse(200, { id: 1, email: "p1@example.com", r…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯ Unhandled Rejection ⎯⎯⎯⎯⎯
+Error: network error
+ ❯ src/App.test.tsx:166:34
+    164|     vi.stubGlobal(
+    165|       "fetch",
+    166|       vi.fn(() => Promise.reject(new Error("network error"))),
+       |                                  ^
+    167|     );
+    168|
+ ❯ Mock node_modules/vitest/dist/chunks/spy.DDMXghXv.js:353:40
+ ❯ getCurrentUser src/api.ts:36:21
+ ❯ src/App.tsx:11:5
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:28656:20
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:1048:13
+ ❯ commitHookEffectListMount node_modules/react-dom/cjs/react-dom-client.development.js:13748:29
+ ❯ commitHookPassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:13835:11
+ ❯ commitPassiveMountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:16906:13
+ ❯ recursivelyTraversePassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:16851:13
+
+This error originated in "src/App.test.tsx" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.
+The last test to run before this error was "TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading". This means either:
+- the error was thrown while Vitest was running this test, or
+- the error was thrown after the test completed, and this was the most recent test at that point.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 6 passed (9)
+     Errors  1 error
+   Start at  00:58:34
+   Duration  2.98s (tests 82%, environment 14%, setup 2%, import 2%)
+
