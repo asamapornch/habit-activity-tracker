@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /Users/tnnntst/Developer/GitHub/habit-activity-tracker/backend
+
+
+ Test Files  7 passed (7)
+      Tests  152 passed (152)
+   Start at  19:35:23
+   Duration  59.69s (tests 97%, import 2%)
+
