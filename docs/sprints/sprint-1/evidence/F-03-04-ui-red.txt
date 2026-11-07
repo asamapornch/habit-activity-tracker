@@ -1,0 +1,1572 @@
+
+ RUN  v5.1.0 ~/Developer/GitHub/habit-activity-tracker/frontend
+
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 29ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 23ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls 6ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template 22ms
+ ✓ src/App.test.tsx > on page load > TEST-01.16a shows the login form when GET /auth/me is unauthenticated 60ms
+ ✓ src/App.test.tsx > on page load > TEST-01.16b shows the signed-in view directly when GET /auth/me is authenticated 10ms
+ ✓ src/App.test.tsx > login form > TEST-01.12 renders email and password fields and a submit button 8ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 92ms
+ ✓ src/App.test.tsx > login form > TEST-01.13 shows the server's message on a 401 110ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 80ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed 76ms
+ ✓ src/App.test.tsx > login form > TEST-01.14 shows the signed-in email and role and a Logout button on a successful login 94ms
+ ✓ src/App.test.tsx > logout > TEST-01.15 calls POST /auth/logout and returns to the form 20ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17a shows a loading message while GET /auth/me is pending 6ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading 5ms
+ ✓ src/App.test.tsx > in-flight login request > TEST-01.18 disables the submit button while the login request is in flight 97ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values 43ms
+ ✓ src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 44ms
+ ✓ src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form 8ms
+ ✓ src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight 68ms
+ × src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18a shows the history in date order and the progress from the server 1024ms
+   → Unable to find an element with the text: 2 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15a shows a loading message, then the Participant's goals with template, target and dates 1024ms
+   → Unable to find an element with the text: /loading goals/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18b (a) shows a loading message while pending; (b) an error message if GET entries fails 1006ms
+   → Unable to find an element with the text: /loading goal/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15b shows an error message if GET /goals fails, not endless loading 1008ms
+   → Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.19 empty history > TEST-04.19 shows an empty-history message and 0% 1009ms
+   → Unable to find an element with the text: No entries yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.16 Participant-only section > TEST-03.16 a Participant sees the Goals section; a Manager does not and never calls GET /goals 1020ms
+   → Unable to find role="heading" and name `/^goals$/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20 prefills today, sends a numeric value, inserts by date and refreshes progress from the server 1011ms
+   → Unable to find role="form" and name `/record entry/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.17 create flow > TEST-03.17 sends POST /goals with numeric templateId and dailyTarget and date strings; the goal appears 1006ms
+   → Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20b Open on a goal shows its goal screen and Back returns to the goal list 1008ms
+   → Unable to find role="button" and name `/open running goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18a shows a 409 overlap message verbatim and keeps what was typed 1010ms
+   → Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21a shows a 409 duplicate message verbatim, keeps the form and leaves the history unchanged 1005ms
+   → Unable to find an element with the text: 1 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18b shows a 400 range message verbatim, keeps the target and adds no goal 1004ms
+   → Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21b shows a 400 future-date message verbatim and keeps the form 1005ms
+   → Unable to find an element with the text: 0 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.19 session expiry > TEST-03.19 rendered through App, a 401 from GET /goals shows the login form 1008ms
+   → Unable to find a label with the text of: /^email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × src/Goals.test.tsx > AC-03.20 in-flight submit > TEST-03.20 disables the create button while POST /goals is in flight 1004ms
+   → Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.22 session expiry > TEST-04.22 rendered through App, a 401 from GET progress shows the login form 1020ms
+   → Unable to find role="button" and name `/open running goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × src/GoalDetail.test.tsx > AC-04.23 in-flight submit > TEST-04.23 disables the record button while POST entries is in flight 1006ms
+   → Unable to find an element with the text: 0 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18a shows the history in date order and the progress from the server
+TestingLibraryElementError: Unable to find an element with the text: 2 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:58:25
+     56|     renderDetail();
+     57|
+     58|     expect(await screen.findByText("2 of 5 days met")).toBeInTheDocume…
+       |                         ^
+     59|     expect(screen.getByText("40%")).toBeInTheDocument();
+     60|     expect(historyDates()).toEqual(["2026-11-01", "2026-11-03"]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18b (a) shows a loading message while pending; (b) an error message if GET entries fails
+TestingLibraryElementError: Unable to find an element with the text: /loading goal/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:71:25
+     69|     });
+     70|     renderDetail();
+     71|     expect(await screen.findByText(/loading goal/i)).toBeInTheDocument…
+       |                         ^
+     72|     entries.resolve(jsonResponse(200, []));
+     73|     expect(await screen.findByText("0 of 5 days met")).toBeInTheDocume…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.19 empty history > TEST-04.19 shows an empty-history message and 0%
+TestingLibraryElementError: Unable to find an element with the text: No entries yet.. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:96:25
+     94|     renderDetail();
+     95|
+     96|     expect(await screen.findByText("No entries yet.")).toBeInTheDocume…
+       |                         ^
+     97|     expect(screen.getByText("0%")).toBeInTheDocument();
+     98|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20 prefills today, sends a numeric value, inserts by date and refreshes progress from the server
+TestingLibraryElementError: Unable to find role="form" and name `/record entry/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:117:31
+    115|     renderDetail();
+    116|
+    117|     const form = await screen.findByRole("form", { name: /record entry…
+       |                               ^
+    118|     await waitFor(() => expect(within(form).getByLabelText(/date/i)).t…
+    119|     expect(within(form).getByLabelText(/value/i)).toHaveAttribute("ste…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20b Open on a goal shows its goal screen and Back returns to the goal list
+TestingLibraryElementError: Unable to find role="button" and name `/open running goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:142:35
+    140|     render(<Goals onUnauthorized={vi.fn()} />);
+    141|
+    142|     await user.click(await screen.findByRole("button", { name: /open r…
+       |                                   ^
+    143|     expect(await screen.findByText("1 of 5 days met")).toBeInTheDocume…
+    144|     expect(screen.getByRole("table", { name: /history/i })).toBeInTheD…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21a shows a 409 duplicate message verbatim, keeps the form and leaves the history unchanged
+TestingLibraryElementError: Unable to find an element with the text: 1 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:163:18
+    161|     const user = userEvent.setup();
+    162|     renderDetail();
+    163|     await screen.findByText("1 of 5 days met");
+       |                  ^
+    164|     const form = await submitEntry(user, "2026-11-01", "4");
+    165|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21b shows a 400 future-date message verbatim and keeps the form
+TestingLibraryElementError: Unable to find an element with the text: 0 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:182:18
+    180|     const user = userEvent.setup();
+    181|     renderDetail();
+    182|     await screen.findByText("0 of 5 days met");
+       |                  ^
+    183|     const form = await submitEntry(user, "2026-11-20", "3");
+    184|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.22 session expiry > TEST-04.22 rendered through App, a 401 from GET progress shows the login form
+TestingLibraryElementError: Unable to find role="button" and name `/open running goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:203:35
+    201|     const user = userEvent.setup();
+    202|     render(<App />);
+    203|     await user.click(await screen.findByRole("button", { name: /open r…
+       |                                   ^
+    204|
+    205|     expect(await screen.findByLabelText(/^email/i)).toBeInTheDocument(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-04.23 in-flight submit > TEST-04.23 disables the record button while POST entries is in flight
+TestingLibraryElementError: Unable to find an element with the text: 0 of 5 days met. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:221:18
+    219|     const user = userEvent.setup();
+    220|     renderDetail();
+    221|     await screen.findByText("0 of 5 days met");
+       |                  ^
+    222|     const form = await submitEntry(user, "2026-11-03", "6");
+    223|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15a shows a loading message, then the Participant's goals with template, target and dates
+TestingLibraryElementError: Unable to find an element with the text: /loading goals/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Goals.test.tsx:40:25
+     38|     render(<Goals onUnauthorized={vi.fn()} />);
+     39|
+     40|     expect(await screen.findByText(/loading goals/i)).toBeInTheDocumen…
+       |                         ^
+     41|     goals.resolve(jsonResponse(200, [G1]));
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15b shows an error message if GET /goals fails, not endless loading
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Goals.test.tsx:57:25
+     55|     render(<Goals onUnauthorized={vi.fn()} />);
+     56|
+     57|     expect(await screen.findByRole("alert")).toBeInTheDocument();
+       |                         ^
+     58|     expect(screen.queryByText(/loading goals/i)).not.toBeInTheDocument…
+     59|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.16 Participant-only section > TEST-03.16 a Participant sees the Goals section; a Manager does not and never calls GET /goals
+TestingLibraryElementError: Unable to find role="heading" and name `/^goals$/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Goals.test.tsx:70:25
+     68|     });
+     69|     render(<App />);
+     70|     expect(await screen.findByRole("heading", { name: /^goals$/i })).t…
+       |                         ^
+     71|     expect(await screen.findByRole("form", { name: /create goal/i })).…
+     72|     cleanup();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.17 create flow > TEST-03.17 sends POST /goals with numeric templateId and dailyTarget and date strings; the goal appears
+TestingLibraryElementError: Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ fillGoalForm src/Goals.test.tsx:22:29
+     20|
+     21| async function fillGoalForm(user: ReturnType<typeof userEvent.setup>, …
+     22|   const form = await screen.findByRole("form", { name: /create goal/i …
+       |                             ^
+     23|   await user.selectOptions(within(form).getByLabelText(/template/i), S…
+     24|   await user.type(within(form).getByLabelText(/daily target/i), target…
+ ❯ src/Goals.test.tsx:99:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18a shows a 409 overlap message verbatim and keeps what was typed
+TestingLibraryElementError: Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ fillGoalForm src/Goals.test.tsx:22:29
+     20|
+     21| async function fillGoalForm(user: ReturnType<typeof userEvent.setup>, …
+     22|   const form = await screen.findByRole("form", { name: /create goal/i …
+       |                             ^
+     23|   await user.selectOptions(within(form).getByLabelText(/template/i), S…
+     24|   await user.type(within(form).getByLabelText(/daily target/i), target…
+ ❯ src/Goals.test.tsx:126:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18b shows a 400 range message verbatim, keeps the target and adds no goal
+TestingLibraryElementError: Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ fillGoalForm src/Goals.test.tsx:22:29
+     20|
+     21| async function fillGoalForm(user: ReturnType<typeof userEvent.setup>, …
+     22|   const form = await screen.findByRole("form", { name: /create goal/i …
+       |                             ^
+     23|   await user.selectOptions(within(form).getByLabelText(/template/i), S…
+     24|   await user.type(within(form).getByLabelText(/daily target/i), target…
+ ❯ src/Goals.test.tsx:145:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.19 session expiry > TEST-03.19 rendered through App, a 401 from GET /goals shows the login form
+TestingLibraryElementError: Unable to find a label with the text of: /^email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/Goals.test.tsx:164:25
+    162|     render(<App />);
+    163|
+    164|     expect(await screen.findByLabelText(/^email/i)).toBeInTheDocument(…
+       |                         ^
+    165|     expect(screen.getByLabelText(/^password/i)).toBeInTheDocument();
+    166|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯
+
+ FAIL  src/Goals.test.tsx > AC-03.20 in-flight submit > TEST-03.20 disables the create button while POST /goals is in flight
+TestingLibraryElementError: Unable to find role="form" and name `/create goal/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div />[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ fillGoalForm src/Goals.test.tsx:22:29
+     20|
+     21| async function fillGoalForm(user: ReturnType<typeof userEvent.setup>, …
+     22|   const form = await screen.findByRole("form", { name: /create goal/i …
+       |                             ^
+     23|   await user.selectOptions(within(form).getByLabelText(/template/i), S…
+     24|   await user.type(within(form).getByLabelText(/daily target/i), target…
+ ❯ src/Goals.test.tsx:180:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯
+
+
+ Test Files  2 failed | 2 passed (4)
+      Tests  17 failed | 20 passed (37)
+   Start at  20:57:57
+   Duration  10.00s (tests 85%, environment 10%, setup 2%, import 1%, transform 1%)
+
