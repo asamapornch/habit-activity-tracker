@@ -1,0 +1,161 @@
+
+ RUN  v5.1.0 /Users/tnnntst/Developer/GitHub/habit-activity-tracker/backend
+
+ ✓ tests/entries.test.ts > AC-04.1 record an entry > TEST-04.1a owner records an entry and receives 201 with the stored entry 496ms
+ ✓ tests/entries.test.ts > AC-04.1 record an entry > TEST-04.1b accepts two-decimal values 0.07, 1.15 and 2.5 446ms
+ ✓ tests/entries.test.ts > AC-04.2 anonymous access > TEST-04.2 no cookie: POST entries, GET entries, GET progress each return 401 413ms
+ ✓ tests/entries.test.ts > AC-04.3 Manager is stopped at the role gate > TEST-04.3a M POST entries returns 403 and stores nothing 423ms
+ ✓ tests/entries.test.ts > AC-04.3 Manager is stopped at the role gate > TEST-04.3b M GET entries and GET progress return 403 408ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4a {} returns 400 and stores nothing 412ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4b an unknown field returns 400 and stores nothing 413ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4c value as a numeric string returns 400 and stores nothing 420ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4d value with three decimals returns 400 and stores nothing 404ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4e slashes, timestamp and impossible dates return 400 and store nothing 417ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4f a JSON array or null body returns 400 and stores nothing 417ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4g malformed goal ids (abc, 0, 99999999999) return 400 on all three endpoints 419ms
+ ✓ tests/entries.test.ts > AC-04.5 ownership (BR-08) > TEST-04.5a control P1 posts 201; P2 gets identical 404 on G1 and a missing goal 432ms
+ ✓ tests/entries.test.ts > AC-04.5 ownership (BR-08) > TEST-04.5b control P1 reads entries and progress; P2 gets identical 404s 432ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6a tomorrow returns 400 FUTURE 421ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6b today is accepted 412ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6c a date after today and after the goal end returns FUTURE, not OUTSIDE 423ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7a the day before the start returns 400 OUTSIDE 411ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7b a past date after the end returns 400 OUTSIDE 420ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7c the start and end dates are accepted 424ms
+ ✓ tests/entries.test.ts > AC-04.8 today follows Asia/Bangkok, not UTC or the server TZ (BR-03, A-02) > TEST-04.8a at 00:30 on 8 Nov in Bangkok an entry for 8 Nov is accepted 430ms
+ ✓ tests/entries.test.ts > AC-04.8 today follows Asia/Bangkok, not UTC or the server TZ (BR-03, A-02) > TEST-04.8b at 23:59 on 7 Nov in Bangkok an entry for 8 Nov is rejected as future 414ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9a above the maximum returns 400 RANGE 411ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9b below the minimum returns 400 RANGE 429ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9c values equal to the bounds are accepted 425ms
+ ✓ tests/entries.test.ts > AC-04.10 one entry per date (BR-01) > TEST-04.10a a second entry on the same date returns 409 and the first is unchanged 431ms
+ ✓ tests/entries.test.ts > AC-04.10 one entry per date (BR-01) > TEST-04.10b the same date on another goal is accepted 485ms
+ ✓ tests/entries.test.ts > AC-04.11 concurrent duplicates (BR-01) > TEST-04.11 five concurrent posts for one date give one 201 and four 409, no 500 442ms
+ ✓ tests/entries.test.ts > AC-04.12 template range change applies only to new entries (D-06) > TEST-04.12 existing entry unchanged; a new entry uses the new range 437ms
+ ✓ tests/entries.test.ts > AC-04.13 history > TEST-04.13a returns only this goal's entries ordered by date 408ms
+ ✓ tests/entries.test.ts > AC-04.13 history > TEST-04.13b no entries returns 200 [] 409ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14a 3 of 5 days met is 60 415ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14b 1 of 3 days rounds down to 33.33 429ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14c a value equal to the target counts as met 422ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14d today is the Bangkok date even when the server TZ differs 425ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14e 2 of 3 days rounds up to 66.67 416ms
+ ✓ tests/entries.test.ts > AC-04.15 progress before and after the goal period (BR-09) > TEST-04.15a before the goal starts everything is 0 412ms
+ ✓ tests/entries.test.ts > AC-04.15 progress before and after the goal period (BR-09) > TEST-04.15b after the goal ends daysElapsed stops at the end date 414ms
+ ✓ tests/entries.test.ts > AC-04.16 progress uses the stored daily target (D-06) > TEST-04.16 after the template range moves above the target, the stored target 5 is used 425ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17a no cookie with an invalid body returns 401, not 400 419ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17b Manager with an invalid body or malformed id returns 403, not 400 407ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17c control; a future date on a missing goal returns 404, not 400 420ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17d control; a date outside the goal with a bad value returns OUTSIDE (BR-03 before BR-02) 413ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17e control; a duplicate date with a bad value returns RANGE (BR-02 before BR-01) 426ms
+ ✓ tests/goals.test.ts > AC-03.1 create a goal > TEST-03.1a P1 creates a goal and receives 201 with the stored goal 533ms
+ ✓ tests/goals.test.ts > AC-03.1 create a goal > TEST-03.1b accepts two-decimal targets 2.5, 0.07 and 1.15 440ms
+ ✓ tests/goals.test.ts > AC-03.2 anonymous access > TEST-03.2 no cookie: POST /goals, GET /goals, GET /goals/1 each return 401 420ms
+ ✓ tests/goals.test.ts > AC-03.3 Manager is stopped at the role gate > TEST-03.3a M POST /goals returns 403 and stores nothing 410ms
+ ✓ tests/goals.test.ts > AC-03.3 Manager is stopped at the role gate > TEST-03.3b M GET /goals and GET /goals/:id of P1's goal return 403 423ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4a {} returns 400 and stores nothing 452ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4b an unknown field returns 400 and stores nothing 408ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4c templateId as a numeric string returns 400 and stores nothing 416ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4d dailyTarget as a numeric string returns 400 and stores nothing 408ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4e dailyTarget with three decimals returns 400 and stores nothing 417ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4f a non-YYYY-MM-DD startDate (slashes, timestamp) returns 400 and stores nothing 414ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4g an impossible calendar date returns 400 and stores nothing 417ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4h templateId 0, -1, 1.5 and 99999999999 return 400 (not 404 or 500) 414ms
+ ✓ tests/goals.test.ts > AC-03.4 body shape > TEST-03.4i a JSON array or null body returns 400 and stores nothing 416ms
+ ✓ tests/goals.test.ts > AC-03.5 end date not before start date (BR-05) > TEST-03.5a endDate before startDate returns 400 DATES and stores nothing 412ms
+ ✓ tests/goals.test.ts > AC-03.5 end date not before start date (BR-05) > TEST-03.5b a one-day goal (startDate = endDate) is accepted 418ms
+ ✓ tests/goals.test.ts > AC-03.6 template must exist > TEST-03.6 templateId 99999 returns 404 and stores nothing 422ms
+ ✓ tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7a target above the template maximum returns 400 RANGE 413ms
+ ✓ tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7b target below the template minimum returns 400 RANGE 471ms
+ ✓ tests/goals.test.ts > AC-03.7 daily target within template range (BR-05) > TEST-03.7c targets equal to the bounds (0, 300, -20) are accepted 480ms
+ ✓ tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8a a partly overlapping range returns 409 444ms
+ ✓ tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8b a range sharing only the last day returns 409 492ms
+ ✓ tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8c overlapping a future goal returns 409 523ms
+ ✓ tests/goals.test.ts > AC-03.8 overlapping goals on the same template (BR-04) > TEST-03.8d a range enclosing an existing goal returns 409 510ms
+ ✓ tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9a ranges that start the day after or end the day before are accepted 624ms
+ ✓ tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9b the same dates on another template are accepted 427ms
+ ✓ tests/goals.test.ts > AC-03.9 non-overlapping goals are accepted (BR-04) > TEST-03.9c another Participant may use the same template and dates 420ms
+ ✓ tests/goals.test.ts > AC-03.10 concurrent overlapping creates (BR-04) > TEST-03.10 five concurrent overlapping requests give one 201 and four 409 454ms
+ ✓ tests/goals.test.ts > AC-03.11 list own goals > TEST-03.11 each Participant lists only their own goals, ordered by id 437ms
+ ✓ tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12a the owner reads their goal with 200 425ms
+ ✓ tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12b control P1 gets 200; P2 gets identical 404 for P1's goal and a missing id 415ms
+ ✓ tests/goals.test.ts > AC-03.12 read one goal > TEST-03.12c malformed ids (abc, 0, 99999999999) return 400 417ms
+ ✓ tests/goals.test.ts > AC-03.13 template range change applies only to new goals (D-06) > TEST-03.13 existing goal keeps its target; a new goal uses the new range 422ms
+ ✓ tests/goals.test.ts > AC-03.14 check order > TEST-03.14a no cookie with an invalid body returns 401, not 400 420ms
+ ✓ tests/goals.test.ts > AC-03.14 check order > TEST-03.14b Manager with an invalid body or malformed id returns 403, not 400 407ms
+ ✓ tests/goals.test.ts > AC-03.14 check order > TEST-03.14c control; missing template with an out-of-range target returns 404, not 400 416ms
+ ✓ tests/goals.test.ts > AC-03.14 check order > TEST-03.14d control; missing template with endDate before startDate returns 404, not 400 447ms
+ ✓ tests/goals.test.ts > AC-03.14 check order > TEST-03.14e control; overlap with an out-of-range target returns 400, not 409 510ms
+ ✓ tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1a no cookie: GET /templates returns 401 UNAUTHENTICATED 587ms
+ ✓ tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1b no cookie: POST /templates and PUT /templates/:id each return 401 447ms
+ ✓ tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1c no cookie: POST /goals, GET /goals, GET /goals/:id each return 401 409ms
+ ✓ tests/access.test.ts > AC-05.1 anonymous access > TEST-05.1d no cookie: POST/GET entries and GET progress each return 401 459ms
+ ✓ tests/access.test.ts > AC-05.2 Participant cannot manage templates > TEST-05.2a Participant POST /templates returns 403 and stores nothing 490ms
+ ✓ tests/access.test.ts > AC-05.2 Participant cannot manage templates > TEST-05.2b Participant PUT /templates/:id returns 403 and the template is unchanged 535ms
+ ✓ tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3a Manager GET /goals/:id returns 403 (not 200, not 404) 482ms
+ ✓ tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3b Manager GET /goals returns 403 469ms
+ ✓ tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3c Manager POST /goals returns 403 and goal count is unchanged 415ms
+ ✓ tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3d Manager GET /goals/:id/entries and GET /goals/:id/progress each return 403 431ms
+ ✓ tests/access.test.ts > AC-05.3 Manager cannot use Participant-only endpoints > TEST-05.3e Manager POST /goals/:id/entries returns 403 and entry count is unchanged 414ms
+ ✓ tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4a owner P1 gets 200 (control); P2 gets 404 on the same GET /goals/:id 423ms
+ ✓ tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4b owner P1 gets 200 and lists E1 (control); P2 gets 404 on GET /goals/:id/entries 418ms
+ ✓ tests/access.test.ts > AC-05.4 / AC-05.8 ownership on reads > TEST-05.4c owner P1 gets 200 (control); P2 gets 404 on GET /goals/:id/progress 426ms
+ ✓ tests/access.test.ts > AC-05.5 / AC-05.8 ownership on writes > TEST-05.5 owner P1 gets 201 (control); P2 gets 404 and no entry is created 426ms
+ ✓ tests/access.test.ts > AC-05.6 own goals only > TEST-05.6 P1's list has only G1; P2's list has only their own goal G2 412ms
+ ✓ tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7a P2 control on GET /goals/:id then identical 404 for G1 and for a missing id 419ms
+ ✓ tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7b P2 control on GET /goals/:id/entries then identical 404 for G1 and for a missing id 421ms
+ ✓ tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7c P2 control on GET /goals/:id/progress then identical 404 for G1 and for a missing id 424ms
+ ✓ tests/access.test.ts > AC-05.7 identical response for another's goal and a missing goal > TEST-05.7d P2 control on POST /goals/:id/entries then identical 404 for G1 and for a missing id 418ms
+ ✓ tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9a control P1 gets 400 for a date before the goal start; P2 gets identical 404 on G1 and a missing id 425ms
+ ✓ tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9b control P1 gets 400 for a value above the template maximum; P2 gets identical 404 on G1 and a missing id 408ms
+ ✓ tests/access.test.ts > AC-05.9 ownership checked before goal-dependent validation > TEST-05.9c control P1 gets 409 for a date that already has an entry; P2 gets identical 404 on G1 and a missing id 418ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 331ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value 278ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.2 rejects a Participant with 403 and stores nothing 276ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3a GET /templates with no cookie returns 401 UNAUTHENTICATED 273ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3b POST /templates with no cookie returns 401 266ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3c PUT /templates/1 with no cookie returns 401 269ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4a rejects minValue equal to maxValue on create 272ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4b rejects minValue greater than maxValue on create 266ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4c rejects minValue greater than maxValue on update, leaving the template unchanged 287ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5a rejects an empty body and stores nothing 278ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5b rejects a whitespace-only name 272ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5c rejects a non-numeric minValue 272ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5d rejects a maxValue with more than two decimals 281ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5e rejects an unknown field 273ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5f rejects a name longer than 100 characters after trimming 280ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5g rejects a unit longer than 20 characters after trimming 273ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5h rejects a numeric string for minValue 271ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5i rejects a maxValue outside the allowed range 276ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5j accepts a negative minValue 269ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6a updates a template, keeps createdById, and GET reflects the change 281ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6b allows a different Manager to update, and createdById stays the original Manager's id 423ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.7 rejects a Participant with 403 and leaves the template unchanged 277ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8a returns 404 NOT_FOUND for a Manager updating a missing id 287ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8b returns 400 for a non-integer id 274ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8c returns 403 (not 404) for a Participant updating a missing id 269ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range 281ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9a returns both templates to a Manager, ordered by id ascending 280ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9b returns both templates to a Participant 290ms
+ ✓ tests/auth.test.ts > POST /auth/login > TEST-01.1 logs in with correct credentials, returns id/email/role, and sets an HttpOnly SameSite=Lax cookie 246ms
+ ✓ tests/auth.test.ts > POST /auth/login > TEST-01.2a returns 401 INVALID_CREDENTIALS for a wrong password 207ms
+ ✓ tests/auth.test.ts > POST /auth/login > TEST-01.2b returns the same 401 code and message for an unknown email 279ms
+ ✓ tests/auth.test.ts > POST /auth/login > TEST-01.7a returns 400 VALIDATION_ERROR for an empty body 139ms
+ ✓ tests/auth.test.ts > POST /auth/login > TEST-01.7b returns 400 for non-string fields and the server still answers a later request 139ms
+ ✓ tests/auth.test.ts > POST /auth/logout > TEST-01.3 invalidates the session so the exact captured login cookie later gets 401 from /auth/me 219ms
+ ✓ tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.4 rejects a protected route with no session (401 UNAUTHENTICATED) 141ms
+ ✓ tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.5a rejects a Participant on a manager-only route (403 FORBIDDEN) 206ms
+ ✓ tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.5b allows a Manager on a manager-only route 208ms
+ ✓ tests/auth.test.ts > requireAuth / requireRole middleware > TEST-01.9 rejects an anonymous request to a manager-only route with 401, not 403 140ms
+ ✓ tests/auth.test.ts > password storage > TEST-01.6 stores a bcrypt hash that differs from the plaintext and verifies with bcrypt 212ms
+ ✓ tests/auth.test.ts > GET /auth/me > TEST-01.8 returns the same identity as login, with no passwordHash 206ms
+ ✓ tests/auth.test.ts > session regeneration > TEST-01.10 issues a new session id on re-login and invalidates the old cookie 273ms
+ ✓ tests/auth.test.ts > error handling > TEST-01.11a returns 400 VALIDATION_ERROR for a malformed JSON body, with no stack trace or HTML 150ms
+ ✓ tests/auth.test.ts > error handling > TEST-01.11b returns 500 INTERNAL_ERROR for an unexpected server error, with no stack trace or HTML 138ms
+ ✓ tests/cors.test.ts > CORS > sends Access-Control-Allow-Origin and -Credentials for the configured FRONTEND_ORIGIN 35ms
+ ✓ tests/cors.test.ts > CORS > does not send Access-Control-Allow-Origin for a different Origin 6ms
+ ✓ tests/cors.test.ts > fail-fast on missing FRONTEND_ORIGIN > throws at import time if FRONTEND_ORIGIN is empty (config.ts treats unset the same way) 4ms
+ ✓ tests/health.test.ts > GET /health > responds with status ok 36ms
+
+ Test Files  7 passed (7)
+      Tests  152 passed (152)
+   Start at  19:38:06
+   Duration  58.44s (tests 98%, import 2%)
+

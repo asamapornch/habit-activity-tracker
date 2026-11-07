@@ -3,6 +3,7 @@ import { healthRouter } from "./routes/health.js";
 import { authRouter } from "./routes/auth.js";
 import { templatesRouter } from "./routes/templates.js";
 import { goalsRouter } from "./routes/goals.js";
+import { entriesRouter } from "./routes/entries.js";
 import { createSessionMiddleware } from "./lib/session.js";
 import { createCorsMiddleware } from "./lib/cors.js";
 
@@ -18,6 +19,7 @@ export function createApp() {
   app.use(authRouter);
   app.use(templatesRouter);
   app.use(goalsRouter);
+  app.use(entriesRouter);
 
   return app;
 }

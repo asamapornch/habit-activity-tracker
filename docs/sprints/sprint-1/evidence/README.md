@@ -62,3 +62,22 @@ hash.
 - Both runs used Node 22. An earlier attempt on Node 20 crashed Vitest's reporter
   (`Map.groupBy is not a function`) and another with the dev database stopped failed every test;
   both were discarded, not saved as evidence. README now says Node 22+.
+
+# F-04 evidence notes
+
+- `F-04-red.txt`: run for F-04 (entries, progress, history; contract v1.1) with
+  `backend/tests/entries.test.ts` committed and no entry/progress routes. Result:
+  `Test Files 2 failed | 5 passed (7)` / `Tests 56 failed | 96 passed (152)`: all 44 `TEST-04.*` plus the
+  12 F-05 tests that need F-04, every one an assertion mismatch (Express's default 404 instead of the
+  expected status or `error.code`), not a compile, config, clock or fixture error. Each test sets its
+  clock before logging in (8-hour session), so no test fails on an expired session.
+- `F-04-green.txt`: run after the routes. Result: `Test Files 7 passed (7)` / `Tests 152 passed (152)`.
+- Extra check, not saved as evidence: replacing the Asia/Bangkok "today" with the server's local date
+  makes `TEST-04.8a` and `TEST-04.14d` fail (they run with `TZ=America/Los_Angeles`), so the time-zone
+  tests do catch a local-time implementation. The code was restored before the green run.
+
+# F-05 evidence notes (Stage B)
+
+- `F-05-green.txt`: full suite after F-03 and F-04, run with `--reporter=verbose` so every test name
+  is listed. Result: `Test Files 7 passed (7)` / `Tests 152 passed (152)`; all 23 `TEST-05.*` pass.
+  `backend/tests/access.test.ts` is unchanged since PR #17.
