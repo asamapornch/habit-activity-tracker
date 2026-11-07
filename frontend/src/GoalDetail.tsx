@@ -29,6 +29,7 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
   const [value, setValue] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [refreshError, setRefreshError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -52,20 +53,26 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError(null);
+    setRefreshError(null);
     setSubmitting(true);
     try {
       const entry = await recordEntry(goal.id, { date, value: Number(value) });
       setEntries((current) => [...(current ?? []), entry].sort(byDate));
       setValue("");
-      setProgress(await getProgress(goal.id));
     } catch (err) {
-      if (isUnauthorized(err)) {
-        onUnauthorized();
-        return;
-      }
-      setFormError(errorMessage(err));
+      if (isUnauthorized(err)) onUnauthorized();
+      else setFormError(errorMessage(err));
+      return;
     } finally {
       setSubmitting(false);
+    }
+
+    // The entry is saved; a failed refresh must not look like a failed save.
+    try {
+      setProgress(await getProgress(goal.id));
+    } catch (err) {
+      if (isUnauthorized(err)) onUnauthorized();
+      else setRefreshError("Entry saved, but progress could not be refreshed.");
     }
   }
 
@@ -110,6 +117,11 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
           <div className="progress-bar__fill" style={{ width: `${Math.min(progress.progress, 100)}%` }} />
         </div>
         <p className="progress-card__today">Today (Asia/Bangkok): {progress.today}</p>
+        {refreshError && (
+          <p role="status" className="error-box">
+            {refreshError}
+          </p>
+        )}
       </div>
 
       <form onSubmit={handleSubmit} aria-label="Record entry" className="card template-form">
@@ -160,7 +172,6 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
             <tr>
               <th scope="col">Date</th>
               <th scope="col">Value</th>
-              <th scope="col">Target met</th>
             </tr>
           </thead>
           <tbody>
@@ -170,7 +181,6 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
                 <td>
                   {entry.value} {template.unit}
                 </td>
-                <td>{entry.value >= goal.dailyTarget ? "Yes" : "No"}</td>
               </tr>
             ))}
           </tbody>

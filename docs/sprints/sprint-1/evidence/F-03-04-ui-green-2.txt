@@ -1,0 +1,47 @@
+
+ RUN  v5.1.0 ~/Developer/GitHub/habit-activity-tracker/frontend
+
+ ✓ src/App.test.tsx > on page load > TEST-01.16a shows the login form when GET /auth/me is unauthenticated 77ms
+ ✓ src/App.test.tsx > on page load > TEST-01.16b shows the signed-in view directly when GET /auth/me is authenticated 23ms
+ ✓ src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18a shows the history in date order and the progress from the server 82ms
+ ✓ src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15a shows a loading message, then the Participant's goals with template, target and dates 37ms
+ ✓ src/Goals.test.tsx > AC-03.15 goal list > TEST-03.15b shows an error message if GET /goals fails, not endless loading 26ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 30ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 27ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls 11ms
+ ✓ src/GoalDetail.test.tsx > AC-04.18 history and progress > TEST-04.18b (a) shows a loading message while pending; (b) an error message if GET entries fails 24ms
+ ✓ src/GoalDetail.test.tsx > AC-04.19 empty history > TEST-04.19 shows an empty-history message and 0% 9ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template 34ms
+ ✓ src/Goals.test.tsx > AC-03.16 Participant-only section > TEST-03.16 a Participant sees the Goals section; a Manager does not and never calls GET /goals 53ms
+ ✓ src/App.test.tsx > login form > TEST-01.12 renders email and password fields and a submit button 8ms
+ ✓ src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20a prefills today, sends a numeric value, inserts by date and refreshes progress from the server 114ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 107ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 92ms
+ ✓ src/App.test.tsx > login form > TEST-01.13 shows the server's message on a 401 125ms
+ ✓ src/Goals.test.tsx > AC-03.17 create flow > TEST-03.17 sends POST /goals with numeric templateId and dailyTarget and date strings; the goal appears 125ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed 78ms
+ ✓ src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18a shows a 409 overlap message verbatim and keeps what was typed 101ms
+ ✓ src/Goals.test.tsx > AC-03.18 server errors > TEST-03.18b shows a 400 range message verbatim, keeps the target and adds no goal 87ms
+ ✓ src/Goals.test.tsx > AC-03.19 session expiry > TEST-03.19 rendered through App, a 401 from GET /goals shows the login form 7ms
+ ✓ src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20c a saved entry stays saved when only the progress refresh fails 79ms
+ ✓ src/GoalDetail.test.tsx > AC-04.20 record flow > TEST-04.20b Open on a goal shows its goal screen and Back returns to the goal list 28ms
+ ✓ src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21a shows a 409 duplicate message verbatim, keeps the form and leaves the history unchanged 61ms
+ ✓ src/App.test.tsx > login form > TEST-01.14 shows the signed-in email and role and a Logout button on a successful login 100ms
+ ✓ src/App.test.tsx > logout > TEST-01.15 calls POST /auth/logout and returns to the form 15ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17a shows a loading message while GET /auth/me is pending 6ms
+ ✓ src/App.test.tsx > loading and error states on page load > TEST-01.17b shows an error message if GET /auth/me fails outright, not endless loading 3ms
+ ✓ src/App.test.tsx > in-flight login request > TEST-01.18 disables the submit button while the login request is in flight 94ms
+ ✓ src/GoalDetail.test.tsx > AC-04.21 server errors > TEST-04.21b shows a 400 future-date message verbatim and keeps the form 54ms
+ ✓ src/GoalDetail.test.tsx > AC-04.22 session expiry > TEST-04.22 rendered through App, a 401 from GET progress shows the login form 21ms
+ ✓ src/GoalDetail.test.tsx > AC-04.23 in-flight submit > TEST-04.23 disables the record button while POST entries is in flight 53ms
+ ✓ src/Goals.test.tsx > AC-03.20 in-flight submit > TEST-03.20 disables the create button while POST /goals is in flight 92ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values 38ms
+ ✓ src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 46ms
+ ✓ src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form 5ms
+ ✓ src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight 65ms
+
+ Test Files  4 passed (4)
+      Tests  38 passed (38)
+   Start at  21:51:18
+   Duration  1.42s (environment 45%, tests 39%, setup 7%, import 5%, transform 3%, worker 1%)
+
