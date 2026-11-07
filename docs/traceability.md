@@ -80,4 +80,4 @@ F-05 `backend/tests/access.test.ts`.
 | Clock set before login; progress as a percentage rounded to two decimals (D-10) | F-04 v1.1, SRS D-10 | PR #29 review |
 | UI criteria for goals, entries and progress added | F-03 v1.2, F-04 v1.2 | PR #31 |
 | History shows no UI-side "target met"; saved entry survives a failed progress refresh | F-04 v1.3 | PR #31 review |
-| Sprint 2 and 3 requirements added to the baseline | SRS v1.1, D-11 | This PR |
+| Sprint 2 and 3 requirements added to the baseline; D-09 limited to goal creation | SRS v1.1, D-11 | PR #33 |
