@@ -120,11 +120,9 @@ database before every test; spec files run one at a time (`fileParallelism: fals
 share that one database. `frontend`'s suite runs once (Vitest + React Testing Library) with `fetch`
 mocked — it needs no backend or database running.
 
-**Expected result on `sprint-1-staging` right now:** the backend suite reports 12 failing tests,
-all in `backend/tests/access.test.ts` (F-05, Stage A). These are intentionally red — they exercise
-`/goals/:id/entries` and `/goals/:id/progress`, which belong to F-04 and are not merged yet (see
-`docs/sprints/sprint-1/F-05-access-control.md` §1.1 and `F-03-goals.md` §5.1). Everything else, and
-the whole frontend suite, should pass. If any other test fails, that's a real regression.
+**Expected result on `sprint-1-staging` right now:** the whole backend suite passes (152 tests,
+including all 23 F-05 access-control tests), and the whole frontend suite passes. Any failing test is
+a real regression.
 
 ## Branching & PR workflow
 
