@@ -9,7 +9,7 @@
 | Needed by | F-03, F-04, F-05 |
 | Owner | Student 1 |
 | Reviewer | Student 2 |
-| Status | Contract written before implementation |
+| Status | Implemented and merged into `sprint-1-staging` (PR #11, #12, #14, #21) |
 
 ## 1. Purpose
 
@@ -152,14 +152,14 @@ mocked per test.
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (separate earlier commit).
-- [ ] Tests TEST-02.* are committed and fail first (red), with the failing output saved.
-- [ ] Implementation makes all TEST-02.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` passes from a clean checkout, including all F-01 tests.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+- [x] This contract is committed before any implementation code (separate earlier commit).
+- [x] Tests TEST-02.* are committed and fail first (red), with the failing output saved.
+- [x] Implementation makes all TEST-02.* pass (green), with the passing output saved.
+- [x] `npm test` in `backend/` passes from a clean checkout, including all F-01 tests.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
-- [ ] `NOT_FOUND` is added to the shared `ErrorCode` type used by the error handler.
+- [x] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] `NOT_FOUND` is added to the shared `ErrorCode` type used by the error handler.
 
 ## 7. Version history
 
@@ -170,3 +170,4 @@ mocked per test.
 | 1.2 | 2026-11-06 | AC-02.8 now also rejects an id greater than 2147483647 (Postgres's 32-bit `integer` max) with 400, instead of letting it reach the database and surface as 500; added TEST-02.8d | PR #12 review |
 | 1.3 | 2026-11-07 | Added AC-02.13 to AC-02.20 and TEST-02.13 to TEST-02.20 (§5.2, frontend component tests): list with loading/error states, role-based controls, create/edit flows, verbatim validation errors with the form preserved, 401 returns to login, disabled submit button while in flight | template UI |
 | 1.4 | 2026-11-07 | Added TEST-02.16b (decimal Min/Max values sent as JSON numbers) and TEST-02.17b (verbatim 400 message and preserved values on update, not just create); clarified TEST-02.19 to render through the signed-in view rather than `Templates` standalone | PR #21 review |
+| 1.5 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |
