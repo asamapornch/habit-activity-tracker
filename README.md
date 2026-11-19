@@ -42,7 +42,7 @@ Example values for local development:
 ```bash
 DATABASE_URL="postgresql://habit:habit@localhost:5432/habit_tracker"
 DATABASE_URL_TEST="postgresql://habit:habit@localhost:5432/habit_tracker_test"
-SESSION_SECRET="some-long-random-string"
+SESSION_SECRET="replace-with-a-long-random-string"
 PORT=4000
 FRONTEND_ORIGIN="http://localhost:5173"
 VITE_API_URL="http://localhost:4000"
