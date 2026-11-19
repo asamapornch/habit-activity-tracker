@@ -1,5 +1,6 @@
 import express from "express";
 import { healthRouter } from "./routes/health.js";
+import { readyRouter } from "./routes/ready.js";
 import { authRouter } from "./routes/auth.js";
 import { templatesRouter } from "./routes/templates.js";
 import { goalsRouter } from "./routes/goals.js";
@@ -22,6 +23,7 @@ export function createApp() {
   app.use(express.json({ strict: false }));
   app.use(createSessionMiddleware());
   app.use(healthRouter);
+  app.use(readyRouter);
   app.use(authRouter);
   app.use(templatesRouter);
   app.use(goalsRouter);
