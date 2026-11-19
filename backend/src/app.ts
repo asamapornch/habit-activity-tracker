@@ -10,6 +10,12 @@ import { createCorsMiddleware } from "./lib/cors.js";
 export function createApp() {
   const app = express();
 
+  // Cloud Run terminates TLS and proxies over HTTP, adding exactly one
+  // X-Forwarded-* hop; trusting it (rather than `true`) lets Express compute
+  // req.secure/req.ip from that header without trusting a spoofable chain of
+  // arbitrary length.
+  app.set("trust proxy", 1);
+
   app.use(createCorsMiddleware());
   // strict: false so a JSON `null` or scalar body reaches the route and gets the
   // route's own 400 message (F-03 TEST-03.4i); malformed JSON is still a SyntaxError.
