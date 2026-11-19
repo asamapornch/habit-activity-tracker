@@ -9,7 +9,7 @@ import { createApp } from "../src/app.js";
 function buildSessionTestApp() {
   const app = createApp();
   app.get("/__test/touch-session", (req, res) => {
-    req.session.touched = true;
+    req.session.userId = 1;
     req.session.save(() => res.status(200).end());
   });
   return app;
