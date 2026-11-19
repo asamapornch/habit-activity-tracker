@@ -1,0 +1,13 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+
+ Test Files  13 passed (13)
+      Tests  165 passed (165)
+   Start at  23:58:32
+   Duration  63.85s (tests 97%, import 3%)
+

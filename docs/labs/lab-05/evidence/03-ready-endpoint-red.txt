@@ -1,0 +1,54 @@
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+ ❯ tests/ready.test.ts (2 tests | 2 failed) 77ms
+   ❯ GET /ready (2)
+     × responds 200 with status ready when the database answers 68ms
+     × responds 503 when the database does not answer 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ready.test.ts > GET /ready > responds 200 with status ready when the database answers
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/ready.test.ts:9:24
+      7|   it("responds 200 with status ready when the database answers", async…
+      8|     const res = await request(createApp()).get("/ready");
+      9|     expect(res.status).toBe(200);
+       |                        ^
+     10|     expect(res.body).toEqual({ status: "ready" });
+     11|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/ready.test.ts > GET /ready > responds 503 when the database does not answer
+AssertionError: expected 404 to be 503 // Object.is equality
+
+- Expected
++ Received
+
+- 503
++ 404
+
+ ❯ tests/ready.test.ts:18:24
+     16|     const res = await request(createApp()).get("/ready");
+     17|
+     18|     expect(res.status).toBe(503);
+       |                        ^
+     19|     expect(res.body).toEqual({ status: "not ready" });
+     20|     spy.mockRestore();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  23:42:07
+   Duration  454ms (import 55%, tests 21%, setup 11%, transform 10%, worker 3%)
+

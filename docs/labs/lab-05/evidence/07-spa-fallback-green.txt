@@ -1,0 +1,9 @@
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:51:38
+   Duration  338ms (import 36%, tests 34%, setup 17%, transform 12%, worker 1%)
+

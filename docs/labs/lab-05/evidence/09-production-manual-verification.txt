@@ -1,0 +1,25 @@
+Manual end-to-end verification against a real `npm run build` (frontend + backend),
+running the actual production entrypoint: NODE_ENV=production PORT=4111 npm start
+
+GET /                                  -> 200, serves frontend/dist/index.html
+GET /some/client/deep-link             -> 200, serves frontend/dist/index.html (SPA fallback)
+GET /health                            -> 200 {"status":"ok"}
+GET /ready                             -> 200 {"status":"ready"}  (SELECT 1 succeeded against DATABASE_URL)
+GET /goals/does-not-exist/sub          -> 404 {"error":{"code":"NOT_FOUND","message":"Not found."}}
+                                           (API's own JSON 404, not index.html, for an
+                                           unmatched path under a known API prefix)
+GET /assets/<real built asset>         -> 200 text/css; charset=UTF-8
+
+Server log:
+> habit-tracker-backend@0.1.0 start
+> node dist/server.js
+
+Backend listening on port 4111
+
+This also caught and fixed a pre-existing bug unrelated to this PR's feature work:
+tsconfig.json's rootDir "." + include ["src","prisma","tests"] made `tsc` emit to
+dist/src/server.js, not dist/server.js, so "start": "node dist/server.js" had never
+actually run successfully. Fixed by adding tsconfig.build.json (rootDir/include
+narrowed to "src") used by the `build` script, and a new `typecheck` script
+(tsc -p tsconfig.json --noEmit) that keeps the original full type-check coverage
+over tests/ and prisma/ without emitting them into the production image.

@@ -1,0 +1,13 @@
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  38 passed (38)
+   Start at  23:59:36
+   Duration  1.44s (tests 43%, environment 43%, setup 7%, import 6%, transform 2%)
+
