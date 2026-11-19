@@ -7,6 +7,8 @@ import { goalsRouter } from "./routes/goals.js";
 import { entriesRouter } from "./routes/entries.js";
 import { createSessionMiddleware } from "./lib/session.js";
 import { createCorsMiddleware } from "./lib/cors.js";
+import { mountFrontend } from "./lib/staticFrontend.js";
+import { config } from "./lib/config.js";
 
 export function createApp() {
   const app = express();
@@ -28,6 +30,10 @@ export function createApp() {
   app.use(templatesRouter);
   app.use(goalsRouter);
   app.use(entriesRouter);
+  // Must come last: a no-op unless frontend/dist was built into this image
+  // (see config.frontendDistPath), and only ever reached by a request none
+  // of the routers above already handled.
+  mountFrontend(app, config.frontendDistPath);
 
   return app;
 }

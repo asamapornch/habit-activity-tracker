@@ -12,4 +12,8 @@ export const config = {
   databaseUrl: isTest
     ? process.env.DATABASE_URL_TEST ?? ""
     : process.env.DATABASE_URL ?? "",
+  // The single-container production image builds the frontend to
+  // frontend/dist (see mountFrontend in lib/staticFrontend.ts); in local dev
+  // that directory doesn't exist and mountFrontend is a no-op.
+  frontendDistPath: path.resolve(import.meta.dirname, "../../../frontend/dist"),
 };
