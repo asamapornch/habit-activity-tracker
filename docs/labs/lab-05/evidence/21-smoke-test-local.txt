@@ -1,0 +1,81 @@
+deploy/smoke_test.py run locally against a stub HTTP server that answers like
+our app (/health, /ready, /, /health/<x> JSON 404, /auth/login, /auth/me, /auth/logout).
+Not the real Cloud Run service: the first real run is the deploy workflow log
+after the release PR.
+Python 3.15.2; SMOKE_DELAY_SECONDS=0.5 SMOKE_MAX_WAIT_SECONDS=3 to keep it short.
+Login values are fake local test values; the password is never printed.
+
+$ # pass, login skipped
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+4/4 checks passed
+exit code: 0, took 0.1 s
+
+$ # pass, login on (logs out at the end)
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+PASS  login: 200, session works and logged out (role PARTICIPANT)
+5/5 checks passed
+exit code: 0, took 0.1 s
+
+$ # slow start: /ready 503 twice, then ready (retried)
+Smoke testing http://127.0.0.1:18083
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+4/4 checks passed
+exit code: 0, took 1.1 s
+
+$ # wrong password (4xx: fails at once, no retry)
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+FAIL  login: expected HTTP 200, got 401
+4/5 checks passed
+exit code: 1, took 0.1 s
+
+$ # only SMOKE_EMAIL set
+Smoke testing http://127.0.0.1:18081
+FAIL  login: set both SMOKE_EMAIL and SMOKE_PASSWORD, or neither
+exit code: 1, took 0.1 s
+
+$ # 404 body is a JSON array, not an object
+Smoke testing http://127.0.0.1:18084
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+FAIL  JSON 404 for unknown API path: expected a JSON object, got list
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+3/4 checks passed
+exit code: 1, took 0.1 s
+
+$ # database down: /ready 503 until the wait limit
+Smoke testing http://127.0.0.1:18082
+PASS  health: 200 ok
+FAIL  readiness/DB: expected HTTP 200, got 503 (after 6 attempts)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+3/4 checks passed
+exit code: 1, took 2.6 s
+
+$ # nothing listening: retried until the wait limit, then one attempt each
+Smoke testing http://127.0.0.1:18099
+FAIL  health: request failed: [Errno 61] Connection refused (after 6 attempts)
+FAIL  readiness/DB: request failed: [Errno 61] Connection refused (after 1 attempt)
+FAIL  HTML frontend: request failed: [Errno 61] Connection refused (after 1 attempt)
+FAIL  JSON 404 for unknown API path: request failed: [Errno 61] Connection refused (after 1 attempt)
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+0/4 checks passed
+exit code: 1, took 2.6 s
