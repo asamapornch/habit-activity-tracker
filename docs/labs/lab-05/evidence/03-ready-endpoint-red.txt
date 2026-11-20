@@ -1,5 +1,5 @@
 
- RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+ RUN  v5.1.0 <repo>/backend
 
  ❯ tests/ready.test.ts (2 tests | 2 failed) 77ms
    ❯ GET /ready (2)

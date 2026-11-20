@@ -1,12 +1,12 @@
 
- RUN  v5.1.0 /Users/asamagus/Downloads/habit-tracker/backend
+ RUN  v5.1.0 <repo>/backend
 
  ❯ tests/staticFrontend.test.ts (0 test)
 
 ⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
 
  FAIL  tests/staticFrontend.test.ts [ tests/staticFrontend.test.ts ]
-Error: Cannot find module '../src/lib/staticFrontend.js' imported from /Users/asamagus/Downloads/habit-tracker/backend/tests/staticFrontend.test.ts
+Error: Cannot find module '../src/lib/staticFrontend.js' imported from <repo>/backend/tests/staticFrontend.test.ts
  ❯ tests/staticFrontend.test.ts:7:1
       5| import { afterEach, beforeEach, describe, expect, it } from "vitest";
       6| import request from "supertest";
