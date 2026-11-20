@@ -88,16 +88,21 @@ code path for "no CORS needed." Changing `cors.ts` to skip CORS setup entirely
 in single-origin mode is a reasonable follow-up but is a behavior change I did
 not make without your sign-off.
 
-**Known limitation:** a few existing test files (`auth.test.ts`,
+**`FRONTEND_DIST_PATH` (new, optional):** `config.frontendDistPath` (default
+`<repo>/frontend/dist`) is now overridable through this env var — documented
+with a placeholder in `.env.example`. This closes a limitation from this PR's
+first revision: a few existing test files (`auth.test.ts`,
 `sessionCookie.test.ts`) build their test app by calling `createApp()` and then
-adding extra `/__test/*` routes afterward. Since `mountFrontend`'s catch-all is
-registered inside `createApp()`, those routes are added *after* it — if
-`frontend/dist` happens to exist on disk when those tests run (e.g. someone ran
-`npm run build` in `frontend/` locally first), the SPA fallback shadows
-`/__test/*` and those tests fail. This doesn't affect production (nothing is
-added to the app after `createApp()` returns there) or normal `npm test` runs
-(no local frontend build present). Found and confirmed via manual end-to-end
-testing — see `evidence/09-production-manual-verification.txt`.
+adding extra `/__test/*` routes afterward; since `mountFrontend`'s catch-all is
+registered inside `createApp()`, those routes land *after* it, so if
+`frontend/dist` happened to exist on disk when those tests ran (e.g. someone
+ran `npm run build` in `frontend/` locally first), the SPA fallback would
+shadow `/__test/*` and those tests would fail. `backend/vitest.config.ts` now
+sets `FRONTEND_DIST_PATH` to a known-missing path for the whole test run, so
+every test — not just ones that happen to avoid `/__test/*` — is independent of
+whatever happens to be built on disk. Verified by rebuilding a real
+`frontend/dist` and re-running the full suite (`evidence/14-suite-robust-to-real-frontend-dist.txt`,
+169/169, where it previously failed 6 tests).
 
 ## 6. Env hygiene
 
@@ -128,3 +133,11 @@ every other env var) silently failed to load at runtime. A new `typecheck`
 script (`tsc -p tsconfig.json --noEmit`) preserves the original full
 type-checking coverage over `tests/` and `prisma/` without emitting them into
 the production image.
+
+**Note on evidence for this fix:** unlike the other items in this PR,
+`evidence/08-start-script-path-fix-green.txt` has no preceding red run. This
+was a pre-existing bug on `main`/`sprint-1-staging`, unrelated to this PR's
+own feature work, found while manually verifying item 5 end-to-end — not
+something introduced by a test written first here. The green run plus the
+manual end-to-end verification (`evidence/09-production-manual-verification.txt`)
+is the evidence; no red run is claimed and none was fabricated.
