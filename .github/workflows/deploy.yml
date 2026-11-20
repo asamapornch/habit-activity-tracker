@@ -26,8 +26,11 @@
 #   - Optional login smoke test: variable SMOKE_EMAIL + secret SMOKE_PASSWORD
 #     (set both or neither).
 #   - The cloud resources (Cloud SQL, secrets, service account, Artifact
-#     Registry, Cloud Run service/job) must already exist: create them once with
-#     deploy/deploy.sh. This workflow only UPDATES them.
+#     Registry, Cloud Run service/job) are pre-provisioned by the course
+#     portal/TA — neither this workflow nor deploy/deploy.sh creates them.
+#     deploy/deploy.sh does the first image build/push and the first
+#     migration+deploy; this workflow does every routine release after that.
+#     Both only UPDATE the migration job and the service.
 #
 # REFERENCES
 #   - Workflow syntax / reusable workflows:
