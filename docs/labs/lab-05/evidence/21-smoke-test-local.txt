@@ -1,0 +1,60 @@
+deploy/smoke_test.py run locally against a stub HTTP server that answers like
+our app (routes /health, /ready, /, /health/<x> JSON 404, /auth/login, /auth/me).
+Not the real Cloud Run service: the first deploy happens after the release PR.
+Python 3.15.2; SMOKE_ATTEMPTS=2 SMOKE_DELAY_SECONDS=0.2 to keep failures short.
+Login values are fake local test values; the password is never printed.
+
+$ # pass, login skipped
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+4/4 checks passed
+exit code: 0
+
+$ # pass, login on
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+PASS  login: 200, session works (role PARTICIPANT)
+5/5 checks passed
+exit code: 0
+
+$ # wrong password
+Smoke testing http://127.0.0.1:18081
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+FAIL  login: expected HTTP 200, got 401 (after 2 attempts)
+4/5 checks passed
+exit code: 1
+
+$ # only SMOKE_EMAIL set
+Smoke testing http://127.0.0.1:18081
+FAIL  login: set both SMOKE_EMAIL and SMOKE_PASSWORD, or neither
+exit code: 1
+
+$ # database down (/ready 503)
+Smoke testing http://127.0.0.1:18082
+PASS  health: 200 ok
+FAIL  readiness/DB: expected HTTP 200, got 503 (after 2 attempts)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+3/4 checks passed
+exit code: 1
+
+$ # nothing listening
+Smoke testing http://127.0.0.1:18099
+FAIL  health: request failed: [Errno 61] Connection refused (after 2 attempts)
+FAIL  readiness/DB: request failed: [Errno 61] Connection refused (after 2 attempts)
+FAIL  HTML frontend: request failed: [Errno 61] Connection refused (after 2 attempts)
+FAIL  JSON 404 for unknown API path: request failed: [Errno 61] Connection refused (after 2 attempts)
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+0/4 checks passed
+exit code: 1

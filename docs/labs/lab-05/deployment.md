@@ -184,14 +184,33 @@ What it does:
    - smoke-tests the live URL (`deploy/smoke_test.py`),
    - writes a summary on the workflow run page.
 
-⚠️ **`deploy/smoke_test.py` does not exist in this repo yet** — it's added by
-a separate PR. **That PR must be merged into `sprint-1-staging` *before* the
-release PR into `main`.** If a release PR reaches `main` while
-`deploy/smoke_test.py` is still missing, the deploy workflow will build the
-image, run the migration, and update the service — and only then fail at the
-smoke-test step, because `python3 deploy/smoke_test.py` has nothing to run.
-The service would already be serving the new release at that point; the
-workflow failing doesn't roll anything back.
+**Smoke test (`deploy/smoke_test.py`).** Standard library only, called as
+`python3 deploy/smoke_test.py "$SERVICE_URL"`. It checks, retrying while a
+new revision starts up:
+
+| Check | Request | Expected |
+|---|---|---|
+| health | `GET /health` | 200 `{"status":"ok"}` |
+| readiness/DB | `GET /ready` | 200 `{"status":"ready"}` (503 means the database is unreachable) |
+| HTML frontend | `GET /` | 200 `text/html` |
+| JSON 404 | `GET /health/__smoke_404__` | 404 JSON, code `NOT_FOUND` (not `index.html`) |
+| login (optional) | `POST /auth/login`, then `GET /auth/me` with the session cookie | 200, same email |
+
+Our routes have no `/api` prefix, so the 404 check uses a sub-path of a known
+route. The login check runs only when both `SMOKE_EMAIL` (environment
+variable) and `SMOKE_PASSWORD` (environment secret) are set in the `demo`
+environment; with neither set it prints `SKIP`. The password is never
+printed. Exit code 0 = all passed, 1 = any check failed, 2 = bad usage.
+
+Run it by hand against any URL:
+
+```bash
+python3 deploy/smoke_test.py https://<service-url>
+```
+
+⚠️ A failed smoke test fails the workflow, but the service is already
+serving the new release at that point; nothing is rolled back
+automatically. Use the rollback below.
 
 ## How to see which commit is running
 

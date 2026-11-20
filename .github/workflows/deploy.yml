@@ -50,8 +50,8 @@
 #   # CHANGE ME (done for our stack): SERVICE_NAME / MIGRATE_JOB_NAME / image
 #     path (s65da36e2/s65da36e2 — both our team prefix)
 #   # CHANGE ME: build step if your image is not built from the root Dockerfile
-#   # CHANGE ME: Python setup + smoke test if you use another smoke test —
-#     deploy/smoke_test.py does not exist yet in this repo (separate PR)
+#   # CHANGE ME: Python setup + smoke test if you use another smoke test
+#     (done for our app: deploy/smoke_test.py)
 # ##############################################################################
 
 name: Deploy demo
