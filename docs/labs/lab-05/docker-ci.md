@@ -1,8 +1,12 @@
 # Lab 5 — Dockerfile and CI
 
 What each new file does, in plain English, and the environment variables involved.
-No values are included anywhere in this doc or in the files themselves — only
-names and where each one comes from.
+No real secret or cloud value is included anywhere in this doc or in the files
+themselves. `docker-compose.yml` and `ci-docker.yml` do contain literal values —
+but only fake, local/CI-only throwaway ones (e.g. a `SESSION_SECRET` that says
+so in its own name, a Postgres password scoped to a container that stops
+existing when the job ends), never a real secret or anything from the actual
+cloud environment.
 
 ## `Dockerfile` (repo root)
 
@@ -102,7 +106,11 @@ Weekly update checks for GitHub Actions (root) and npm (`backend/` and
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` / `POSTGRES_PORT` | `docker-compose`'s local Postgres container | Local dev only — Cloud SQL itself is provisioned separately (course portal/TA), not by these vars |
 | `VITE_API_URL` | Optional build-time base URL for the frontend's API calls | Intentionally left unset in the production Docker build, so compiled requests default to relative/same-origin paths |
 
-No value for any of these appears in this document, in the Dockerfile, in
-`docker-compose.yml`, or in `ci-docker.yml` — only placeholders (`.env.example`)
-or throwaway CI-only fixture values scoped to a service container that stops
-existing when the job ends.
+No real secret or cloud value for any of these appears in this document, in the
+Dockerfile, in `docker-compose.yml`, or in `ci-docker.yml`. The Dockerfile and
+this document itself carry no values at all — only names. `docker-compose.yml`
+and `ci-docker.yml` do carry literal values, but only fake, local/CI-only
+throwaway ones: `docker-compose.yml`'s are clearly-fake local dev values (its
+own `app` service's `environment:` block), and `ci-docker.yml`'s are fixture
+values scoped to a service container that stops existing when the job ends —
+neither is a real secret or a value from the actual cloud environment.
