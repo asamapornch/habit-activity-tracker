@@ -86,6 +86,26 @@ full commit SHA (with a version comment), verified directly against
 and `repos/actions/setup-node/tags`) — not invented, not scraped from a
 third-party page.
 
+### Branch protection: a red check blocks the merge (C-02)
+
+`main` and `sprint-1-staging` require a PR, 1 approval, and the
+`test-and-docker` check to pass. To show the check really blocks a merge,
+PR #42 broke one assertion on purpose (`backend/tests/health.test.ts`
+expected `{ status: "deliberately-broken-for-c02-demo" }`). `test-and-docker`
+failed at Backend tests on exactly that test (1 failed, 168 passed), GitHub
+marked the check **Required** and showed "Merging is blocked" with the Merge
+button disabled. The PR was then closed without merging and its branch
+deleted (no force-push).
+
+- `evidence/22-c02-pr42-merge-blocked.jpg`: the PR page with the failing
+  required check and the disabled Merge button
+- `evidence/23-c02-pr42-test-and-docker-failed.jpg`: the `test-and-docker`
+  log with the one failed assertion
+
+The PR also had no approval, so GitHub lists "Review required" as well. The
+failing check alone is enough to block: it is a required status check, so
+even an approved PR cannot merge while it is red.
+
 ## `.github/dependabot.yml`
 
 Weekly update checks for GitHub Actions (root) and npm (`backend/` and
