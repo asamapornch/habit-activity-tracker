@@ -10,6 +10,36 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-habit}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # The single-container production image (root Dockerfile), built and run
+  # locally against this same `db`. Not part of the backend test workflow
+  # above — `docker compose up -d db` for that keeps working unchanged.
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Clearly fake, local-only values — never real secrets.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-habit}:${POSTGRES_PASSWORD:-habit}@db:5432/${POSTGRES_DB:-habit_tracker}
+      SESSION_SECRET: local-compose-session-secret-not-a-real-secret
+      FRONTEND_ORIGIN: http://localhost:3000
+      PORT: 3000
+      # Overrides the image's NODE_ENV=production: there's no TLS-terminating
+      # proxy here (unlike Cloud Run), so the session cookie's Secure flag
+      # (session.ts: `secure: NODE_ENV === "production"`) must stay off or
+      # no plain-HTTP client could ever send the cookie back.
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
 
 volumes:
   pgdata:
