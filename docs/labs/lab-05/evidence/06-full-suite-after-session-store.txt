@@ -1,0 +1,13 @@
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 <repo>/backend
+
+
+ Test Files  12 passed (12)
+      Tests  160 passed (160)
+   Start at  23:47:51
+   Duration  63.80s (tests 97%, import 3%)
+

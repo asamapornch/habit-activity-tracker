@@ -10,4 +10,7 @@ export async function resetDb() {
   await prisma.goal.deleteMany();
   await prisma.template.deleteMany();
   await prisma.user.deleteMany();
+  // Not a Prisma-managed model (@@ignore'd, see schema.prisma) so it has no
+  // deleteMany(); connect-pg-simple owns this table's rows.
+  await prisma.$executeRawUnsafe('DELETE FROM "session"');
 }

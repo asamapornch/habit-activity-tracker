@@ -60,3 +60,17 @@ model Entry {
   @@unique([goalId, date])
   @@map("entries")
 }
+
+// Managed by the migration in this table's shape, not by Prisma Client:
+// connect-pg-simple (src/lib/session.ts) reads/writes it directly over a
+// plain `pg` Pool. Modelled here (and @@ignore'd) only so `prisma migrate
+// dev` sees no drift against this already-applied, additive migration.
+model Session {
+  sid    String   @id
+  sess   Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire])
+  @@map("session")
+  @@ignore
+}

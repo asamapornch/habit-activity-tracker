@@ -1,0 +1,31 @@
+
+ RUN  v5.1.0 <repo>/backend
+
+ ❯ tests/config.test.ts (2 tests | 1 failed) 62ms
+   ❯ config.frontendDistPath (2)
+     × is overridable via FRONTEND_DIST_PATH (so tests can point it at a fixture or a known-missing path) 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/config.test.ts > config.frontendDistPath > is overridable via FRONTEND_DIST_PATH (so tests can point it at a fixture or a known-missing path)
+AssertionError: expected '<repo>/frontend/dist' to be '/tmp/lab5-fixture-dist' // Object.is equality
+
+Expected: "/tmp/lab5-fixture-dist"
+Received: "<repo>/frontend/dist"
+
+ ❯ tests/config.test.ts:24:37
+     22|     const { config } = await import("../src/lib/config.js");
+     23|
+     24|     expect(config.frontendDistPath).toBe("/tmp/lab5-fixture-dist");
+       |                                     ^
+     25|   });
+     26| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  14:38:00
+   Duration  205ms (tests 49%, setup 32%, transform 15%, worker 2%, import 1%)
+

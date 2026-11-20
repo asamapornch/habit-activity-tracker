@@ -1,0 +1,47 @@
+
+ RUN  v5.1.0 <repo>/backend
+
+ ❯ tests/dbPool.test.ts (2 tests | 2 failed) 83ms
+   ❯ pgPool error handling (2)
+     × has an error listener so an idle-connection error does not crash the process 78ms
+     × logs only the error message (no secrets) when the pool emits an error 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/dbPool.test.ts > pgPool error handling > has an error listener so an idle-connection error does not crash the process
+AssertionError: expected 0 to be greater than 0
+ ❯ tests/dbPool.test.ts:9:43
+      7|     // Node's EventEmitter rethrows an "error" event synchronously whe…
+      8|     // listener is attached — exactly the crash this guards against.
+      9|     expect(pgPool.listenerCount("error")).toBeGreaterThan(0);
+       |                                           ^
+     10|   });
+     11|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/dbPool.test.ts > pgPool error handling > logs only the error message (no secrets) when the pool emits an error
+AssertionError: expected [Function] to not throw an error but 'Error: synthetic idle client error' was thrown
+
+- Expected:
+undefined
+
++ Received:
+"Error: synthetic idle client error"
+
+ ❯ tests/dbPool.test.ts:16:49
+     14|     const err = new Error("synthetic idle client error");
+     15|
+     16|     expect(() => pgPool.emit("error", err)).not.toThrow();
+       |                                                 ^
+     17|
+     18|     const loggedText = spy.mock.calls.flat().map(String).join(" ");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  14:37:13
+   Duration  260ms (tests 48%, setup 29%, transform 12%, import 9%, worker 2%)
+
