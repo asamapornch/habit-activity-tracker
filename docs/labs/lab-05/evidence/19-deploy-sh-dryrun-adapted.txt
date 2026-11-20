@@ -14,10 +14,6 @@ Dry Run : 1
 [DRY_RUN] gcloud run services update-traffic s65da36e2 --to-latest --project cpe-se-course-2026 --region asia-southeast1 --quiet 
 
 ==================================================================
-Deployment Completed!
-Service URL    : https://s65da36e2-<hash>-as.a.run.app
-Health Check   : https://s65da36e2-<hash>-as.a.run.app/health
-Readiness Check: https://s65da36e2-<hash>-as.a.run.app/ready
-Admin Email    : manager@example.com
-Admin Password : Stored in Secret Manager: s65da36e2-admin-password (not printed).
+DRY RUN: nothing was deployed.
+Re-run with DRY_RUN=0 (from the main branch) to actually deploy.
 ==================================================================
