@@ -1,0 +1,71 @@
+Local end-to-end verification: `docker compose up -d db app` (POSTGRES_PORT=5434
+to avoid a port clash with an unrelated local container), against the real
+built image.
+
+--- GET /health ---
+{"status":"ok"} [200]
+
+--- GET /ready ---
+{"status":"ready"} [200]
+
+--- Migration + seed job, run exactly as the Cloud Run migration job will
+    (inside the running image, cwd backend/, dummy SEED_PASSWORD_* values) ---
+$ docker compose exec -e SEED_PASSWORD_MANAGER=... -e SEED_PASSWORD_PARTICIPANT_1=... \
+    -e SEED_PASSWORD_PARTICIPANT_2=... app sh -c "npx prisma migrate deploy && npm run db:seed"
+
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "habit_tracker", schema "public" at "db:5432"
+2 migrations found in prisma/migrations
+No pending migrations to apply.
+
+> habit-tracker-backend@0.1.0 db:seed
+> tsx prisma/seed.ts
+
+Verified seeded rows:
+          email           |    role
+--------------------------+-------------
+ manager@example.com      | MANAGER
+ participant1@example.com | PARTICIPANT
+ participant2@example.com | PARTICIPANT
+
+--- Login + create + restart + still-there check ---
+(docker-compose.yml's app service sets NODE_ENV=development, overriding the
+image's baked-in NODE_ENV=production: locally there's no TLS-terminating
+proxy the way Cloud Run provides one, so the session cookie's Secure flag
+must stay off here or no plain-HTTP client could ever send it back. This is
+a docker-compose-only override — the shipped image still defaults to
+NODE_ENV=production.)
+
+$ curl -X POST http://localhost:3000/auth/login -d '{"email":"manager@example.com","password":"<dummy>"}'
+{"id":7,"email":"manager@example.com","role":"MANAGER"} [200]
+
+$ curl -X POST http://localhost:3000/templates -d '{"name":"Persistence Check","unit":"reps","minValue":0,"maxValue":100}'
+{"id":3,"name":"Persistence Check","unit":"reps","minValue":0,"maxValue":100,"createdById":7} [201]
+
+$ docker compose restart app
+
+$ curl http://localhost:3000/auth/me   (same session cookie, after restart)
+{"id":7,"email":"manager@example.com","role":"MANAGER"} [200]
+
+$ curl http://localhost:3000/templates   (after restart)
+[{"id":3,"name":"Persistence Check","unit":"reps","minValue":0,"maxValue":100,"createdById":7}] [200]
+
+Both the session (proving sessions live in Postgres, not the app process's
+memory — a restart kills that process entirely) and the created row (Postgres
+data, in a separate container/volume from the app) survived the app
+container's restart.
+
+--- Non-root user check (see evidence/15-docker-build-tail.txt for the build) ---
+$ docker run --rm habit-tracker:local id
+uid=1000(node) gid=1000(node) groups=1000(node)
+
+--- Bug found and fixed during this verification ---
+First build/run attempt crashed on startup:
+  PrismaClientInitializationError: Unable to require(...query_engine...)
+  generator client { binaryTargets = ["native", "linux-arm64-openssl-1.1.x"] }
+node:*-slim doesn't ship the `openssl` package; without it, Prisma's
+engine-detection at `generate` time picks the wrong OpenSSL target (1.1.x on
+a Bookworm/OpenSSL-3 image), and the generated client fails to load at
+runtime. Fixed by installing `openssl` in both the backend-build stage
+(where `prisma generate` runs, via package.json's postinstall) and the final
+stage (where the engine binary actually loads).
