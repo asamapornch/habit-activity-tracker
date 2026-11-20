@@ -6,6 +6,9 @@ describe("GET /health", () => {
   it("responds with status ok", async () => {
     const res = await request(createApp()).get("/health");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: "ok" });
+    // LAB 5 C-02 DEMO: deliberately wrong expectation so the required check
+    // `test-and-docker` fails and branch protection blocks the merge.
+    // This PR is closed without merging; the real value is { status: "ok" }.
+    expect(res.body).toEqual({ status: "deliberately-broken-for-c02-demo" });
   });
 });
