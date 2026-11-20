@@ -5,29 +5,37 @@ set -euo pipefail
 # Habit Tracker — Idempotent Google Cloud Run Deployment Script
 # ==============================================================================
 # Usage:
-#   ./deploy/deploy.sh [--demo]
+#   DRY_RUN=1 bash deploy/deploy.sh [--demo]   (preview — default, safe)
+#   DRY_RUN=0 bash deploy/deploy.sh [--demo]   (REAL deploy — see below)
 #
 # Environment Variables (Optional):
 #   PROJECT_ID   GCP Project ID (defaults to active gcloud config project)
 #   REGION       GCP Region (default: asia-southeast1)
-#   DRY_RUN      Set DRY_RUN=1 to print all gcloud commands without executing
+#   DRY_RUN      Defaults to 1 (preview only, no gcloud/docker calls actually
+#                run). A REAL deploy requires explicitly setting DRY_RUN=0,
+#                AND must be run from the main branch — the script's own
+#                guard below refuses to run otherwise.
 #
-# WHAT THIS SCRIPT DOES  (one-time / manual first setup; safe to re-run)
-#   Creates every cloud resource the app needs and does the first deployment:
-#   1 enable APIs     2 Artifact Registry  3 Cloud SQL instance  4 database
-#   5 runtime SA+IAM  6 DB user + secret   7 admin password      8 demo password
-#   (secret access)   9 build image        10 migrate+seed job   11 Cloud Run service
-#   After this, routine releases are done by GitHub Actions (deploy.yml ->
-#   deploy/release.sh), which only UPDATES these resources.
+# WHAT THIS SCRIPT DOES  (manual first deploy; safe to re-run)
+#   The course portal/TA pre-provisions every cloud resource this app needs
+#   (APIs enabled, Artifact Registry, the Cloud SQL instance and database,
+#   the runtime service account and its IAM, and the Secret Manager secrets
+#   — see "Resource names" in docs/labs/lab-05/deployment.md). This script
+#   does NOT create or enable any of that. It only:
+#     9  builds and pushes the image         (Artifact Registry)
+#     10 updates and runs the migrate+seed job on that image
+#     11 updates the Cloud Run service to that image, with its traffic
+#   After this first deploy, routine releases are done by GitHub Actions
+#   (deploy.yml -> deploy/release.sh), which updates the same two resources.
 #
 # ⭐ IMPORTANT
 #   - Idempotent: existing resources/secrets are reused, never overwritten
 #     (a re-run does not replace credentials).
 #   - Passwords are generated with openssl and live only in Secret Manager;
 #     they are never printed (run_cmd redacts --password=...).
-#   - Preview first with:  DRY_RUN=1 ./deploy/deploy.sh   (no gcloud calls)
+#   - Preview first with:  DRY_RUN=1 bash deploy/deploy.sh   (no gcloud calls;
+#     this is also the default if DRY_RUN is unset)
 #   - Run from the REPO ROOT (step 9 builds the root Dockerfile).
-#   - Offline test: deploy/tests/test_deploy_stub.sh
 #
 # REFERENCES
 #   - gcloud run deploy : https://cloud.google.com/sdk/gcloud/reference/run/deploy
@@ -237,24 +245,30 @@ run_cmd gcloud run services update "$SERVICE_NAME" \
   --project "$PROJECT_ID"
 
 run_cmd gcloud run services update-traffic "$SERVICE_NAME" --to-latest --project "$PROJECT_ID" --region "$REGION" --quiet
-if [ "$DRY_RUN" = "1" ]; then
-  SERVICE_URL="https://${SERVICE_NAME}-<hash>-as.a.run.app"
-else
+if [ "$DRY_RUN" != "1" ]; then
   SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --project "$PROJECT_ID" --format='value(status.url)')"
 fi
 
 # ------------------------------------------------------------------------------
 # Summary output (URLs; passwords stay in Secret Manager and are not printed)
+# A dry run never had a real deploy to report, so it gets its own, honest
+# summary instead of a fake-looking "Deployment Completed!" with a
+# placeholder URL.
 # ------------------------------------------------------------------------------
 printf '\n'
 printf '%s\n' "=================================================================="
-printf '%s\n' "Deployment Completed!"
-printf '%s\n' "Service URL    : ${SERVICE_URL}"
-printf '%s\n' "Health Check   : ${SERVICE_URL}/health"
-printf '%s\n' "Readiness Check: ${SERVICE_URL}/ready"
-printf '%s\n' "Admin Email    : manager@example.com"
-printf '%s\n' "Admin Password : Stored in Secret Manager: ${SECRET_ADMIN_PASS} (not printed)."
-if [ "$SEED_DEMO_DATA" = "true" ]; then
-  printf '%s\n' "Demo Password  : Stored in Secret Manager: ${SECRET_DEMO_PASS} (not printed)."
+if [ "$DRY_RUN" = "1" ]; then
+  printf '%s\n' "DRY RUN: nothing was deployed."
+  printf '%s\n' "Re-run with DRY_RUN=0 (from the main branch) to actually deploy."
+else
+  printf '%s\n' "Deployment Completed!"
+  printf '%s\n' "Service URL    : ${SERVICE_URL}"
+  printf '%s\n' "Health Check   : ${SERVICE_URL}/health"
+  printf '%s\n' "Readiness Check: ${SERVICE_URL}/ready"
+  printf '%s\n' "Admin Email    : manager@example.com"
+  printf '%s\n' "Admin Password : Stored in Secret Manager: ${SECRET_ADMIN_PASS} (not printed)."
+  if [ "$SEED_DEMO_DATA" = "true" ]; then
+    printf '%s\n' "Demo Password  : Stored in Secret Manager: ${SECRET_DEMO_PASS} (not printed)."
+  fi
 fi
 printf '%s\n' "=================================================================="
