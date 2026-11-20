@@ -194,13 +194,33 @@ new revision starts up:
 | readiness/DB | `GET /ready` | 200 `{"status":"ready"}` (503 means the database is unreachable) |
 | HTML frontend | `GET /` | 200 `text/html` |
 | JSON 404 | `GET /health/__smoke_404__` | 404 JSON, code `NOT_FOUND` (not `index.html`) |
-| login (optional) | `POST /auth/login`, then `GET /auth/me` with the session cookie | 200, same email |
+| login (optional) | `POST /auth/login`, `GET /auth/me` with the session cookie, `POST /auth/logout` | 200, same email, logged out |
 
 Our routes have no `/api` prefix, so the 404 check uses a sub-path of a known
-route. The login check runs only when both `SMOKE_EMAIL` (environment
+route. Only failures that can clear up while a new revision starts
+(connection errors, timeouts, HTTP 5xx such as `/ready` 503) are retried, for
+at most `SMOKE_MAX_WAIT_SECONDS` (default 120 s) in total; a 4xx or a wrong
+body fails at once. Exit code 0 = all passed, 1 = any check failed, 2 = bad
+usage.
+
+**Optional login check.** Runs only when both `SMOKE_EMAIL` (environment
 variable) and `SMOKE_PASSWORD` (environment secret) are set in the `demo`
-environment; with neither set it prints `SKIP`. The password is never
-printed. Exit code 0 = all passed, 1 = any check failed, 2 = bad usage.
+environment; with neither set it prints `SKIP`, with only one set it fails.
+It logs in, calls `/auth/me`, then logs out. The password is never printed.
+
+- Use a **PARTICIPANT** test account, never the manager:
+  `SMOKE_EMAIL` = `participant2@example.com`, `SMOKE_PASSWORD` = the value of
+  Secret Manager secret `s65da36e2-demo-password` (copy it in the GitHub
+  `demo` environment's secrets UI; never paste it into Git, chat or a
+  screenshot).
+- The account is created by the seed (`backend/prisma/seed.ts`, upsert-only),
+  which runs in the migration job `s65da36e2-migrate`. `deploy/deploy.sh`
+  sets that job's command to `npx prisma migrate deploy && npm run db:seed`,
+  and `deploy/release.sh` re-executes the same job, so the account exists in
+  the demo database once the first `DRY_RUN=0 bash deploy/deploy.sh` has run.
+- So set `SMOKE_EMAIL`/`SMOKE_PASSWORD` **only after** the first manual deploy
+  succeeded and you can log in as that account in the browser. Set earlier,
+  the login check fails after the service is already updated.
 
 Run it by hand against any URL:
 
