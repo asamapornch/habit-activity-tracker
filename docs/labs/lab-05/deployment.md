@@ -4,6 +4,46 @@ How this app runs in the cloud, in plain English. No secret values appear
 anywhere in this document — only resource names and Secret Manager secret
 *names*.
 
+## Stack and changes from the reference
+
+Our stack: **React/Vite** (frontend) + **Express/TypeScript** (backend) +
+**Prisma** + **PostgreSQL**, built into a single container and deployed to
+Cloud Run, with sessions stored in PostgreSQL and the database migrated/seeded
+by a Cloud Run job — not the generic reference kit's assumed stack. Every
+change made to adapt the course kit's `deploy/deploy.sh`, `deploy/release.sh`,
+and `.github/workflows/deploy.yml` for this app:
+
+- **Seed command**: `npm run db:seed` (our script, `backend/prisma/seed.ts`
+  via `tsx`) instead of the kit's `npm run prisma:seed`.
+- **Seed env vars**: the migration job gets `SEED_PASSWORD_MANAGER`/
+  `_PARTICIPANT_1`/`_PARTICIPANT_2` (what our seed script actually reads),
+  not the kit's `ADMIN_PASSWORD`/`DEMO_USER_PASSWORD`; mapped unconditionally
+  rather than gated behind `--demo`/`SEED_DEMO_DATA`, since our seed has no
+  demo/non-demo branch.
+- **Health/readiness paths**: our app exposes bare `/health` and `/ready`
+  (see `backend/src/routes/health.ts` and `ready.ts`), not the kit's assumed
+  `/api/health`/`/api/ready`.
+- **`SESSION_SECRET` added**: the kit's service only had `DATABASE_URL`; our
+  app refuses to start without a session secret too.
+- **`FRONTEND_ORIGIN` added**: a plain env var, set to the service's own URL
+  at deploy time — single container, single origin (see
+  `cloud-ready-contract.md` item 5), not a separate frontend host the way a
+  two-origin app would need.
+- **`--update-env-vars`/`--update-secrets`** instead of the kit's
+  `--set-env-vars`/`--set-secrets` everywhere, so a deploy can't silently
+  wipe portal-managed config this script doesn't name (see "Rules" below).
+- **Port 3000**, matching our Dockerfile, instead of the kit's placeholder
+  port.
+- **Branding and stale text**: every "TokTickIT" reference, the wrong
+  `/api/health`/`/api/ready` URLs, a fake example admin email, and the
+  dry-run summary's fake "Deployment Completed!" + placeholder URL (now an
+  honest "DRY RUN: nothing was deployed.") were all specific to the generic
+  kit or just wrong for this app.
+- **Removed**: references to `deploy/tests/test_*_stub.sh` (don't exist in
+  this repo) and the kit's claim that `deploy/deploy.sh` "creates" Cloud
+  SQL/IAM/secrets (the course portal/TA pre-provisions all of it; see
+  "Resource names" below).
+
 ## Architecture
 
 One container, one Cloud Run service, one Cloud SQL (Postgres) instance,
@@ -64,16 +104,52 @@ comment.
 | `SEED_PASSWORD_PARTICIPANT_1` | Seed script's first participant account password | Secret Manager secret `s65da36e2-demo-password`, on the **job** only |
 | `SEED_PASSWORD_PARTICIPANT_2` | Seed script's second participant account password | Same secret as `SEED_PASSWORD_PARTICIPANT_1` (`s65da36e2-demo-password`) — only one demo password is provisioned, so both participants get the same one |
 
+## Local commands
+
+The same build/test/migrate/seed commands this deployment relies on, run
+locally (see `README.md` for full setup). Fake local values only — never a
+real secret.
+
+```bash
+# Build (what the Dockerfile's two stages run)
+cd backend && npm run build      # tsc -> backend/dist
+cd frontend && npm run build     # tsc -b && vite build -> frontend/dist
+
+# Test
+cd backend && npm test           # Vitest + Supertest, needs DATABASE_URL_TEST
+cd frontend && npm test          # Vitest + React Testing Library, no backend needed
+
+# Run — either the dev servers (backend/package.json "dev", frontend "dev"),
+# or the full built-image stack:
+docker compose up --build        # db + app, http://localhost:3000
+
+# Migrate (non-interactive, same command the Cloud Run job runs)
+cd backend && npm run db:migrate:deploy
+
+# Seed (needs SEED_PASSWORD_* — fake local values, e.g. via docker compose exec):
+docker compose exec \
+  -e SEED_PASSWORD_MANAGER=dev -e SEED_PASSWORD_PARTICIPANT_1=dev \
+  -e SEED_PASSWORD_PARTICIPANT_2=dev app sh -c "npx prisma migrate deploy && npm run db:seed"
+```
+
 ## The first manual deploy (`deploy/deploy.sh`)
 
 Run once, from the repo root, after the course portal/TA has provisioned
-everything in "Resource names" above. Preview first:
+everything in "Resource names" above. Preview first (this is also the
+default if `DRY_RUN` is left unset — nothing is actually deployed):
 
 ```bash
 DRY_RUN=1 bash deploy/deploy.sh
 ```
 
-What it does, once `DRY_RUN` is unset (or `0`):
+Only once that preview looks right, the **real** deploy — must be run from
+the `main` branch, or the script's own guard refuses:
+
+```bash
+DRY_RUN=0 bash deploy/deploy.sh
+```
+
+What it does:
 
 1. **Build & push the image** — builds the root `Dockerfile`, tags it with
    the current commit's full SHA, pushes it to Artifact Registry, then
@@ -105,9 +181,17 @@ What it does, once `DRY_RUN` is unset (or `0`):
    - runs `deploy/release.sh` (verify image digest → run the migration job
      → update the service, same order and the same fail-before-touching-the-service
      guarantee as the manual script),
-   - smoke-tests the live URL (`deploy/smoke_test.py` — added in a separate
-     PR; not yet in this repo),
+   - smoke-tests the live URL (`deploy/smoke_test.py`),
    - writes a summary on the workflow run page.
+
+⚠️ **`deploy/smoke_test.py` does not exist in this repo yet** — it's added by
+a separate PR. **That PR must be merged into `sprint-1-staging` *before* the
+release PR into `main`.** If a release PR reaches `main` while
+`deploy/smoke_test.py` is still missing, the deploy workflow will build the
+image, run the migration, and update the service — and only then fail at the
+smoke-test step, because `python3 deploy/smoke_test.py` has nothing to run.
+The service would already be serving the new release at that point; the
+workflow failing doesn't roll anything back.
 
 ## How to see which commit is running
 
