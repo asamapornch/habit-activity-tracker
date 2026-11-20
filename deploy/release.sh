@@ -3,8 +3,10 @@
 # Habit Tracker — release.sh (used by .github/workflows/deploy.yml)
 # ==============================================================================
 # WHAT THIS SCRIPT DOES
-#   Update pre-provisioned resources only. Does not create SQL, IAM or secrets.
-#   (Create those once with deploy/deploy.sh.)
+#   Update pre-provisioned resources only. The course portal/TA provisions
+#   Cloud SQL, IAM, the service account, and the Secret Manager secrets —
+#   this script (like deploy/deploy.sh) never creates any of that, only
+#   updates the migration job's and the service's image/config.
 #   Normal release : verify image -> run migration job -> update service.
 #   Rollback       : verify image -> update service (NO migration, NO seed).
 #
@@ -20,7 +22,6 @@
 #     updated, so a broken migration never reaches users.
 #   - The image is resolved to an immutable @sha256 digest so the job and the
 #     service run exactly the same image.
-#   - Offline test: deploy/tests/test_release_stub.sh
 #
 # REFERENCES
 #   - gcloud run jobs update/execute : https://cloud.google.com/sdk/gcloud/reference/run/jobs
@@ -32,8 +33,9 @@
 #   # CHANGE ME (done for our stack): default SERVICE_NAME / MIGRATE_JOB_NAME
 #   #            and the image path `s65da36e2/s65da36e2` (Artifact Registry
 #   #            repo / image name — both are our team prefix)
-#   # CHANGE ME: how the migration is run (the Cloud Run job is created by
-#   #            deploy/deploy.sh step 10 — change the command there)
+#   # CHANGE ME: how the migration is run (the Cloud Run job itself is
+#   #            pre-provisioned by the portal; its image/command is updated
+#   #            by deploy/deploy.sh step 10 — change the command there)
 # ==============================================================================
 set -euo pipefail
 
