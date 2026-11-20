@@ -14,6 +14,11 @@ export const config = {
     : process.env.DATABASE_URL ?? "",
   // The single-container production image builds the frontend to
   // frontend/dist (see mountFrontend in lib/staticFrontend.ts); in local dev
-  // that directory doesn't exist and mountFrontend is a no-op.
-  frontendDistPath: path.resolve(import.meta.dirname, "../../../frontend/dist"),
+  // that directory doesn't exist and mountFrontend is a no-op. Overridable so
+  // tests can point this at a fixture, or at a known-missing path to force
+  // the no-op regardless of whether a real frontend/dist happens to exist on
+  // disk (e.g. from a local `npm run build`).
+  frontendDistPath:
+    process.env.FRONTEND_DIST_PATH ||
+    path.resolve(import.meta.dirname, "../../../frontend/dist"),
 };
