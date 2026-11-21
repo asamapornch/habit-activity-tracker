@@ -296,7 +296,8 @@ errors.
 
 ### Login
 
-Logged in as the seeded manager account on the live service.
+Login page of the live service (URL visible in the address bar). The
+logged-in state is shown in evidence/26.
 
 [first deploy: login page](evidence/24-first-deploy-login-page.png)
 
@@ -310,7 +311,8 @@ Logged in as the seeded manager account on the live service.
      --update-env-vars PERSISTENCE_TEST=1
    ```
    — a no-op env var, purely to make Cloud Run create and switch traffic to
-   a brand new container instance.
+   a brand new container instance. `PERSISTENCE_TEST=1` was a temporary env
+   var used only to force a new revision; it was removed afterwards.
    [new revision serving traffic](evidence/25-first-deploy-new-revision.png)
 3. Once that new revision was serving 100% of traffic, the **same browser
    session** (no new login) was still authenticated, and the "Persistence
