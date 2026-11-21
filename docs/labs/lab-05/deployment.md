@@ -330,6 +330,49 @@ rejected with `"Invalid template fields."` (`backend/src/routes/templates.ts`).
 
 [rule rejection](evidence/27-rule-rejection.png)
 
+## Actions deploy record (21 Nov 2026)
+
+- The release PR #56 (`sprint-1-staging` -> `main`) was reviewed and merged
+  by the teammate. Merging into `main` triggered the "Deploy demo" workflow
+  (`deploy.yml`), run #2:
+  https://github.com/asamapornch/habit-activity-tracker/actions/runs/44886142902 .
+  Commit `b63310c39c0d77bfa1842357fa025d19f1e8cf77`. Tests passed (169 + 38),
+  the deploy job passed, and the smoke test passed (health, readiness/DB,
+  HTML frontend, JSON 404 for an unknown API path). The service URL is
+  https://s65da36e2-4d7hbszvwq-as.a.run.app .
+
+- Rollback test: Deploy demo #4, started manually (`workflow_dispatch`) with
+  `image_tag` = `5142906a97da4cc750b03f8b18baa8337019f7d2` (the previous
+  release image):
+  https://github.com/asamapornch/habit-activity-tracker/actions/runs/44886968327 .
+  The summary shows "Rollback: true", the test job is skipped on purpose
+  (nothing new to test), and the smoke test passed. After the rollback the
+  service ran the older image (digest
+  `sha256:ca72e17292e7bd2e37684a8f8a396393f397f5768fa827686034f54f6d76cc93`),
+  the app still worked, and the login session and the "Persistence test"
+  template were still there.
+
+- Roll forward: Deploy demo #5, started manually from `main` with an empty
+  `image_tag`:
+  https://github.com/asamapornch/habit-activity-tracker/actions/runs/44887682225 .
+  "Rollback: false", tag `b63310c...`, digest
+  `sha256:b8b2dca9c29d452ce387f46afa52dc63e6023ee3ea89114b408010760dba0c5a` .
+
+- Running revision check (C-06): `gcloud run services describe s65da36e2
+  --region asia-southeast1 --project cpe-se-course-2026` shows
+  `latestReadyRevisionName` `s65da36e2-00008-wwx` with image digest
+  `sha256:b8b2dca9c29d452ce387f46afa52dc63e6023ee3ea89114b408010760dba0c5a` .
+  This is the same digest as run #5, so the running revision matches the
+  deployed commit `b63310c`. The revision list shows it was deployed by the
+  deployer service account (`s65da36e2-deployer`), not by a person.
+
+- Notes: Deploy demo #3 was an accidental duplicate run (same commit, empty
+  `image_tag`, green). The image is rebuilt on every run, so the digest
+  differs between runs of the same commit tag. The service was checked with
+  `gcloud` because Console access to the shared course project is limited.
+
+Evidence images for these runs are included in the PDF report.
+
 ## Rules
 
 - **Never put a secret value in Git.** Only Secret Manager secret *names*
