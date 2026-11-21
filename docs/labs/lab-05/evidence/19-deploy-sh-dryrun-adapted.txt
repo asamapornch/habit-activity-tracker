@@ -1,0 +1,19 @@
+==================================================================
+Habit Tracker Cloud Run Deployment
+Project : cpe-se-course-2026
+Region  : asia-southeast1
+Demo    : false
+Dry Run : 1
+==================================================================
+[DRY_RUN] gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet 
+[DRY_RUN] docker build --platform linux/amd64 --tag asia-southeast1-docker.pkg.dev/cpe-se-course-2026/s65da36e2/s65da36e2:0000000000000000000000000000000000000000 . 
+[DRY_RUN] docker push asia-southeast1-docker.pkg.dev/cpe-se-course-2026/s65da36e2/s65da36e2:0000000000000000000000000000000000000000 
+[DRY_RUN] gcloud run jobs update s65da36e2-migrate --image asia-southeast1-docker.pkg.dev/cpe-se-course-2026/s65da36e2/s65da36e2:0000000000000000000000000000000000000000 --region asia-southeast1 --service-account s65da36e2-runner@cpe-se-course-2026.iam.gserviceaccount.com --set-cloudsql-instances cpe-se-course-2026:asia-southeast1:s65da36e2-pg --update-secrets DATABASE_URL=s65da36e2-database-url:latest\,SEED_PASSWORD_MANAGER=s65da36e2-admin-password:latest\,SEED_PASSWORD_PARTICIPANT_1=s65da36e2-demo-password:latest\,SEED_PASSWORD_PARTICIPANT_2=s65da36e2-demo-password:latest --update-env-vars NODE_ENV=production\,TZ=Asia/Bangkok\,SEED_DEMO_DATA=false --command sh --args -c\,npx\ prisma\ migrate\ deploy\ \&\&\ npm\ run\ db:seed --max-retries 1 --task-timeout 300s --project cpe-se-course-2026 
+[DRY_RUN] gcloud run jobs execute s65da36e2-migrate --region asia-southeast1 --wait --project cpe-se-course-2026 
+[DRY_RUN] gcloud run services update s65da36e2 --image asia-southeast1-docker.pkg.dev/cpe-se-course-2026/s65da36e2/s65da36e2:0000000000000000000000000000000000000000 --region asia-southeast1 --service-account s65da36e2-runner@cpe-se-course-2026.iam.gserviceaccount.com --add-cloudsql-instances cpe-se-course-2026:asia-southeast1:s65da36e2-pg --update-secrets DATABASE_URL=s65da36e2-database-url:latest\,SESSION_SECRET=s65da36e2-app-secret-1:latest --update-env-vars NODE_ENV=production\,TZ=Asia/Bangkok\,FRONTEND_ORIGIN=https://s65da36e2-\<hash\>-as.a.run.app --min-instances 0 --max-instances 1 --memory 512Mi --cpu 1 --port 3000 --project cpe-se-course-2026 
+[DRY_RUN] gcloud run services update-traffic s65da36e2 --to-latest --project cpe-se-course-2026 --region asia-southeast1 --quiet 
+
+==================================================================
+DRY RUN: nothing was deployed.
+Re-run with DRY_RUN=0 (from the main branch) to actually deploy.
+==================================================================

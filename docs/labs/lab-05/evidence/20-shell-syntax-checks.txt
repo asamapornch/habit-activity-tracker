@@ -1,0 +1,6 @@
+$ bash -n deploy/deploy.sh
+OK: syntax valid
+$ bash -n deploy/release.sh
+OK: syntax valid
+
+shellcheck: not installed in this environment; skipped per instruction ("if installed").

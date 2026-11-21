@@ -1,0 +1,107 @@
+# ##############################################################################
+# CI — backend typecheck/tests, frontend tests, and a Docker build check
+# ##############################################################################
+# WHAT THIS WORKFLOW DOES
+#   1) Starts a throwaway Postgres service container.
+#   2) Installs and type-checks/tests the backend against it, then tests the
+#      frontend (no backend/database needed for that).
+#   3) Builds the root Dockerfile (no push) as a smoke test that the image
+#      this repo ships actually builds.
+#
+# ⚠️ DO NOT RENAME the job id `test-and-docker` — a future deploy workflow
+# reuses this workflow via `workflow_call` and branch protection will require
+# this check by name.
+#
+# All credentials below are throwaway values scoped to this job's own
+# ephemeral service container; nothing here is a real secret.
+# ##############################################################################
+
+name: CI
+
+on:
+  pull_request:
+    branches: [sprint-1-staging, main]
+  push:
+    branches: [sprint-1-staging]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: habit
+          POSTGRES_PASSWORD: habit
+          POSTGRES_DB: habit_tracker
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U habit"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      # Two distinct databases on the one service container, mirroring local
+      # dev (README §3-4): tests/setup.ts refuses to run if these are equal,
+      # to guard against a test run wiping a "dev" database by accident.
+      DATABASE_URL: postgresql://habit:habit@localhost:5432/habit_tracker
+      DATABASE_URL_TEST: postgresql://habit:habit@localhost:5432/habit_tracker_test
+      SESSION_SECRET: ci-throwaway-session-secret-not-a-real-secret
+      FRONTEND_ORIGIN: http://localhost:5173
+      PORT: 4000
+      SEED_PASSWORD_MANAGER: ci-throwaway-pw-manager
+      SEED_PASSWORD_PARTICIPANT_1: ci-throwaway-pw-participant-1
+      SEED_PASSWORD_PARTICIPANT_2: ci-throwaway-pw-participant-2
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      - name: Create test database
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y --no-install-recommends postgresql-client
+          PGPASSWORD=habit psql -h localhost -U habit -d habit_tracker -c "CREATE DATABASE habit_tracker_test"
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Apply test database migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL_TEST }}
+        run: npx prisma migrate deploy
+
+      - name: Backend typecheck
+        working-directory: backend
+        run: npm run typecheck
+
+      - name: Backend tests
+        working-directory: backend
+        run: npm test
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Frontend tests
+        working-directory: frontend
+        run: npm test
+
+      - name: Build Docker image (no push)
+        run: docker build -t habit-tracker:ci .

@@ -42,7 +42,7 @@ Example values for local development:
 ```bash
 DATABASE_URL="postgresql://habit:habit@localhost:5432/habit_tracker"
 DATABASE_URL_TEST="postgresql://habit:habit@localhost:5432/habit_tracker_test"
-SESSION_SECRET="some-long-random-string"
+SESSION_SECRET="replace-with-a-long-random-string"
 PORT=4000
 FRONTEND_ORIGIN="http://localhost:5173"
 VITE_API_URL="http://localhost:4000"
@@ -56,7 +56,7 @@ and `VITE_API_URL` to match whatever ports you actually end up running on, or lo
 ## 3. Start a local PostgreSQL (optional, via Docker)
 
 ```bash
-docker compose up -d
+docker compose up -d db
 ```
 
 This starts a dev Postgres on `localhost:5432` (or `POSTGRES_PORT` if you overrode it) matching the
@@ -107,6 +107,23 @@ cd frontend && npm run dev
 
 Open the frontend URL in a browser; it calls the backend at `VITE_API_URL` with
 `credentials: "include"`, so `FRONTEND_ORIGIN` must match the frontend's actual origin exactly.
+
+## 6b. Or run the whole app in Docker (closer to production)
+
+```bash
+docker compose up --build
+```
+
+Builds the root `Dockerfile` and starts it alongside `db`, serving the built frontend and the API
+from one container on <http://localhost:3000> (single origin — see
+`docs/labs/lab-05/docker-ci.md`). The `app` service's env vars in `docker-compose.yml` are
+clearly-fake local values, not real secrets. First time only, apply migrations and seed it (same
+dummy `SEED_PASSWORD_*` pattern as above):
+
+```bash
+docker compose exec -e SEED_PASSWORD_MANAGER=dev -e SEED_PASSWORD_PARTICIPANT_1=dev \
+  -e SEED_PASSWORD_PARTICIPANT_2=dev app sh -c "npx prisma migrate deploy && npm run db:seed"
+```
 
 ## 7. Run tests
 

@@ -1,0 +1,16 @@
+.git
+**/node_modules
+**/dist
+**/coverage
+.env
+.env.*
+docs
+*.md
+.github
+.vscode
+.idea
+*.log
+.DS_Store
+backend/tests
+frontend/src/**/*.test.*
+frontend/src/test

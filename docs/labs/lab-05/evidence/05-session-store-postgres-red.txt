@@ -1,0 +1,55 @@
+
+ RUN  v5.1.0 <repo>/backend
+
+ ❯ tests/sessionStore.test.ts (2 tests | 2 failed) 376ms
+   ❯ session store (2)
+     × persists the session in the Postgres `session` table, not in server memory 219ms
+     × recognises a session cookie issued by one app instance from a brand-new app instance sharing the same store 157ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/sessionStore.test.ts > session store > persists the session in the Postgres `session` table, not in server memory
+PrismaClientKnownRequestError: 
+Invalid `prisma.$queryRaw()` invocation:
+
+
+Raw query failed. Code: `42P01`. Message: `relation "session" does not exist`
+ ❯ $n.handleRequestError node_modules/@prisma/client/runtime/library.js:121:7315
+ ❯ $n.handleAndLogRequestError node_modules/@prisma/client/runtime/library.js:121:6623
+ ❯ $n.request node_modules/@prisma/client/runtime/library.js:121:6307
+ ❯ l node_modules/@prisma/client/runtime/library.js:130:9633
+ ❯ tests/sessionStore.test.ts:24:18
+     22|     expect(loginRes.status).toBe(200);
+     23|
+     24|     const rows = await prisma.$queryRaw<
+       |                  ^
+     25|       { sid: string; expire: Date }[]
+     26|     >`SELECT sid, expire FROM "session"`;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/sessionStore.test.ts > session store > recognises a session cookie issued by one app instance from a brand-new app instance sharing the same store
+AssertionError: expected 401 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 401
+
+ ❯ tests/sessionStore.test.ts:54:26
+     52|     const meRes = await request(appB).get("/auth/me").set("Cookie", co…
+     53|
+     54|     expect(meRes.status).toBe(200);
+       |                          ^
+     55|     expect(meRes.body).toEqual({ id: user.id, email: user.email, role:…
+     56|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  23:43:26
+   Duration  760ms (tests 55%, import 32%, transform 6%, setup 6%)
+
