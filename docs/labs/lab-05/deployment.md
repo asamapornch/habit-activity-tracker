@@ -294,6 +294,40 @@ errors.
 
 [state before the Actions redeploy](evidence/28-before-redeploy.png)
 
+### Login
+
+Logged in as the seeded manager account on the live service.
+
+[first deploy: login page](evidence/24-first-deploy-login-page.png)
+
+### Persistence test
+
+1. As that same logged-in manager session, created a template "Persistence
+   test" (min 0, max 10).
+2. Forced a new Cloud Run revision (`s65da36e2-00003-qwp`) with:
+   ```bash
+   gcloud run services update s65da36e2 --region asia-southeast1 \
+     --update-env-vars PERSISTENCE_TEST=1
+   ```
+   — a no-op env var, purely to make Cloud Run create and switch traffic to
+   a brand new container instance.
+   [new revision serving traffic](evidence/25-first-deploy-new-revision.png)
+3. Once that new revision was serving 100% of traffic, the **same browser
+   session** (no new login) was still authenticated, and the "Persistence
+   test" template was still listed.
+   [still logged in and template still listed after the revision swap](evidence/26-persistence-after-restart.png)
+
+Confirms sessions and data live in Cloud SQL, not in any one instance's
+memory: a brand new container instance (the new revision) still recognized
+the session created by the previous instance, and could read the same row.
+
+### Rule rejection
+
+Creating a template with Min 10 and Max 5 (`minValue >= maxValue`) is
+rejected with `"Invalid template fields."` (`backend/src/routes/templates.ts`).
+
+[rule rejection](evidence/27-rule-rejection.png)
+
 ## Rules
 
 - **Never put a secret value in Git.** Only Secret Manager secret *names*
