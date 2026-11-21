@@ -281,6 +281,19 @@ in `docs/labs/lab-05/evidence/16-docker-compose-e2e-verification.txt`
 (container restart standing in for a replaced instance); the same steps
 apply here against the real Cloud Run service.
 
+## First deployment record (21 Nov 2026)
+
+The first real deploy ran manually from `main` at commit
+`5142906a97da4cc750b03f8b18baa8337019f7d2`, via `DRY_RUN=0 bash deploy/deploy.sh`.
+Build, push, the migration job, and the service update all completed with no
+errors.
+
+- Service URL: `https://s65da36e2-4d7hbszvwq-as.a.run.app`
+- `GET /health` → 200
+- `GET /ready` → 200 (`{"status":"ready"}`)
+
+[state before the Actions redeploy](evidence/28-before-redeploy.png)
+
 ## Rules
 
 - **Never put a secret value in Git.** Only Secret Manager secret *names*
