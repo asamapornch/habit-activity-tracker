@@ -281,6 +281,55 @@ in `docs/labs/lab-05/evidence/16-docker-compose-e2e-verification.txt`
 (container restart standing in for a replaced instance); the same steps
 apply here against the real Cloud Run service.
 
+## First deployment record (21 Nov 2026)
+
+The first real deploy ran manually from `main` at commit
+`5142906a97da4cc750b03f8b18baa8337019f7d2`, via `DRY_RUN=0 bash deploy/deploy.sh`.
+Build, push, the migration job, and the service update all completed with no
+errors.
+
+- Service URL: `https://s65da36e2-4d7hbszvwq-as.a.run.app`
+- `GET /health` → 200
+- `GET /ready` → 200 (`{"status":"ready"}`)
+
+[state before the Actions redeploy](evidence/28-before-redeploy.png)
+
+### Login
+
+Login page of the live service (URL visible in the address bar). The
+logged-in state is shown in evidence/26.
+
+[first deploy: login page](evidence/24-first-deploy-login-page.png)
+
+### Persistence test
+
+1. As that same logged-in manager session, created a template "Persistence
+   test" (min 0, max 10).
+2. Forced a new Cloud Run revision (`s65da36e2-00003-qwp`) with:
+   ```bash
+   gcloud run services update s65da36e2 --region asia-southeast1 \
+     --update-env-vars PERSISTENCE_TEST=1
+   ```
+   — a no-op env var, purely to make Cloud Run create and switch traffic to
+   a brand new container instance. `PERSISTENCE_TEST=1` was a temporary env
+   var used only to force a new revision; it was removed afterwards.
+   [new revision serving traffic](evidence/25-first-deploy-new-revision.png)
+3. Once that new revision was serving 100% of traffic, the **same browser
+   session** (no new login) was still authenticated, and the "Persistence
+   test" template was still listed.
+   [still logged in and template still listed after the revision swap](evidence/26-persistence-after-restart.png)
+
+Confirms sessions and data live in Cloud SQL, not in any one instance's
+memory: a brand new container instance (the new revision) still recognized
+the session created by the previous instance, and could read the same row.
+
+### Rule rejection
+
+Creating a template with Min 10 and Max 5 (`minValue >= maxValue`) is
+rejected with `"Invalid template fields."` (`backend/src/routes/templates.ts`).
+
+[rule rejection](evidence/27-rule-rejection.png)
+
 ## Rules
 
 - **Never put a secret value in Git.** Only Secret Manager secret *names*
