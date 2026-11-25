@@ -10,7 +10,7 @@ Package version: 1.0 · Date: 23 Nov 2026
 | Product | Habit and Activity Tracker (recording system only; no medical advice, no reminders delivered) |
 | Repository | https://github.com/asamapornch/habit-activity-tracker |
 | Release tag | `v1.0-sprint1` (Sprint 1 features F-01 to F-05) |
-| Version under test | `main` at commit `0619c07db872a5bf1c7946301b4bfc40e9e477d2` (contains the tag; later commits only add Docker, CI and deployment files, no feature change) |
+| Version under test | `main` at commit `0619c07db872a5bf1c7946301b4bfc40e9e477d2` (contains the tag; later commits only add Docker, CI and deployment files and cloud-readiness code changes (session store, /ready, static fallback, config); no feature change) |
 | Deployed revision | Cloud Run revision `s65da36e2-00009-b4s`, image from Deploy demo run #6 (https://github.com/asamapornch/habit-activity-tracker/actions/runs/44890478696) |
 | URL | https://s65da36e2-4d7hbszvwq-as.a.run.app |
 | In scope | Login/logout, activity templates (create, edit, list), goals (create, list, open), daily entries, history, progress %, role and ownership rules |
