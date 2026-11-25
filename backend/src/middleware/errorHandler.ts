@@ -15,5 +15,18 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     return;
   }
 
+  // body-parser (via raw-body) rejects a request body over express.json()'s
+  // limit with this shape before any route runs; without this, a request
+  // that's merely too large for the field it fills (B2-01) fell through to
+  // the generic 500 below instead of the 400 AC-02.11 requires.
+  const isBodyTooLarge =
+    (err as { status?: number; type?: string } | null)?.status === 413 &&
+    (err as { type?: string }).type === "entity.too.large";
+
+  if (isBodyTooLarge) {
+    sendError(res, 400, "VALIDATION_ERROR", "Request body is too large.");
+    return;
+  }
+
   sendError(res, 500, "INTERNAL_ERROR", "An unexpected error occurred.");
 }
