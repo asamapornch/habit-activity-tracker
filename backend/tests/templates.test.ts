@@ -354,6 +354,10 @@ describe("B2-01 oversized request body (AC-02.11, AC-02.17)", () => {
     expect(res.body.error.code).toBe("VALIDATION_ERROR");
   });
 
+  // 102,000 characters is chosen because the body stays just under body-parser's
+  // 102,400-byte (100 kB) default limit, so this case must still reach the length
+  // check and return 400; the 110,000-character case exceeds the limit and must
+  // also return 400.
   it("rejects a 102,000-character name with 400 VALIDATION_ERROR (body still under the 100 kB limit)", async () => {
     const res = await request(app)
       .post("/templates")
