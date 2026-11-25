@@ -334,6 +334,70 @@ describe("PUT /templates/:id", () => {
   });
 });
 
+describe("B2-01 oversized request body (AC-02.11, AC-02.17)", () => {
+  it("accepts a 100-character name (boundary)", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ name: "a".repeat(100), unit: "km", minValue: 0, maxValue: 50 });
+
+    expect(res.status).toBe(201);
+  });
+
+  it("rejects a 99,000-character name with 400 VALIDATION_ERROR (body under the 100 kB limit)", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ name: "a".repeat(99_000), unit: "km", minValue: 0, maxValue: 50 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects a 102,000-character name with 400 VALIDATION_ERROR (body still under the 100 kB limit)", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ name: "a".repeat(102_000), unit: "km", minValue: 0, maxValue: 50 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("POST /templates with a 110,000-character name returns 400 VALIDATION_ERROR, not 500 (body over the 100 kB limit)", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ name: "a".repeat(110_000), unit: "km", minValue: 0, maxValue: 50 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    expect(typeof res.body.error.message).toBe("string");
+    expect(res.body.error.message.length).toBeGreaterThan(0);
+    await expect(prisma.template.count()).resolves.toBe(0);
+  });
+
+  it("PUT /templates/:id with a 110,000-character name returns 400 VALIDATION_ERROR, not 500, and leaves the template unchanged", async () => {
+    const created = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send(VALID_TEMPLATE);
+
+    const res = await request(app)
+      .put(`/templates/${created.body.id}`)
+      .set("Cookie", managerCookie)
+      .send({ name: "a".repeat(110_000), unit: "km", minValue: 0, maxValue: 50 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    expect(typeof res.body.error.message).toBe("string");
+    expect(res.body.error.message.length).toBeGreaterThan(0);
+
+    const stored = await prisma.template.findUniqueOrThrow({ where: { id: created.body.id } });
+    expect(stored.name).toBe(VALID_TEMPLATE.name);
+  });
+});
+
 describe("GET /templates", () => {
   it("TEST-02.9a returns both templates to a Manager, ordered by id ascending", async () => {
     const first = await request(app).post("/templates").set("Cookie", managerCookie).send(VALID_TEMPLATE);
