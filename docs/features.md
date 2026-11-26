@@ -14,8 +14,8 @@ get their contracts at the start of their sprint.
 | F-06 | Goal revisions | Participant revises the daily target and/or end date of an own goal; revisions kept with an effective date; past days keep their old target | FR-10, BR-10, BR-11, BR-04, BR-08 | F-03, F-04 | 2 | Planned |
 | F-07 | Streaks | Current and longest streak per goal from entries and the target in effect on each day | FR-11, BR-11, BR-12, BR-08 | F-04, F-06 | 2 | Planned |
 | F-08 | Progress summaries | Weekly and monthly summary per goal: days recorded, days met, total and average value | FR-12, BR-11, BR-08 | F-04, F-06 | 2 | Planned |
-| F-09 | Reminder schedules | Participant sets weekdays and a time per goal; upcoming reminders for the next 7 days are listed; nothing is delivered | FR-13, FR-14, BR-13, BR-08 | F-03 | 3 | Planned |
-| F-10 | Deployment and hardening | Docker images, PostgreSQL on durable storage, GCP deployment, CI on every PR, performance check | NFR-06, NFR-07, NFR-08 | F-01 to F-09 | 3 (Lab 5 for Docker/CI/GCP) | Planned |
+| F-09 | Reminder schedules | Participant sets weekdays and a time per goal; upcoming reminders for the next 7 days are listed; nothing is delivered | FR-13, FR-14, BR-13, BR-08 | F-03 | 3 | Contract written (planned) — `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.0; no code yet; Slice 1 (one goal's own schedule) is the smallest implementable workflow |
+| F-10 | Deployment and hardening | Docker images, PostgreSQL on durable storage, GCP deployment, CI on every PR, performance check | NFR-06, NFR-07, NFR-08 | F-01 to F-09 | 3 (Lab 5 for Docker/CI/GCP) | NFR-06/NFR-08 done (Lab 5, already on main); NFR-07 contract written (planned) — `docs/sprints/sprint-3/F-10-deployment-hardening.md` v1.0; no timing test yet |
 
 ## System responsibilities (cross-cutting)
 
