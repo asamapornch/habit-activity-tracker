@@ -1,0 +1,92 @@
+Lab 7 post-deployment check — output
+run by asamapornch
+
+Date/time: 2026-11-27 04:00:36 to 04:01:54 Asia/Bangkok (timestamps from the run itself, per check)
+Revision: s65da36e2-00011-269 (matches this script's EXPECTED_REVISION; confirmed by its own
+  live `gcloud run services describe` cross-check — no mismatch note was printed in the run)
+Commit: main b53e7bc (the commit s65da36e2-00011-269 was built from; see the Job 2 Cloud Run /
+  Artifact Registry revision-to-commit mapping done earlier for this Lab 7 report)
+Script: /tmp/lab7-postdeploy-check.sh (kept out of this repo by design; not git-committed;
+  sha256 bf497184cb886dc4dbc1fde25d6125f6bf9b0e581b6d6f31a084e70d33d8bd69 as of this run,
+  for reproducibility reference)
+Target: https://s65da36e2-4d7hbszvwq-as.a.run.app (our own deployed app only)
+
+Result: 19 PASS / 0 FAIL / 0 BLOCKED out of 19 checks. No check failed or was skipped.
+
+================================================================================
+Raw output (as pasted by asamapornch; no password, token or cookie value appears in it)
+================================================================================
+
+== Logging in ==
+Manager email: manager@example.com
+Manager password:
+Participant A email: participant1@example.com
+Participant A password:
+Participant B email:  participant2@example.com
+Participant B password:
+
+== Manager creates the synthetic template with backdateDays=null ==
+[PASS] TEMPLATE-NULL                    expected=201                      actual=201 -
+[PASS] TEMPLATE-NULL-VALUE              expected=null actual=null
+
+== Participant A creates a goal on it ==
+[PASS] GOAL-CREATE                      expected=201                      actual=201 -
+
+== null = no limit: an old entry inside the goal is accepted ==
+[PASS] NO-LIMIT-OK                      expected=201                      actual=201 -
+
+== Template backdateDays boundaries (AC-02.21/02.22) ==
+[PASS] LIMIT-0-ACCEPTED                 expected=200                      actual=200 -
+[PASS] LIMIT-30-ACCEPTED                expected=200                      actual=200 -
+[PASS] LIMIT-NEG1-REJECTED              expected=400 VALIDATION_ERROR     actual=400 VALIDATION_ERROR
+[PASS] LIMIT-31-REJECTED                expected=400 VALIDATION_ERROR     actual=400 VALIDATION_ERROR
+[PASS] LIMIT-NONINT-REJECTED            expected=400 VALIDATION_ERROR     actual=400 VALIDATION_ERROR
+[PASS] LIMIT-UNCHANGED-AFTER-REJECTS    expected=backdateDays still 30 actual=backdateDays=30
+
+== Setting the working limit (2 days) for the entry-boundary checks ==
+[PASS] LIMIT-SET-FOR-ENTRIES            expected=200                      actual=200 -
+
+== Entry boundaries against the working limit (AC-04.24) ==
+[PASS] ENTRY-AT-LIMIT-ACCEPTED          expected=201                      actual=201 -
+[PASS] ENTRY-BEYOND-LIMIT-REJECTED      expected=400 VALIDATION_ERROR     actual=400 VALIDATION_ERROR
+[PASS] ENTRY-TODAY-ACCEPTED             expected=201                      actual=201 -
+
+== BR-06: a Participant cannot write templates ==
+[PASS] PARTICIPANT-CANNOT-CREATE-TEMPLATE expected=403 FORBIDDEN            actual=403 FORBIDDEN
+[PASS] PARTICIPANT-CANNOT-EDIT-TEMPLATE expected=403 FORBIDDEN            actual=403 FORBIDDEN
+
+== BR-08: a Participant cannot read or change another Participant's goal/entries ==
+[PASS] PARTICIPANT-B-CANNOT-READ-GOAL   expected=404 NOT_FOUND            actual=404 NOT_FOUND
+[PASS] PARTICIPANT-B-CANNOT-CREATE-ENTRY expected=404 NOT_FOUND            actual=404 NOT_FOUND
+
+== Invalidating sessions (server-side logout; no cookie ever touched disk) ==
+
+== Results: 19 PASS / 0 FAIL out of 19 checks ==
+CHECK                          | ACTION                                             | EXPECTED                   | ACTUAL             | VERDICT | TIME (Asia/Bangkok)       | REVISION
+UNAUTH-401                     | GET /templates, no cookie                          | 401 UNAUTHENTICATED        | 401 UNAUTHENTICATED | PASS   | 2026-11-27 04:00:36 +0700 | s65da36e2-00011-269
+TEMPLATE-NULL                  | POST /templates backdateDays=null                  | 201                        | 201 -              | PASS   | 2026-11-27 04:01:50 +0700 | s65da36e2-00011-269
+TEMPLATE-NULL-VALUE            | created body backdateDays                          | null                       | null               | PASS   | 2026-11-27 04:01:50 +0700 | s65da36e2-00011-269
+GOAL-CREATE                    | POST /goals 2026-11-17..2026-11-27                 | 201                        | 201 -              | PASS   | 2026-11-27 04:01:50 +0700 | s65da36e2-00011-269
+NO-LIMIT-OK                    | POST entry date=2026-11-17, template backdateDays=null | 201                        | 201 -              | PASS   | 2026-11-27 04:01:51 +0700 | s65da36e2-00011-269
+LIMIT-0-ACCEPTED               | PUT template backdateDays=0                        | 200                        | 200 -              | PASS   | 2026-11-27 04:01:51 +0700 | s65da36e2-00011-269
+LIMIT-30-ACCEPTED              | PUT template backdateDays=30                       | 200                        | 200 -              | PASS   | 2026-11-27 04:01:51 +0700 | s65da36e2-00011-269
+LIMIT-NEG1-REJECTED            | PUT template backdateDays=-1                       | 400 VALIDATION_ERROR       | 400 VALIDATION_ERROR | PASS   | 2026-11-27 04:01:51 +0700 | s65da36e2-00011-269
+LIMIT-31-REJECTED              | PUT template backdateDays=31                       | 400 VALIDATION_ERROR       | 400 VALIDATION_ERROR | PASS   | 2026-11-27 04:01:52 +0700 | s65da36e2-00011-269
+LIMIT-NONINT-REJECTED          | PUT template backdateDays=2.5                      | 400 VALIDATION_ERROR       | 400 VALIDATION_ERROR | PASS   | 2026-11-27 04:01:52 +0700 | s65da36e2-00011-269
+LIMIT-UNCHANGED-AFTER-REJECTS  | GET /templates after the 3 rejected PUTs           | backdateDays still 30      | backdateDays=30    | PASS   | 2026-11-27 04:01:52 +0700 | s65da36e2-00011-269
+LIMIT-SET-FOR-ENTRIES          | PUT template backdateDays=2                        | 200                        | 200 -              | PASS   | 2026-11-27 04:01:52 +0700 | s65da36e2-00011-269
+ENTRY-AT-LIMIT-ACCEPTED        | POST entry date=2026-11-25 (today-2, at limit)     | 201                        | 201 -              | PASS   | 2026-11-27 04:01:53 +0700 | s65da36e2-00011-269
+ENTRY-BEYOND-LIMIT-REJECTED    | POST entry date=2026-11-24 (1 day beyond limit)    | 400 VALIDATION_ERROR       | 400 VALIDATION_ERROR | PASS   | 2026-11-27 04:01:53 +0700 | s65da36e2-00011-269
+ENTRY-TODAY-ACCEPTED           | POST entry date=2026-11-27 (today, inside window)  | 201                        | 201 -              | PASS   | 2026-11-27 04:01:53 +0700 | s65da36e2-00011-269
+PARTICIPANT-CANNOT-CREATE-TEMPLATE | Participant A POST /templates                      | 403 FORBIDDEN              | 403 FORBIDDEN      | PASS   | 2026-11-27 04:01:53 +0700 | s65da36e2-00011-269
+PARTICIPANT-CANNOT-EDIT-TEMPLATE | Participant A PUT /templates/12                    | 403 FORBIDDEN              | 403 FORBIDDEN      | PASS   | 2026-11-27 04:01:54 +0700 | s65da36e2-00011-269
+PARTICIPANT-B-CANNOT-READ-GOAL | Participant B GET /goals/12 (owned by A)           | 404 NOT_FOUND              | 404 NOT_FOUND      | PASS   | 2026-11-27 04:01:54 +0700 | s65da36e2-00011-269
+PARTICIPANT-B-CANNOT-CREATE-ENTRY | Participant B POST /goals/12/entries (owned by A)  | 404 NOT_FOUND              | 404 NOT_FOUND      | PASS   | 2026-11-27 04:01:54 +0700 | s65da36e2-00011-269
+
+== Synthetic data remaining (no DELETE endpoint exists for templates/goals/entries —
+   out of scope per the F-02/F-03/F-04 contracts; automated cleanup is not possible) ==
+  Template id=12 name="L7-CHECK-1795726831"
+  Goal id=12 (Participant A, on the above template)
+  Up to 3 entries on that goal: 2026-11-17, 2026-11-25, 2026-11-27
+  (plus 2026-11-24 only if that check incorrectly returned 201)
+  All identifiable by the prefix "L7-CHECK-1795726831" for manual DB removal if desired.
