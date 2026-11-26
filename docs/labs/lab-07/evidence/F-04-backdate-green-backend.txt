@@ -1,0 +1,81 @@
+# F-04 Lab 7 GREEN (backend)
+# Tested commit: 71032a8 (implementation on top of 1fd0298)
+# Run at: 2026-11-26 18:23 +07; Node v26.13.1
+# Commands: cd backend && npx vitest run tests/entries.test.ts --reporter=verbose ; npx vitest run ; npm run typecheck ; npm run build
+# Result: entries 54 passed (54); full backend Test Files 15 passed (15), Tests 194 passed (194); typecheck and build exit 0.
+
+## entries.test.ts (verbose)
+
+ RUN  v5.1.0 <repo>/backend
+
+ ✓ tests/entries.test.ts > AC-04.1 record an entry > TEST-04.1a owner records an entry and receives 201 with the stored entry 466ms
+ ✓ tests/entries.test.ts > AC-04.1 record an entry > TEST-04.1b accepts two-decimal values 0.07, 1.15 and 2.5 414ms
+ ✓ tests/entries.test.ts > AC-04.2 anonymous access > TEST-04.2 no cookie: POST entries, GET entries, GET progress each return 401 400ms
+ ✓ tests/entries.test.ts > AC-04.3 Manager is stopped at the role gate > TEST-04.3a M POST entries returns 403 and stores nothing 397ms
+ ✓ tests/entries.test.ts > AC-04.3 Manager is stopped at the role gate > TEST-04.3b M GET entries and GET progress return 403 397ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4a {} returns 400 and stores nothing 395ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4b an unknown field returns 400 and stores nothing 416ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4c value as a numeric string returns 400 and stores nothing 393ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4d value with three decimals returns 400 and stores nothing 402ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4e slashes, timestamp and impossible dates return 400 and store nothing 402ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4f a JSON array or null body returns 400 and stores nothing 419ms
+ ✓ tests/entries.test.ts > AC-04.4 body shape and id format > TEST-04.4g malformed goal ids (abc, 0, 99999999999) return 400 on all three endpoints 406ms
+ ✓ tests/entries.test.ts > AC-04.5 ownership (BR-08) > TEST-04.5a control P1 posts 201; P2 gets identical 404 on G1 and a missing goal 401ms
+ ✓ tests/entries.test.ts > AC-04.5 ownership (BR-08) > TEST-04.5b control P1 reads entries and progress; P2 gets identical 404s 416ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6a tomorrow returns 400 FUTURE 393ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6b today is accepted 397ms
+ ✓ tests/entries.test.ts > AC-04.6 no future dates (BR-03) > TEST-04.6c a date after today and after the goal end returns FUTURE, not OUTSIDE 400ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7a the day before the start returns 400 OUTSIDE 395ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7b a past date after the end returns 400 OUTSIDE 389ms
+ ✓ tests/entries.test.ts > AC-04.7 date within the goal (BR-03) > TEST-04.7c the start and end dates are accepted 399ms
+ ✓ tests/entries.test.ts > AC-04.8 today follows Asia/Bangkok, not UTC or the server TZ (BR-03, A-02) > TEST-04.8a at 00:30 on 8 Nov in Bangkok an entry for 8 Nov is accepted 390ms
+ ✓ tests/entries.test.ts > AC-04.8 today follows Asia/Bangkok, not UTC or the server TZ (BR-03, A-02) > TEST-04.8b at 23:59 on 7 Nov in Bangkok an entry for 8 Nov is rejected as future 395ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9a above the maximum returns 400 RANGE 396ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9b below the minimum returns 400 RANGE 396ms
+ ✓ tests/entries.test.ts > AC-04.9 value within template range (BR-02) > TEST-04.9c values equal to the bounds are accepted 405ms
+ ✓ tests/entries.test.ts > AC-04.10 one entry per date (BR-01) > TEST-04.10a a second entry on the same date returns 409 and the first is unchanged 396ms
+ ✓ tests/entries.test.ts > AC-04.10 one entry per date (BR-01) > TEST-04.10b the same date on another goal is accepted 397ms
+ ✓ tests/entries.test.ts > AC-04.11 concurrent duplicates (BR-01) > TEST-04.11 five concurrent posts for one date give one 201 and four 409, no 500 419ms
+ ✓ tests/entries.test.ts > AC-04.12 template range change applies only to new entries (D-06) > TEST-04.12 existing entry unchanged; a new entry uses the new range 411ms
+ ✓ tests/entries.test.ts > AC-04.13 history > TEST-04.13a returns only this goal's entries ordered by date 397ms
+ ✓ tests/entries.test.ts > AC-04.13 history > TEST-04.13b no entries returns 200 [] 396ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14a 3 of 5 days met is 60 399ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14b 1 of 3 days rounds down to 33.33 399ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14c a value equal to the target counts as met 397ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14d today is the Bangkok date even when the server TZ differs 394ms
+ ✓ tests/entries.test.ts > AC-04.14 progress (BR-09) > TEST-04.14e 2 of 3 days rounds up to 66.67 404ms
+ ✓ tests/entries.test.ts > AC-04.15 progress before and after the goal period (BR-09) > TEST-04.15a before the goal starts everything is 0 392ms
+ ✓ tests/entries.test.ts > AC-04.15 progress before and after the goal period (BR-09) > TEST-04.15b after the goal ends daysElapsed stops at the end date 397ms
+ ✓ tests/entries.test.ts > AC-04.16 progress uses the stored daily target (D-06) > TEST-04.16 after the template range moves above the target, the stored target 5 is used 400ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17a no cookie with an invalid body returns 401, not 400 396ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17b Manager with an invalid body or malformed id returns 403, not 400 397ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17c control; a future date on a missing goal returns 404, not 400 396ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17d control; a date outside the goal with a bad value returns OUTSIDE (BR-03 before BR-02) 397ms
+ ✓ tests/entries.test.ts > AC-04.17 check order > TEST-04.17e control; a duplicate date with a bad value returns RANGE (BR-02 before BR-01) 400ms
+ ✓ tests/entries.test.ts > AC-04.24 back-dating limit boundaries (BR-03, D-12) > TEST-04.24a limit 7: today − 7 (2026-11-03) is accepted 397ms
+ ✓ tests/entries.test.ts > AC-04.24 back-dating limit boundaries (BR-03, D-12) > TEST-04.24b limit 7: today − 8 (2026-11-02) returns OLD(2026-11-03) 391ms
+ ✓ tests/entries.test.ts > AC-04.24 back-dating limit boundaries (BR-03, D-12) > TEST-04.24c limit 7: today is accepted and tomorrow is still FUTURE 400ms
+ ✓ tests/entries.test.ts > AC-04.25 limit 0 allows today only (BR-03, D-12) > TEST-04.25 limit 0: today is accepted, yesterday returns OLD(today) 406ms
+ ✓ tests/entries.test.ts > AC-04.26 no limit keeps the Sprint 1 rule (BR-03, D-02) > TEST-04.26 limit null: a date 29 days back inside the goal is accepted 396ms
+ ✓ tests/entries.test.ts > AC-04.27 check order with the limit > TEST-04.27a too old and before the goal start returns OLD, not OUTSIDE 391ms
+ ✓ tests/entries.test.ts > AC-04.27 check order with the limit > TEST-04.27b too old with a bad value on a taken date returns OLD, not RANGE or 409 390ms
+ ✓ tests/entries.test.ts > AC-04.27 check order with the limit > TEST-04.27c control; another Participant gets 404 and a Manager 403 before the limit 403ms
+ ✓ tests/entries.test.ts > AC-04.28 the template's current limit is used (D-12) > TEST-04.28 a limit set later rejects new old entries; existing entries and progress stay 413ms
+ ✓ tests/entries.test.ts > AC-04.29 the limit uses Asia/Bangkok today (A-02) > TEST-04.29 TZ America/Los_Angeles at 17:30Z on 7 Nov: limit 1 allows 7 Nov, rejects 6 Nov 404ms
+
+ Test Files  1 passed (1)
+      Tests  54 passed (54)
+   Start at  18:21:39
+   Duration  21.96s (tests 99%, import 1%)
+
+
+## Full backend suite
+
+ RUN  v5.1.0 <repo>/backend
+
+
+ Test Files  15 passed (15)
+      Tests  194 passed (194)
+   Start at  18:22:01
+   Duration  64.77s (tests 97%, import 2%)
+

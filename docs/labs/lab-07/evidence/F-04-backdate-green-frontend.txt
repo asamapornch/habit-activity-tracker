@@ -1,0 +1,15 @@
+# F-04 Lab 7 GREEN (frontend, regression only: no frontend change in this PR)
+# Tested commit: 71032a8
+# Run at: 2026-11-26 18:23 +07; Node v26.13.1
+# Commands: cd frontend && npx vitest run ; npm run lint ; npm run build
+# Result: Test Files 4 passed (4), Tests 43 passed (43); lint 0 errors (3 existing exhaustive-deps warnings in Goals.tsx, GoalDetail.tsx and Templates.tsx, none touched here); build exit 0.
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  43 passed (43)
+   Start at  18:23:07
+   Duration  1.11s (tests 53%, environment 30%, transform 7%, import 5%, setup 5%)
+
