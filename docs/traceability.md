@@ -34,7 +34,7 @@ F-05 `backend/tests/access.test.ts`.
 | --- | --- | --- | --- | --- |
 | BR-01 One entry per day (409) | F-04 | 1 | AC-04.10, 04.11 (concurrent), 04.21 / TEST-04.10, 04.11, 04.21a | Verified |
 | BR-02 Value within template range | F-04 | 1 | AC-04.9, 04.12, 04.21 / TEST-04.9, 04.12 | Verified |
-| BR-03 No future date, within the template's back-dating limit (Lab 7), inside goal dates | F-04 | 1 | AC-04.6 to 04.8 (Asia/Bangkok today), 04.21 / TEST-04.6 to 04.8, 04.21b; Lab 7: AC-04.24 to 04.29 / TEST-04.24a to 04.29 | Verified; Lab 7 part specified, tests pending |
+| BR-03 No future date, within the template's back-dating limit (Lab 7), inside goal dates | F-04 | 1 | AC-04.6 to 04.8 (Asia/Bangkok today), 04.21 / TEST-04.6 to 04.8, 04.21b; Lab 7: AC-04.24 to 04.29 / TEST-04.24a to 04.24c, 04.25, 04.26, 04.27a to 04.27c, 04.28, 04.29 | Verified (Lab 7 part: PR #71) |
 | BR-04 No overlapping goals per template (409) | F-03 | 1 | AC-03.8 to 03.10 (concurrent), 03.18 / TEST-03.8 to 03.10, 03.18a | Verified |
 | BR-05 Target in range, end not before start | F-03 | 1 | AC-03.5, 03.7, 03.13, 03.18 / TEST-03.5, 03.7, 03.13, 03.18b | Verified |
 | BR-06 Only a Manager writes templates (403) | F-02, F-05 | 1 | AC-02.2, 02.7, 02.10, 02.14, 05.2 / TEST-02.2, 02.7, 02.10, 02.14, 05.2; Lab 7: AC-02.25 / TEST-02.25a, 02.25b | Verified (Lab 7 part: PR #70) |

@@ -71,11 +71,23 @@ entriesRouter.post("/goals/:id/entries", requireRole("PARTICIPANT"), async (req,
     const goal = await findOwnGoal(req, res, id);
     if (!goal) return;
 
-    // BR-03: future first, then outside the goal's dates.
+    // The goal's template, read once: its current back-dating limit (BR-03, SRS D-12)
+    // and its current range (BR-02, SRS D-06).
+    const template = await prisma.template.findUniqueOrThrow({ where: { id: goal.templateId } });
+
+    // BR-03: future first, then the template's back-dating limit (F-04 v1.5), then the goal's dates.
     const date = formatDateOnly(input.date);
-    if (date > todayInBangkok()) {
+    const today = todayInBangkok();
+    if (date > today) {
       sendError(res, 400, "VALIDATION_ERROR", "Entry date must not be in the future.");
       return;
+    }
+    if (template.backdateDays !== null) {
+      const earliest = formatDateOnly(new Date(parseDateOnly(today)!.getTime() - template.backdateDays * DAY_MS));
+      if (date < earliest) {
+        sendError(res, 400, "VALIDATION_ERROR", `Entry date must not be earlier than ${earliest}.`);
+        return;
+      }
     }
     if (date < formatDateOnly(goal.startDate) || date > formatDateOnly(goal.endDate)) {
       sendError(res, 400, "VALIDATION_ERROR", "Entry date must be within the goal's start and end dates.");
@@ -83,7 +95,6 @@ entriesRouter.post("/goals/:id/entries", requireRole("PARTICIPANT"), async (req,
     }
 
     // BR-02: the template's current range (SRS D-06), compared at two decimals (D-07).
-    const template = await prisma.template.findUniqueOrThrow({ where: { id: goal.templateId } });
     const value = round2(input.value);
     if (value < round2(template.minValue) || value > round2(template.maxValue)) {
       sendError(res, 400, "VALIDATION_ERROR", "Value must be within the template range.");

@@ -9,7 +9,7 @@
 | Needed by | F-05 (Stage B), release |
 | Owner | Student 2 |
 | Reviewer | Student 1 |
-| Status | Implemented and merged into `sprint-1-staging` (PR #29, #30, #31). v1.5: Lab 7 back-dating limit specified (Issue #65), implementation pending |
+| Status | Implemented and merged into `sprint-1-staging` (PR #29, #30, #31). v1.5: Lab 7 back-dating limit (Issue #65) implemented in PR #71 |
 
 ## 1. Purpose
 
@@ -332,13 +332,13 @@ progress `today` is `2026-11-05`.
 - [x] (v1.2) TEST-04.18 to TEST-04.23 are committed red before the entry screens, then green;
       `npm test` in `frontend/` passes; screenshots of the entry, history and progress journey are
       saved under `docs/sprints/sprint-1/evidence/ui-goals/`.
-- [ ] (v1.5, Lab 7) TEST-04.24a to TEST-04.29 are committed in their own commit and run red on the
+- [x] (v1.5, Lab 7) TEST-04.24a to TEST-04.29 are committed in their own commit and run red on the
       code before the BR-03 change (after F-02 v1.6 is merged, so the column exists): the listed
       new-behaviour tests fail on assertions, the controls pass; output saved under
       `docs/labs/lab-07/evidence/`.
-- [ ] (v1.5) The BR-03 change makes them pass; all existing TEST-01 to TEST-05 pass without editing any
+- [x] (v1.5) The BR-03 change makes them pass; all existing TEST-01 to TEST-05 pass without editing any
       existing expected result; outputs saved.
-- [ ] (v1.5) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 1.
+- [x] (v1.5) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 1.
 
 ## 7. Version history
 

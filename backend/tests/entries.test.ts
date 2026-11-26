@@ -618,3 +618,133 @@ describe("AC-04.17 check order", () => {
     expect(await entryCount()).toBe(1);
   });
 });
+
+// Lab 7 (Issue #65): per-template back-dating limit, F-04 contract v1.5 §5.1.
+// The limit is set on T through Prisma (column from F-02 v1.6), except in TEST-04.28.
+const OLD = (date: string) => `Entry date must not be earlier than ${date}.`;
+// 12:00 on 10 November 2026 in Bangkok: today is 2026-11-10.
+const NOV_10 = "2026-11-10T05:00:00Z";
+
+async function setLimit(backdateDays: number | null) {
+  await prisma.template.update({ where: { id: T.id }, data: { backdateDays } });
+}
+
+describe("AC-04.24 back-dating limit boundaries (BR-03, D-12)", () => {
+  it("TEST-04.24a limit 7: today − 7 (2026-11-03) is accepted", async () => {
+    await setLimit(7);
+    await start(NOV_10);
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-03" });
+    expect(res.status).toBe(201);
+  });
+
+  it("TEST-04.24b limit 7: today − 8 (2026-11-02) returns OLD(2026-11-03)", async () => {
+    await setLimit(7);
+    await start(NOV_10);
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-02" });
+    expectError(res, 400, "VALIDATION_ERROR", OLD("2026-11-03"));
+    expect(await entryCount()).toBe(0);
+  });
+
+  it("TEST-04.24c limit 7: today is accepted and tomorrow is still FUTURE", async () => {
+    await setLimit(7);
+    await start(NOV_10);
+    expect((await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-10" })).status).toBe(201);
+    const tomorrow = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-11" });
+    expectError(tomorrow, 400, "VALIDATION_ERROR", FUTURE);
+    expect(await entryCount()).toBe(1);
+  });
+});
+
+describe("AC-04.25 limit 0 allows today only (BR-03, D-12)", () => {
+  it("TEST-04.25 limit 0: today is accepted, yesterday returns OLD(today)", async () => {
+    await setLimit(0);
+    await start(NOV_10);
+    expect((await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-10" })).status).toBe(201);
+    const yesterday = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-09" });
+    expectError(yesterday, 400, "VALIDATION_ERROR", OLD("2026-11-10"));
+    expect(await entryCount()).toBe(1);
+  });
+});
+
+describe("AC-04.26 no limit keeps the Sprint 1 rule (BR-03, D-02)", () => {
+  it("TEST-04.26 limit null: a date 29 days back inside the goal is accepted", async () => {
+    await setLimit(null);
+    await start("2026-11-30T05:00:00Z");
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-01" });
+    expect(res.status).toBe(201);
+  });
+});
+
+describe("AC-04.27 check order with the limit", () => {
+  it("TEST-04.27a too old and before the goal start returns OLD, not OUTSIDE", async () => {
+    await setLimit(7);
+    await start(NOV_10);
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-10-31" });
+    expectError(res, 400, "VALIDATION_ERROR", OLD("2026-11-03"));
+    expect(await entryCount()).toBe(0);
+  });
+
+  it("TEST-04.27b too old with a bad value on a taken date returns OLD, not RANGE or 409", async () => {
+    await insertEntry(G1.id, "2026-11-01", 5);
+    await setLimit(7);
+    await start(NOV_10);
+    const res = await postEntry(p1Cookie, G1.id, { date: "2026-11-01", value: 999 });
+    expectError(res, 400, "VALIDATION_ERROR", OLD("2026-11-03"));
+    const stored = await prisma.entry.findMany({ where: { goalId: G1.id } });
+    expect(stored.map((e) => e.value)).toEqual([5]);
+  });
+
+  it("TEST-04.27c control; another Participant gets 404 and a Manager 403 before the limit", async () => {
+    await setLimit(7);
+    await start(NOV_10);
+    const tooOld = { ...B, date: "2026-11-01" };
+    expectError(await postEntry(p1Cookie, G1.id, tooOld), 400, "VALIDATION_ERROR", OLD("2026-11-03"));
+
+    const onG1 = await postEntry(p2Cookie, G1.id, tooOld);
+    const onMissing = await postEntry(p2Cookie, 99999, tooOld);
+    expectError(onG1, 404, "NOT_FOUND", GOAL404);
+    expectError(onMissing, 404, "NOT_FOUND", GOAL404);
+    expect(onG1.body).toEqual(onMissing.body);
+
+    expectError(await postEntry(managerCookie, G1.id, tooOld), 403, "FORBIDDEN", ROLE);
+    expect(await entryCount()).toBe(0);
+  });
+});
+
+describe("AC-04.28 the template's current limit is used (D-12)", () => {
+  it("TEST-04.28 a limit set later rejects new old entries; existing entries and progress stay", async () => {
+    await setLimit(null);
+    await start(NOV_10);
+    expect((await postEntry(p1Cookie, G1.id, { date: "2026-11-01", value: 5 })).status).toBe(201);
+
+    const putRes = await request(app)
+      .put(`/templates/${T.id}`)
+      .set("Cookie", managerCookie)
+      .send({ name: "Running", unit: "km", minValue: 0, maxValue: 50, backdateDays: 3 });
+    expect(putRes.status).toBe(200);
+
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-05" });
+    expectError(res, 400, "VALIDATION_ERROR", OLD("2026-11-07"));
+    expect(await entryCount()).toBe(1);
+
+    const list = await getEntries(p1Cookie, G1.id);
+    expect(list.status).toBe(200);
+    expect(list.body.map((e: { date: string }) => e.date)).toEqual(["2026-11-01"]);
+
+    const progress = await getProgress(p1Cookie, G1.id);
+    expect(progress.status).toBe(200);
+    expect(progress.body).toMatchObject({ daysElapsed: 10, daysMet: 1, progress: 10 });
+  });
+});
+
+describe("AC-04.29 the limit uses Asia/Bangkok today (A-02)", () => {
+  it("TEST-04.29 TZ America/Los_Angeles at 17:30Z on 7 Nov: limit 1 allows 7 Nov, rejects 6 Nov", async () => {
+    useOtherTimeZone();
+    await setLimit(1);
+    await start("2026-11-07T17:30:00Z");
+    expect((await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-07" })).status).toBe(201);
+    const res = await postEntry(p1Cookie, G1.id, { ...B, date: "2026-11-06" });
+    expectError(res, 400, "VALIDATION_ERROR", OLD("2026-11-07"));
+    expect(await entryCount()).toBe(1);
+  });
+});

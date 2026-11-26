@@ -19,7 +19,7 @@ Change request: Issue #65. Written before any test or code change (contract PR).
 | Pre-change implementation | `main` at `5d0e4ba` (release PR #67, Lab 6), deployed 2026-11-26 |
 | Intervening development since the baseline | Lab 5 cloud-readiness and deploy files; Lab 6 fixes PR #63 (B2-01, `errorHandler.ts`) and PR #64 (#60, `Templates.tsx` wheel blur). None changes BR-03. No Sprint 2 code is on `main`. |
 | Contract (this document, SRS v1.2, F-02 v1.7, F-04 v1.5, system SDS v1.1) | PR #69, merged before any test or code |
-| Tests and code | F-02 PR (field) and F-04 PR (rule), each with a red test commit before the code commit |
+| Tests and code | PR #70 F-02 field (red `7d9888a` → code `3d3d538`), PR #71 F-04 rule (red `1343c13` → code `71032a8`) |
 
 ## 3. Impact
 
