@@ -5,7 +5,10 @@ import { requireAuth, requireRole } from "../middleware/auth.js";
 
 export const templatesRouter = Router();
 
-const ALLOWED_KEYS = ["name", "unit", "minValue", "maxValue"] as const;
+const REQUIRED_KEYS = ["name", "unit", "minValue", "maxValue"] as const;
+// Optional key (F-02 v1.7, SRS D-12): left out means null, the Sprint 1 behaviour.
+const OPTIONAL_KEYS = ["backdateDays"] as const;
+const MAX_BACKDATE_DAYS = 30;
 const MIN_RANGE_VALUE = -1_000_000;
 const MAX_RANGE_VALUE = 1_000_000;
 
@@ -14,6 +17,7 @@ interface TemplateInput {
   unit: string;
   minValue: number;
   maxValue: number;
+  backdateDays: number | null;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -34,15 +38,21 @@ function isValidRangeValue(value: unknown): value is number {
   );
 }
 
+function isValidBackdateDays(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 0 && value <= MAX_BACKDATE_DAYS;
+}
+
 function parseTemplateInput(body: unknown): TemplateInput | null {
   if (!isPlainObject(body)) return null;
 
   const keys = Object.keys(body);
-  if (keys.length !== ALLOWED_KEYS.length || !ALLOWED_KEYS.every((key) => keys.includes(key))) {
+  const allowed: readonly string[] = [...REQUIRED_KEYS, ...OPTIONAL_KEYS];
+  if (!REQUIRED_KEYS.every((key) => keys.includes(key)) || !keys.every((key) => allowed.includes(key))) {
     return null;
   }
 
   const { name, unit, minValue, maxValue } = body;
+  const backdateDays = body.backdateDays ?? null;
   if (typeof name !== "string" || typeof unit !== "string") return null;
 
   const trimmedName = name.trim();
@@ -53,7 +63,9 @@ function parseTemplateInput(body: unknown): TemplateInput | null {
   if (!isValidRangeValue(minValue) || !isValidRangeValue(maxValue)) return null;
   if (minValue >= maxValue) return null;
 
-  return { name: trimmedName, unit: trimmedUnit, minValue, maxValue };
+  if (backdateDays !== null && !isValidBackdateDays(backdateDays)) return null;
+
+  return { name: trimmedName, unit: trimmedUnit, minValue, maxValue, backdateDays };
 }
 
 // Postgres's `integer` (int4) column max; a larger id would reach the

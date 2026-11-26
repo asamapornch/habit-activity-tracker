@@ -1,6 +1,6 @@
 # System-Level Software Design Specification — Habit & Activity Tracking
 
-Version 1.0 (Sprint 1 baseline). Requirement IDs refer to `docs/srs.md`.
+Version 1.1 (Sprint 1 baseline; v1.1 adds the Lab 7 template back-dating limit, Issue #65). Requirement IDs refer to `docs/srs.md`.
 
 ## 1. Architecture overview
 
@@ -52,6 +52,7 @@ erDiagram
       string unit
       float minValue
       float maxValue
+      int backdateDays "nullable, 0-30 (Lab 7)"
       int createdById FK
     }
     Goal {
@@ -86,6 +87,10 @@ Constraints:
   requests are therefore serialised and the second receives 409.
 - Changing a template's min/max affects only new input (SRS D-06); existing goals and entries are not
   revalidated.
+- `Template.backdateDays` (v1.1, Lab 7, SRS D-12) is a nullable integer, 0 to 30, validated in the API.
+  `NULL` means no back-dating limit; rows that existed before the column was added stay `NULL`. When an
+  entry is recorded, BR-03 reads the template's current value and rejects a date before today − N
+  (Asia/Bangkok). Changing it, like the range, affects only new entries.
 - Overlap (BR-04) is computed from stored start and end dates; nothing extra is stored.
 - Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
 
@@ -106,8 +111,8 @@ Status-code policy (SRS D-05): 401 = no valid session; 403 = signed in but role 
 includes a Manager calling Participant-only endpoints, so the role gate answers before any lookup);
 404 = a Participant asks for a record that belongs to someone else or does not exist (so existence is
 not revealed). Check order on every endpoint: 401, 403, 400 for body-shape validation only, 404 for
-ownership or existence, then validation that depends on the goal's or template's data (BR-01, BR-02,
-BR-03).
+ownership or existence, then validation that depends on the goal's or template's data (BR-03, then
+BR-02, then BR-01; inside BR-03: future, then the template's back-dating limit, then the goal's dates).
 
 ## 5. Authentication and session design
 
@@ -154,12 +159,12 @@ BR-03).
 | `POST /auth/logout` | logged in | F-01 | FR-02 |
 | `GET /auth/me` | logged in | F-01 | FR-02 |
 | `GET /templates` | logged in | F-02 | FR-05 |
-| `POST /templates` | Manager | F-02 | FR-03, BR-06, BR-07 |
-| `PUT /templates/:id` | Manager | F-02 | FR-04, BR-06, BR-07 |
+| `POST /templates` | Manager | F-02 | FR-03, BR-06, BR-07, D-12 |
+| `PUT /templates/:id` | Manager | F-02 | FR-04, BR-06, BR-07, D-12 |
 | `POST /goals` | Participant | F-03 | FR-06, BR-04, BR-05 |
 | `GET /goals` | Participant | F-03 | FR-06, BR-08 |
 | `GET /goals/:id` | Participant (owner) | F-03 | FR-06, BR-08 |
-| `POST /goals/:id/entries` | Participant (owner) | F-04 | FR-07, BR-01, BR-02, BR-03 |
+| `POST /goals/:id/entries` | Participant (owner) | F-04 | FR-07, BR-01, BR-02, BR-03, D-12 |
 | `GET /goals/:id/entries` | Participant (owner) | F-04 | FR-09, BR-08 |
 | `GET /goals/:id/progress` | Participant (owner) | F-04 | FR-08, BR-09 |
 | `GET /health` | any | — | operations |

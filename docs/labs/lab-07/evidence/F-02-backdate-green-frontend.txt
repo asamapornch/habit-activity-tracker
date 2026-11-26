@@ -1,0 +1,58 @@
+# F-02 Lab 7 GREEN (frontend)
+# Tested commit: 3d3d538 (lab7/f02-backdate-field)
+# Run at: 2026-11-26 18:08 +07; Node v26.13.1
+# Commands: cd frontend && npx vitest run src/Templates.test.tsx --reporter=verbose ; npx vitest run ; npm run lint ; npm run build
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 18ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 16ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls 4ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template 13ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 73ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 61ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed 59ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values 38ms
+ ✓ src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 38ms
+ ✓ src/Templates.test.tsx > #60 mouse wheel on a focused number field > blurs the min/max value field on wheel instead of leaving it focused 6ms
+ ✓ src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form 6ms
+ ✓ src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight 61ms
+ ✓ src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26a sends a typed limit of 7 as a JSON number on create 69ms
+ ✓ src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26b sends backdateDays null when the limit is left empty 58ms
+ ✓ src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26c pre-fills the current limit on edit and sends the new limit in PUT 35ms
+ ✓ src/Templates.test.tsx > Lab 7 back-dating limit in the list (AC-02.27) > TEST-02.27 shows the limit for a template that has one and nothing extra otherwise 4ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  18:09:29
+   Duration  971ms (tests 67%, environment 24%, import 4%, setup 4%, transform 1%)
+
+
+## Full frontend suite
+
+ RUN  v5.1.0 <repo>/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  43 passed (43)
+   Start at  18:09:30
+   Duration  1.02s (tests 57%, environment 31%, import 5%, setup 5%, transform 1%)
+
+## npm run lint
+src/GoalDetail.tsx:45:34: warning react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'onUnauthorized' help: Either include it or remove the dependency array.
+src/Goals.tsx:143:34: warning react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'onUnauthorized' help: Either include it or remove the dependency array.
+src/Templates.tsx:180:11: warning react-hooks(exhaustive-deps): React Hook useEffect has a missing dependency: 'onUnauthorized' help: Either include it or remove the dependency array.
+lint: exit 0
+## npm run build
+vite v8.3.6 building client environment for production...
+transforming...
+✓ 23 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.47 kB │ gzip:  0.30 kB
+dist/assets/index-Bi0nqGY6.css    7.12 kB │ gzip:  1.93 kB
+dist/assets/index-C8FXkty3.js   235.00 kB │ gzip: 72.21 kB
+
+✓ built in 63ms
+build: exit 0

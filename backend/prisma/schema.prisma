@@ -29,6 +29,8 @@ model Template {
   unit        String
   minValue    Float
   maxValue    Float
+  // Lab 7 (SRS D-12): back-dating limit in days, 0 to 30; null = no limit.
+  backdateDays Int?
   createdById Int
   createdBy   User   @relation("TemplateCreatedBy", fields: [createdById], references: [id])
   goals       Goal[]
