@@ -294,3 +294,104 @@ describe("AC-02.20 in-flight submit", () => {
     await screen.findByText(TEMPLATE_A.name);
   });
 });
+
+// Lab 7 (Issue #65): per-template back-dating limit, F-02 contract v1.7 §5.2.
+describe("Lab 7 back-dating limit field (AC-02.26)", () => {
+  const BACKDATE_LABEL = /back-dating limit/i;
+
+  async function fillCreateForm(user: ReturnType<typeof userEvent.setup>, form: HTMLElement) {
+    await user.type(within(form).getByLabelText(/name/i), TEMPLATE_A.name);
+    await user.type(within(form).getByLabelText(/unit/i), TEMPLATE_A.unit);
+    await user.type(within(form).getByLabelText(/min/i), String(TEMPLATE_A.minValue));
+    await user.type(within(form).getByLabelText(/max/i), String(TEMPLATE_A.maxValue));
+  }
+
+  it("TEST-02.26a sends a typed limit of 7 as a JSON number on create", async () => {
+    const createHandler = vi.fn((_init?: RequestInit) => jsonResponse(201, { ...TEMPLATE_A, backdateDays: 7 }));
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, []),
+      "POST /templates": createHandler,
+    });
+
+    const user = userEvent.setup();
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    const form = await screen.findByRole("form", { name: /create/i });
+    await fillCreateForm(user, form);
+    const limitField = within(form).queryByLabelText(BACKDATE_LABEL);
+    expect(limitField).not.toBeNull();
+    await user.type(limitField!, "7");
+    await user.click(within(form).getByRole("button", { name: /create/i }));
+
+    await waitFor(() => expect(createHandler).toHaveBeenCalledTimes(1));
+    const sentBody = JSON.parse(createHandler.mock.calls[0][0]!.body as string);
+    expect(sentBody.backdateDays).toBe(7);
+  });
+
+  it("TEST-02.26b sends backdateDays null when the limit is left empty", async () => {
+    const createHandler = vi.fn((_init?: RequestInit) => jsonResponse(201, { ...TEMPLATE_A, backdateDays: null }));
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, []),
+      "POST /templates": createHandler,
+    });
+
+    const user = userEvent.setup();
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    const form = await screen.findByRole("form", { name: /create/i });
+    expect(within(form).queryByLabelText(BACKDATE_LABEL)).not.toBeNull();
+    await fillCreateForm(user, form);
+    await user.click(within(form).getByRole("button", { name: /create/i }));
+
+    await waitFor(() => expect(createHandler).toHaveBeenCalledTimes(1));
+    const sentBody = JSON.parse(createHandler.mock.calls[0][0]!.body as string);
+    expect(sentBody).toHaveProperty("backdateDays", null);
+  });
+
+  it("TEST-02.26c pre-fills the current limit on edit and sends the new limit in PUT", async () => {
+    const limited = { ...TEMPLATE_A, backdateDays: 5 };
+    const updateHandler = vi.fn((_init?: RequestInit) => jsonResponse(200, { ...limited, backdateDays: 2 }));
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, [limited]),
+      [`PUT /templates/${limited.id}`]: updateHandler,
+    });
+
+    const user = userEvent.setup();
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    await screen.findByText(limited.name);
+    await user.click(screen.getByRole("button", { name: /edit/i }));
+
+    const form = await screen.findByRole("form", { name: /edit/i });
+    const limitField = within(form).queryByLabelText(BACKDATE_LABEL);
+    expect(limitField).not.toBeNull();
+    expect(limitField).toHaveValue(5);
+
+    await user.clear(limitField!);
+    await user.type(limitField!, "2");
+    await user.click(within(form).getByRole("button", { name: /save/i }));
+
+    await waitFor(() => expect(updateHandler).toHaveBeenCalledTimes(1));
+    const sentBody = JSON.parse(updateHandler.mock.calls[0][0]!.body as string);
+    expect(sentBody.backdateDays).toBe(2);
+  });
+});
+
+describe("Lab 7 back-dating limit in the list (AC-02.27)", () => {
+  it("TEST-02.27 shows the limit for a template that has one and nothing extra otherwise", async () => {
+    mockFetch({
+      "GET /templates": () =>
+        jsonResponse(200, [
+          { ...TEMPLATE_A, backdateDays: 7 },
+          { ...TEMPLATE_B, backdateDays: null },
+        ]),
+    });
+
+    render(<Templates role="PARTICIPANT" onUnauthorized={vi.fn()} />);
+
+    await screen.findByText(TEMPLATE_A.name);
+    const [rowA, rowB] = screen.getAllByRole("listitem");
+    expect(rowA.textContent).toContain("back-dating 7 days");
+    expect(rowB.textContent).not.toContain("back-dating");
+  });
+});

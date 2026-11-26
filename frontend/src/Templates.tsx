@@ -22,6 +22,9 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
   const [unit, setUnit] = useState(initial?.unit ?? "");
   const [minValue, setMinValue] = useState(initial ? String(initial.minValue) : "");
   const [maxValue, setMaxValue] = useState(initial ? String(initial.maxValue) : "");
+  const [backdateDays, setBackdateDays] = useState(
+    initial?.backdateDays != null ? String(initial.backdateDays) : "",
+  );
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -35,6 +38,8 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
       unit,
       minValue: Number(minValue),
       maxValue: Number(maxValue),
+      // Empty = no limit; the server validates the 0 to 30 range (AC-02.17).
+      backdateDays: backdateDays.trim() === "" ? null : Number(backdateDays),
     };
 
     try {
@@ -46,6 +51,7 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
         setUnit("");
         setMinValue("");
         setMaxValue("");
+        setBackdateDays("");
       }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
@@ -114,6 +120,20 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
             required
           />
         </div>
+      </div>
+      <div className="field">
+        <label htmlFor={`${idPrefix}-backdate`}>Back-dating limit (days)</label>
+        <input
+          id={`${idPrefix}-backdate`}
+          type="number"
+          step="1"
+          min="0"
+          max="30"
+          className="input"
+          value={backdateDays}
+          onChange={(event) => setBackdateDays(event.target.value)}
+          onWheel={(event) => event.currentTarget.blur()}
+        />
       </div>
       <div className="template-form__actions">
         <button type="submit" className="btn btn--primary" disabled={submitting}>
@@ -213,6 +233,7 @@ export function Templates({
                 <span className="template-list__name">{template.name}</span>
                 <span className="template-list__meta">
                   {template.unit} · {template.minValue}–{template.maxValue}
+                  {template.backdateDays != null && ` · back-dating ${template.backdateDays} days`}
                 </span>
               </div>
               {role === "MANAGER" && (

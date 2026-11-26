@@ -55,6 +55,8 @@ export interface Template {
   unit: string;
   minValue: number;
   maxValue: number;
+  /** Back-dating limit in days (Lab 7, SRS D-12); null = no limit. */
+  backdateDays?: number | null;
   createdById: number;
 }
 
@@ -63,6 +65,7 @@ export interface TemplateInput {
   unit: string;
   minValue: number;
   maxValue: number;
+  backdateDays: number | null;
 }
 
 async function apiRequest(path: string, init?: RequestInit): Promise<unknown> {

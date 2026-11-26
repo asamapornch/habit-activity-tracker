@@ -9,7 +9,7 @@
 | Needed by | F-03, F-04, F-05 |
 | Owner | Student 1 |
 | Reviewer | Student 2 |
-| Status | Implemented and merged into `sprint-1-staging` (PR #11, #12, #14, #21). v1.6/v1.7: Lab 7 back-dating limit specified (Issue #65), implementation pending |
+| Status | Implemented and merged into `sprint-1-staging` (PR #11, #12, #14, #21). v1.6/v1.7: Lab 7 back-dating limit (Issue #65) implemented in PR #70 |
 
 ## 1. Purpose
 
@@ -223,13 +223,13 @@ assertion on a status or a value. On the pre-change code `5d0e4ba`:
       approved by the other student with comments describing what was checked.
 - [x] Failed or skipped tests, if any, are listed in the evidence report.
 - [x] `NOT_FOUND` is added to the shared `ErrorCode` type used by the error handler.
-- [ ] (v1.7, Lab 7) TEST-02.21a to TEST-02.27 are committed before the implementation and run on the
+- [x] (v1.7, Lab 7) TEST-02.21a to TEST-02.27 are committed before the implementation and run on the
       pre-change code `5d0e4ba`: the tests listed as expected red in §5.2 fail on assertions because the
       limit is missing (not compile or setup errors), and the controls TEST-02.22a and 02.25a pass; the
       output is saved under `docs/labs/lab-07/evidence/`.
-- [ ] (v1.6) The migration and implementation make them pass (green); all existing TEST-01 to TEST-05
+- [x] (v1.6) The migration and implementation make them pass (green); all existing TEST-01 to TEST-05
       pass without editing any existing expected result; outputs saved.
-- [ ] (v1.6) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 2.
+- [x] (v1.6) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 2.
 
 ## 7. Version history
 

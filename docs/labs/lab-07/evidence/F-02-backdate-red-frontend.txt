@@ -1,0 +1,91 @@
+# F-02 Lab 7 RED (frontend)
+# Tested commit: 7d9888a (lab7/f02-backdate-field, tests only on top of sprint-1-staging 87def4c)
+# Code under test is identical to pre-change main 5d0e4ba: `git diff --name-only 5d0e4ba 87def4c` lists only docs/ files.
+# Run at: 2026-11-26 18:06 +07; Node v26.13.1
+# Command: cd frontend && npx vitest run src/Templates.test.tsx --reporter=verbose
+# Expected (F-02 v1.7 section 5.2): red = TEST-02.21a, 21b, 21c, 22b, 23a, 23b, 24, 25b (backend) and 26a, 26b, 26c, 27 (frontend); controls TEST-02.22a and 25a pass.
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 19ms
+ ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 16ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.14 a Participant sees the list only, with no create or edit controls 4ms
+ ✓ src/Templates.test.tsx > AC-02.14 / AC-02.15 role-based controls > TEST-02.15 a Manager sees a create form and an edit control for each template 12ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16 a Manager creating a valid template sends POST /templates and it appears in the list 71ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.16b sends decimal Min/Max values as JSON numbers, not strings 59ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17 shows the server's validation message verbatim and keeps what was typed 60ms
+ ✓ src/Templates.test.tsx > AC-02.16 / AC-02.17 create flow > TEST-02.17b shows the server's message verbatim on a 400 PUT and keeps the edit form open with its values 38ms
+ ✓ src/Templates.test.tsx > AC-02.18 edit flow > TEST-02.18 pre-fills the form, sends PUT /templates/:id, and the list shows the new values 37ms
+ ✓ src/Templates.test.tsx > #60 mouse wheel on a focused number field > blurs the min/max value field on wheel instead of leaving it focused 5ms
+ ✓ src/Templates.test.tsx > AC-02.19 session expiry > TEST-02.19 rendered through the signed-in view, a 401 from a template request shows the login form 6ms
+ ✓ src/Templates.test.tsx > AC-02.20 in-flight submit > TEST-02.20 disables the submit button while the create request is in flight 56ms
+ × src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26a sends a typed limit of 7 as a JSON number on create 54ms
+   → expected null not to be null
+ × src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26b sends backdateDays null when the limit is left empty 4ms
+   → expected null not to be null
+ × src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26c pre-fills the current limit on edit and sends the new limit in PUT 14ms
+   → expected null not to be null
+ × src/Templates.test.tsx > Lab 7 back-dating limit in the list (AC-02.27) > TEST-02.27 shows the limit for a template that has one and nothing extra otherwise 6ms
+   → expected 'Runningkm · 0–50' to contain 'back-dating 7 days'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26a sends a typed limit of 7 as a JSON number on create
+AssertionError: expected null not to be null
+ ❯ src/Templates.test.tsx:322:28
+    320|     await fillCreateForm(user, form);
+    321|     const limitField = within(form).queryByLabelText(BACKDATE_LABEL);
+    322|     expect(limitField).not.toBeNull();
+       |                            ^
+    323|     await user.type(limitField!, "7");
+    324|     await user.click(within(form).getByRole("button", { name: /create/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26b sends backdateDays null when the limit is left empty
+AssertionError: expected null not to be null
+ ❯ src/Templates.test.tsx:342:63
+    340|
+    341|     const form = await screen.findByRole("form", { name: /create/i });
+    342|     expect(within(form).queryByLabelText(BACKDATE_LABEL)).not.toBeNull…
+       |                                                               ^
+    343|     await fillCreateForm(user, form);
+    344|     await user.click(within(form).getByRole("button", { name: /create/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/Templates.test.tsx > Lab 7 back-dating limit field (AC-02.26) > TEST-02.26c pre-fills the current limit on edit and sends the new limit in PUT
+AssertionError: expected null not to be null
+ ❯ src/Templates.test.tsx:367:28
+    365|     const form = await screen.findByRole("form", { name: /edit/i });
+    366|     const limitField = within(form).queryByLabelText(BACKDATE_LABEL);
+    367|     expect(limitField).not.toBeNull();
+       |                            ^
+    368|     expect(limitField).toHaveValue(5);
+    369|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  src/Templates.test.tsx > Lab 7 back-dating limit in the list (AC-02.27) > TEST-02.27 shows the limit for a template that has one and nothing extra otherwise
+AssertionError: expected 'Runningkm · 0–50' to contain 'back-dating 7 days'
+
+Expected: "back-dating 7 days"
+Received: "Runningkm · 0–50"
+
+ ❯ src/Templates.test.tsx:394:30
+    392|     await screen.findByText(TEMPLATE_A.name);
+    393|     const [rowA, rowB] = screen.getAllByRole("listitem");
+    394|     expect(rowA.textContent).toContain("back-dating 7 days");
+       |                              ^
+    395|     expect(rowB.textContent).not.toContain("back-dating");
+    396|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 12 passed (16)
+   Start at  18:06:14
+   Duration  864ms (tests 63%, environment 27%, import 4%, setup 4%, transform 1%)
+
