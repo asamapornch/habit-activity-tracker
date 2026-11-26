@@ -14,3 +14,18 @@ Our team's (asamapornch, warunwora) results from running UAT against the partner
 All dates/times above are as recorded in each file (derived from evidence file modification times, not a stopwatch record, except where the file itself says otherwise). `LOCAL-1-result.md` records no tester or date/time field; this is stated here rather than guessed.
 
 `results-template.md` in this directory is the original empty template for the partner's own UAT cases against our app and is unchanged.
+
+## Evidence notes
+
+Checked by SHA-1 checksum, these files in `evidence/` are byte-identical within each group (the same screen supports more than one step/case, noted at each file's evidence line in the result files above):
+
+- `EXP-1-AC-08.12.png`, `UAT-04-D4.png`, `UAT-04-D5.png`, `UAT-04-E1.png`, `UAT-04-E3.png`
+- `UAT-04-A4.png`, `UAT-04-C3.png`, `UAT-04-F1.png`, `UAT-04-F3.png`
+- `UAT-03-A9.png`, `UAT-03-C6.png`, `UAT-03-D5.png`
+- `UAT-02-A4.png`, `UAT-03-C1.png`, `UAT-04-A1.png`
+- `UAT-02-B5.png`, `UAT-02-B7.png`
+- `UAT-03-B2.png`, `UAT-03-B5.png`
+- `UAT-01-step1.png`, `UAT-01-step10.png`
+- `UAT-01-step9.png`, `UAT-03-A2.png`
+
+All evidence images were reviewed for secrets by asamapornch and by Claude Code; the reviewer warunwora opened only a sample.

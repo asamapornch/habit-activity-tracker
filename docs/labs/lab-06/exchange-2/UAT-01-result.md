@@ -37,15 +37,15 @@
 
 | File | Step |
 |---|---|
-| UAT-01-step1.png | 1 |
+| UAT-01-step1.png (same screenshot as `UAT-01-step10.png`; one screen supports several steps) | 1 |
 | UAT-01-step2.png | 2 |
 | UAT-01-step3.png | 3 |
 | UAT-01-step4.png | 4 |
 | UAT-01-step6.png | 6 |
 | UAT-01-step7.png | 7 |
 | UAT-01-step8.png | 8 |
-| UAT-01-step9.png | 9 |
-| UAT-01-step10.png | 10 |
+| UAT-01-step9.png (same screenshot as `UAT-03-A2.png`; one screen supports several steps) | 9 |
+| UAT-01-step10.png (same screenshot as `UAT-01-step1.png`; one screen supports several steps) | 10 |
 
 (No screenshot for step 5 was taken as a separate file; the saved state is captured in step 6's screenshot, which shows the goal already created. Step 5's actual result above was read from the live page text at that point.)
 

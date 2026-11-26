@@ -87,6 +87,8 @@
 
 Screenshots `UAT-03-S2.png`, `S3.png`, `A2.png`, `A8.png`, `A9.png`, `B1.png`, `B2.png`, `B5.png`, `B7.png`, `C1.png`, `C2.png`, `C6.png`, `D1.png` (image withheld from the repository because it showed a masked password field; the step result is recorded in the text above), `D5.png` in `~/uat-work/results/evidence/`. Console-step results above are the exact status/body text printed by each request (run as equivalent `fetch()` calls in the page context).
 
+`UAT-03-A2.png` (same screenshot as `UAT-01-step9.png`; one screen supports several steps). `UAT-03-A9.png` (same screenshot as `UAT-03-C6.png`, `UAT-03-D5.png`; one screen supports several steps). `UAT-03-B2.png` (same screenshot as `UAT-03-B5.png`; one screen supports several steps). `UAT-03-B5.png` (same screenshot as `UAT-03-B2.png`; one screen supports several steps). `UAT-03-C1.png` (same screenshot as `UAT-02-A4.png`, `UAT-04-A1.png`; one screen supports several steps). `UAT-03-C6.png` (same screenshot as `UAT-03-A9.png`, `UAT-03-D5.png`; one screen supports several steps). `UAT-03-D5.png` (same screenshot as `UAT-03-A9.png`, `UAT-03-C6.png`; one screen supports several steps).
+
 ### Notes
 
 - Step B3 (role-spoofing POST with `X-Role: MANAGER` header) required a one-time explicit user approval to run, since it was flagged by the harness's safety classifier as looking like an unauthorized-access attempt. The user approved this single request as part of the authorized UAT-03 case; it was not re-used or extended to any other request.

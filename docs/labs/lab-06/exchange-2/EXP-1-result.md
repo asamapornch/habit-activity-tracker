@@ -117,7 +117,7 @@ Setup: a second, independent Chrome instance was launched with a fresh profile a
 |---|---|---|---|
 | P1 logged in to this second window; checked the Date box on every goal's entry form (UAT-04 Stretch ×2, Walking, Water) | Date box defaults to today in Asia/Bangkok (2026-11-25), regardless of browser timezone | All four goals' Date boxes showed `25/11/2026` | matches |
 
-Evidence: `EXP-1-AC-08.12.png`.
+Evidence: `EXP-1-AC-08.12.png` (same screenshot as `UAT-04-D4.png`, `UAT-04-D5.png`, `UAT-04-E1.png`, `UAT-04-E3.png`; one screen supports several steps).
 
 ---
 

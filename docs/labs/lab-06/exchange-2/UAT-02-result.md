@@ -74,6 +74,8 @@
 
 Screenshots `UAT-02-A1.png` through `UAT-02-D5.png` (image withheld from the repository because it showed a masked password field; the step result is recorded in the text above) in `~/uat-work/results/evidence/` (one per step; `UAT-02-B5-check.png` and `UAT-02-C2.png` etc. include intermediate verification shots).
 
+`UAT-02-A4.png` (same screenshot as `UAT-03-C1.png`, `UAT-04-A1.png`; one screen supports several steps). `UAT-02-B5.png` (same screenshot as `UAT-02-B7.png`; one screen supports several steps). `UAT-02-B7.png` (same screenshot as `UAT-02-B5.png`; one screen supports several steps).
+
 ### Tooling notes (not app findings)
 
 During Parts B–D, my own browser-automation script (not the application) twice produced incorrect-looking field values that were **not** actually submitted:

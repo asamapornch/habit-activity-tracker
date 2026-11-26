@@ -82,6 +82,8 @@
 
 Screenshots `UAT-04-A1.png` through `UAT-04-F4` equivalents in `~/uat-work/results/evidence/` (`A1`–`A4`, `B2`–`B5`, `C1`–`C3`, `D1`–`D5`, `E1`, `E3`, `F1`–`F3`; steps that are simple logouts with no new visual state weren't separately screenshotted).
 
+`UAT-04-A1.png` (same screenshot as `UAT-02-A4.png`, `UAT-03-C1.png`; one screen supports several steps). `UAT-04-A4.png` (same screenshot as `UAT-04-C3.png`, `UAT-04-F1.png`, `UAT-04-F3.png`; one screen supports several steps). `UAT-04-C3.png` (same screenshot as `UAT-04-A4.png`, `UAT-04-F1.png`, `UAT-04-F3.png`; one screen supports several steps). `UAT-04-D4.png` (same screenshot as `EXP-1-AC-08.12.png`, `UAT-04-D5.png`, `UAT-04-E1.png`, `UAT-04-E3.png`; one screen supports several steps). `UAT-04-D5.png` (same screenshot as `EXP-1-AC-08.12.png`, `UAT-04-D4.png`, `UAT-04-E1.png`, `UAT-04-E3.png`; one screen supports several steps). `UAT-04-E1.png` (same screenshot as `EXP-1-AC-08.12.png`, `UAT-04-D4.png`, `UAT-04-D5.png`, `UAT-04-E3.png`; one screen supports several steps). `UAT-04-E3.png` (same screenshot as `EXP-1-AC-08.12.png`, `UAT-04-D4.png`, `UAT-04-D5.png`, `UAT-04-E1.png`; one screen supports several steps). `UAT-04-F1.png` (same screenshot as `UAT-04-A4.png`, `UAT-04-C3.png`, `UAT-04-F3.png`; one screen supports several steps). `UAT-04-F3.png` (same screenshot as `UAT-04-A4.png`, `UAT-04-C3.png`, `UAT-04-F1.png`; one screen supports several steps).
+
 ### Notes
 
 Two M1 logins in this case initially needed a password retry ("Username or password is incorrect" on first attempt, succeeded on second) — same pattern seen in UAT-03. Not an application defect; noted for your tracking.
