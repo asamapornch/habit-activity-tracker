@@ -4,12 +4,12 @@
 | --- | --- |
 | Feature ID | F-04 |
 | Sprint | 1 |
-| Linked requirements | FR-07, FR-08, FR-09, BR-01, BR-02, BR-03, BR-08, BR-09, NFR-02, NFR-05 |
-| Depends on | F-01 (`requireAuth`, `requireRole`), F-02 (templates), F-03 (goals, `CONFLICT`, shared validation), database schema (`Entry`) |
+| Linked requirements | FR-07, FR-08, FR-09, BR-01, BR-02, BR-03, BR-08, BR-09, NFR-02, NFR-05; SRS D-12 (Lab 7) |
+| Depends on | F-01 (`requireAuth`, `requireRole`), F-02 (templates; `backdateDays` from F-02 v1.6), F-03 (goals, `CONFLICT`, shared validation), database schema (`Entry`) |
 | Needed by | F-05 (Stage B), release |
 | Owner | Student 2 |
 | Reviewer | Student 1 |
-| Status | Implemented and merged into `sprint-1-staging` (PR #29, #30, #31) |
+| Status | Implemented and merged into `sprint-1-staging` (PR #29, #30, #31). v1.5: Lab 7 back-dating limit specified (Issue #65), implementation pending |
 
 ## 1. Purpose
 
@@ -31,9 +31,12 @@ the Sprint 1 journey: template → goal → daily entry → progress.
       (missing, unknown or wrongly typed fields, malformed date, too many decimals, malformed id);
    4. goal existence and ownership: **404** `Goal not found.` — the same response for a goal that
       does not exist and a goal of another Participant (BR-08), identical to F-03;
-   5. BR-03, entry date, checked against "today" and the goal's dates: a date after today
-      (**400** `Entry date must not be in the future.`), otherwise a date before the goal's start or
-      after its end (**400** `Entry date must be within the goal's start and end dates.`);
+   5. BR-03, entry date, checked against "today", the template's back-dating limit and the goal's
+      dates, in this order: a date after today (**400** `Entry date must not be in the future.`);
+      otherwise, when the goal's template has `backdateDays` N (not `null`), a date before
+      today − N (**400** `Entry date must not be earlier than <today − N>.`, the date as
+      `YYYY-MM-DD`; v1.5, SRS D-12); otherwise a date before the goal's start or after its end
+      (**400** `Entry date must be within the goal's start and end dates.`);
    6. BR-02, value outside the template's current range: **400**
       `Value must be within the template range.`;
    7. BR-01, the goal already has an entry on that date: **409** `CONFLICT`.
@@ -75,7 +78,13 @@ Other decisions:
 
 - An entry cannot be changed or deleted in Sprint 1 (not in the SRS); a mistaken entry stays. BR-01
   makes a second entry for the same date a 409, not an update.
-- Back-dating within the goal period is allowed (SRS D-02).
+- Back-dating within the goal period is allowed (SRS D-02), limited by the template's
+  `backdateDays` when it is set (v1.5, SRS D-12). With N set, the earliest allowed date is today − N
+  in Asia/Bangkok; N = 0 allows today only; `null` means no limit, as in Sprint 1. The template's
+  **current** limit is read when the entry is recorded (like the range, D-06); existing entries are
+  never revalidated, changed or removed when a Manager changes the limit, and progress (BR-09) keeps
+  counting them. The UI adds no check of its own: the 400 message is shown verbatim (AC-04.21), so
+  `GoalDetail.tsx` needs no change.
 - `value` has no rule beyond the template range; 0 and negative values are accepted when inside it.
 - Dates are returned as `YYYY-MM-DD` strings; `value`, `daysElapsed`, `daysMet` and `progress` as
   JSON numbers.
@@ -103,6 +112,7 @@ Error body: `{ "error": { "code", "message" } }`.
 | 400 | `VALIDATION_ERROR` | `Invalid entry fields.` | body shape (step 3) |
 | 400 | `VALIDATION_ERROR` | `Invalid goal id.` | malformed `:id` (step 3, same as F-03) |
 | 400 | `VALIDATION_ERROR` | `Entry date must not be in the future.` | BR-03, date after today (step 5) |
+| 400 | `VALIDATION_ERROR` | `Entry date must not be earlier than <YYYY-MM-DD>.` (today − N) | BR-03, older than the template's back-dating limit (step 5, v1.5) |
 | 400 | `VALIDATION_ERROR` | `Entry date must be within the goal's start and end dates.` | BR-03, outside the goal (step 5) |
 | 400 | `VALIDATION_ERROR` | `Value must be within the template range.` | BR-02 (step 6) |
 | 401 | `UNAUTHENTICATED` | `Authentication required.` (F-01) | no valid session |
@@ -158,6 +168,12 @@ BR-01, BR-02 and BR-03.
 | AC-04.21 | A 400 or 409 from `POST /goals/:id/entries` is shown with the server's message verbatim, and the form keeps what was typed. | BR-01, BR-02, BR-03, NFR-05 |
 | AC-04.22 | A `401` from any entry or progress request returns the user to the login screen. | NFR-02 |
 | AC-04.23 | The record button is disabled while the request is in flight. | NFR-05 |
+| AC-04.24 | With the template's `backdateDays` 7 and today 2026-11-10, an entry dated 2026-11-03 (today − 7) is accepted, 2026-11-02 returns 400 `Entry date must not be earlier than 2026-11-03.` and nothing is stored, today is accepted, and tomorrow is still rejected as future. | BR-03, D-12 |
+| AC-04.25 | With `backdateDays` 0 only today is accepted; yesterday returns 400 with today's date in the message. | BR-03, D-12 |
+| AC-04.26 | With `backdateDays` `null` any past date inside the goal is accepted, as in Sprint 1. | BR-03, D-02, D-12 |
+| AC-04.27 | Check order with the limit: a date both too old and outside the goal returns the too-old message; a too-old date with an out-of-range value or on a date that already has an entry returns the too-old message (BR-03 before BR-02 and BR-01); another Participant's goal returns 404 and a Manager 403 before any date check. | BR-03, BR-08, NFR-02 |
+| AC-04.28 | The template's current limit is used: after a Manager sets a limit, an older new entry is rejected, while existing older entries stay in the history and progress is unchanged. | BR-03, BR-09, D-12 |
+| AC-04.29 | "Today" for the limit follows Asia/Bangkok, not the server's `TZ`. | BR-03, SRS A-02 |
 
 ## 5. Software test specification (STS)
 
@@ -244,6 +260,28 @@ Tests marked **control** first send the request with only one fault and assert t
 | TEST-04.17d | AC-04.17 | **control** `P1` posts `{ date: "2026-11-03", value: 999 }` to `G1` (400 `RANGE`); then `P1` posts `{ date: "2026-10-31", value: 999 }` to `G1` | 400 `VALIDATION_ERROR` `OUTSIDE` (BR-03 before BR-02); nothing stored |
 | TEST-04.17e | AC-04.17 | `G1` has an entry on `2026-11-03`; **control** `P1` posts `B` (409 `DUP`); then `P1` posts `{ date: "2026-11-03", value: 999 }` | 400 `VALIDATION_ERROR` `RANGE` (BR-02 before BR-01); still one entry |
 
+**v1.5 (Lab 7) back-dating tests.** The limit is set on template `T` directly through Prisma in the
+test (`backdateDays` column from F-02 v1.6), except in TEST-04.28, where the Manager sets it through
+`PUT /templates/:T`. `OLD(d)` = `Entry date must not be earlier than d.`
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-04.24a | AC-04.24 | `T` `backdateDays` 7; now 2026-11-10T05:00:00Z; `P1` posts `date` `2026-11-03` to `G1` | 201 (today − 7 is allowed) |
+| TEST-04.24b | AC-04.24 | same; `P1` posts `date` `2026-11-02` | 400 `VALIDATION_ERROR` `OLD(2026-11-03)`; nothing stored |
+| TEST-04.24c | AC-04.24 | same; `P1` posts `2026-11-10`, then `2026-11-11` | 201; then 400 `VALIDATION_ERROR` `FUTURE` (unchanged) |
+| TEST-04.25 | AC-04.25 | `T` `backdateDays` 0; now 2026-11-10T05:00:00Z; `P1` posts `2026-11-10`, then `2026-11-09` | 201; then 400 `VALIDATION_ERROR` `OLD(2026-11-10)`; one entry stored |
+| TEST-04.26 | AC-04.26 | `T` `backdateDays` `null`; now 2026-11-30T05:00:00Z; `P1` posts `2026-11-01` | 201 (29 days back, Sprint 1 behaviour) |
+| TEST-04.27a | AC-04.27 | `T` `backdateDays` 7; now 2026-11-10T05:00:00Z; `P1` posts `2026-10-31` (too old **and** before the goal start) | 400 `VALIDATION_ERROR` `OLD(2026-11-03)`, not `OUTSIDE`; nothing stored |
+| TEST-04.27b | AC-04.27 | same; `G1` has an entry `2026-11-01` value 5; `P1` posts `{ date: "2026-11-01", value: 999 }` | 400 `VALIDATION_ERROR` `OLD(2026-11-03)`, not `RANGE` or 409; still one entry, value 5 |
+| TEST-04.27c | AC-04.27 | same limit and time; **control** `P1` posts `2026-11-01` to `G1` (400 `OLD(2026-11-03)`); then `P2` posts the same body to `G1` and to goal 99999; `M` posts it to `G1` | `P2` gets identical 404 `NOT_FOUND` `GOAL404` for both; `M` gets 403 `FORBIDDEN` `ROLE`; nothing stored |
+| TEST-04.28 | AC-04.28 | `T` `backdateDays` `null`; now 2026-11-10T05:00:00Z; `P1` posts `{ 2026-11-01, 5 }` (201); `M` `PUT /templates/:T` with `T`'s fields and `backdateDays` 3 (200); `P1` posts `2026-11-05`; `P1` `GET /goals/:G1/entries` and `/progress` | the second post 400 `VALIDATION_ERROR` `OLD(2026-11-07)`, nothing new stored; history still has the 1 November entry; progress `daysElapsed` 10, `daysMet` 1, `progress` 10 |
+| TEST-04.29 | AC-04.29 | `TZ` `America/Los_Angeles`; now 2026-11-07T17:30:00Z (8 Nov in Bangkok); `T` `backdateDays` 1; `P1` posts `2026-11-07`, then `2026-11-06` | 201; then 400 `VALIDATION_ERROR` `OLD(2026-11-07)` |
+
+On the pre-change code these new tests are expected to fail where they assert the new limit
+(TEST-04.24b, 04.25, 04.27a to 04.27c, 04.28, 04.29: the entry is accepted, or another message is
+returned, instead of `OLD(...)`). TEST-04.24a, 04.24c and 04.26 are boundary and Sprint 1 controls and
+are expected to pass before and after the change.
+
 ### 5.2 Frontend tests
 
 Component tests (Vitest + React Testing Library) in `frontend/src/GoalDetail.test.tsx`, with `fetch`
@@ -294,6 +332,13 @@ progress `today` is `2026-11-05`.
 - [x] (v1.2) TEST-04.18 to TEST-04.23 are committed red before the entry screens, then green;
       `npm test` in `frontend/` passes; screenshots of the entry, history and progress journey are
       saved under `docs/sprints/sprint-1/evidence/ui-goals/`.
+- [ ] (v1.5, Lab 7) TEST-04.24a to TEST-04.29 are committed in their own commit and run red on the
+      code before the BR-03 change (after F-02 v1.6 is merged, so the column exists): the listed
+      new-behaviour tests fail on assertions, the controls pass; output saved under
+      `docs/labs/lab-07/evidence/`.
+- [ ] (v1.5) The BR-03 change makes them pass; all existing TEST-01 to TEST-05 pass without editing any
+      existing expected result; outputs saved.
+- [ ] (v1.5) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 1.
 
 ## 7. Version history
 
@@ -304,3 +349,4 @@ progress `today` is `2026-11-05`.
 | 1.2 | 2026-11-07 | Added §3.3 UI, AC-04.18 to AC-04.23 and TEST-04.18 to TEST-04.23 (§5.2, frontend component tests): goal screen with history and progress, empty state, record flow with numeric JSON and progress refreshed from the server, verbatim 400/409 with the form kept, 401 returns to login, disabled submit while in flight; existing-tests section renumbered §5.3 | entry UI, Issue #26 |
 | 1.3 | 2026-11-07 | History shows date and value only (no UI-side "target met", BR-09 stays on the server); TEST-04.20 renamed TEST-04.20a; TEST-04.20c added: a failed progress refresh after a saved entry no longer looks like a failed save | PR #31 review |
 | 1.4 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |
+| 1.5 | 2026-11-26 | BR-03 adds the template's back-dating limit: check order future → too old → outside the goal, message `Entry date must not be earlier than <date>.`, current limit used, existing entries kept; AC-04.24 to AC-04.29, TEST-04.24a to TEST-04.29. Existing AC and tests unchanged | Lab 7 change request, Issue #65 (SRS v1.2, D-12; F-02 v1.6) |

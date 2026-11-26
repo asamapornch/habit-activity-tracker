@@ -1,6 +1,6 @@
 # Software Requirements Specification — Habit & Activity Tracking
 
-Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.1 (whole-product baseline)
+Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.2 (whole-product baseline; Lab 7 change, Issue #65)
 
 ## 1. Purpose and context
 
@@ -49,8 +49,8 @@ validation; progress and own history; access-control tests.
 | --- | --- | --- | --- |
 | FR-01 | A user can log in with email and password and receives an authenticated session. | F-01 | 1 |
 | FR-02 | A logged-in user can log out; the session is no longer valid afterwards. The current user's identity and role can be retrieved while logged in. | F-01 | 1 |
-| FR-03 | A Manager can create an activity template with name, unit, minimum value and maximum value. | F-02 | 1 |
-| FR-04 | A Manager can update an existing template. | F-02 | 1 |
+| FR-03 | A Manager can create an activity template with name, unit, minimum value, maximum value and an optional back-dating limit in days. | F-02 | 1 (back-dating limit: Lab 7) |
+| FR-04 | A Manager can update an existing template, including its back-dating limit. | F-02 | 1 (back-dating limit: Lab 7) |
 | FR-05 | Any logged-in user can list templates. | F-02 | 1 |
 | FR-06 | A Participant can create a goal from a template with a daily target, a start date and an end date. | F-03 | 1 |
 | FR-07 | A Participant can record a value for a date on one of their own goals. | F-04 | 1 |
@@ -68,7 +68,7 @@ validation; progress and own history; access-control tests.
 | --- | --- | --- | --- |
 | BR-01 | A goal accepts at most one entry per calendar date. | 409 | F-04 |
 | BR-02 | An entry value must lie within the template's minimum and maximum (inclusive). | 400 | F-04 |
-| BR-03 | An entry date must not be in the future, before the goal start date, or after the goal end date. | 400 | F-04 |
+| BR-03 | An entry date must not be in the future, earlier than today minus the template's back-dating limit (when the template has one, D-12), before the goal start date, or after the goal end date. | 400 | F-04 |
 | BR-04 | A Participant cannot have two goals for the same template whose date ranges overlap (start and end dates inclusive). | 409 | F-03 |
 | BR-05 | A goal's daily target must lie within the template range, and its end date must not be before its start date. | 400 | F-03 |
 | BR-06 | Only a Manager can create or update templates. | 403 | F-02 |
@@ -111,7 +111,7 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | ID | Decision | Reason |
 | --- | --- | --- |
 | D-01 | Duplicate-entry behaviour: one entry per day per goal, duplicates rejected (BR-01). | The brief requires a specified one-entry-per-day or accumulation rule; one-per-day is simpler to verify. |
-| D-02 | Back-dating allowed within the goal period; future dates rejected (BR-03). | Participants may forget to record; future entries are meaningless. |
+| D-02 | Back-dating allowed within the goal period, limited by the template's back-dating limit when it has one (D-12); future dates rejected (BR-03). | Participants may forget to record; future entries are meaningless. |
 | D-03 | Goal changes are deferred to Sprint 2. | The brief lists goal revisions as a later sprint item. |
 | D-04 | Participant history is private with no sharing in Sprint 1 (BR-08). | The brief says Managers do not automatically gain access to private records. |
 | D-05 | Another Participant's record returns 404; a wrong role (including a Manager reading participant data) returns 403; no session returns 401. | Avoid leaking existence; keep codes consistent with the role gate. |
@@ -121,6 +121,7 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-09 | A goal's start date may be in the past (a goal may be created after it started); no goal-creation rule depends on "today" (a later revision rule, BR-10, does). | Matches back-dating for entries (D-02); a Participant may set up a goal a few days late. |
 | D-10 | Progress (BR-09) is returned as a percentage, `daysMet ÷ daysElapsed × 100`, rounded half up to two decimals (e.g. 2 of 3 days = 66.67); it is 0 when no day has elapsed. | Easier to read than a ratio in the UI and in the evidence; two decimals match the precision of values (A-05). |
 | D-11 | Requirements for Sprints 2 and 3 (FR-10 to FR-14, BR-10 to BR-13, NFR-06 to NFR-08) are added to the baseline now, with feature and sprint allocation, from the whole-product scope in §2.1; their detailed AC and tests are written in each sprint's contracts. | The brief requires every baseline requirement to have a feature and sprint now (Part B). |
+| D-12 | A template has an optional back-dating limit `backdateDays`, an integer from 0 to 30 set only by a Manager (BR-06); `null` (or the key left out) means no limit, the Sprint 1 behaviour, and every template that existed before the change has `null`. With a limit N, an entry dated before today − N (Asia/Bangkok, A-02) is rejected (BR-03); 0 allows today only. The template's current limit is used, like the range (D-06): changing it never changes or removes existing entries, and progress (BR-09) still counts them. | Old values recorded weeks later are less reliable and can raise progress in bulk; different activities need different windows, so the limit belongs to the template (Lab 7 change request, Issue #65). |
 
 ## 8. Version history
 
@@ -129,3 +130,4 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | 1.0 | 2026-11-06 | Initial SRS: Sprint 1 FR-01 to FR-09, BR-01 to BR-09, NFR-01 to NFR-05 | Sprint 1 baseline |
 | 1.0 (+D-09, D-10) | 2026-11-07 | Decisions D-09 and D-10 added with the F-03 and F-04 contracts | PR #25, PR #29 review |
 | 1.1 | 2026-11-07 | FR-10 to FR-14, BR-10 to BR-13, NFR-06 to NFR-08 and D-11 added for Sprints 2 and 3; D-09 narrowed to goal creation | Whole-product traceability (Part B); PR #33 review |
+| 1.2 | 2026-11-26 | Per-template back-dating limit: FR-03, FR-04, BR-03 and D-02 changed, D-12 added | Lab 7 change request, Issue #65 |
