@@ -1,6 +1,8 @@
 # Instructor announcement evidence
 
-File: `lab7-instructor-announcement.jpg`.
+Files: `lab7-instructor-announcement.jpg` (cropped). `lab7-instructor-announcement-full.png` (the
+full screenshot) is not yet added — it is not in `~/Downloads` as of this writing; it will be added
+in a follow-up commit once available.
 
 ## What it is
 
@@ -24,6 +26,7 @@ Reviewed before adding: no names, emails, passwords, tokens, cookies or other se
 in the image. The only identifying detail is generic reaction counts (3 likes, 1 comment), with no
 attached names.
 
-## To confirm
+## Source
 
-[TO CONFIRM: where it was posted, by whom, date]
+Lab 7 announcement posted 24 Nov 2026 20:49 by Suthep Madarasmi (instructor), screenshot taken by
+asamapornch.

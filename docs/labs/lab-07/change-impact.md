@@ -15,7 +15,8 @@ Change request: Issue #65. Written before any test or code change (contract PR).
 
 | Item | Version |
 | --- | --- |
-| Accepted Sprint 1 baseline (old behaviour) | tag `v1.0-sprint1`, `0619c07` |
+| Accepted Sprint 1 baseline (old behaviour) | tag `v1.0-sprint1` = `444dd05` (PR #34 merge, 2026-11-07) |
+| Build used for Lab 6 UAT | `main` at `0619c07` (2026-11-21) — a different, later commit, not the tag itself. 71 files changed since `444dd05` (Lab 5 cloud-readiness/deploy infrastructure: trust proxy, `/ready`, static frontend serving, a Postgres session store via `connect-pg-simple`, config, db pool, an `@@ignore`'d `Session` model), none touching `backend/src/routes/{auth,templates,goals,entries}.ts` or any service file; verified by `git diff --stat 444dd05 0619c07` |
 | Pre-change implementation | `main` at `5d0e4ba` (release PR #67, Lab 6), deployed 2026-11-26 |
 | Intervening development since the baseline | Lab 5 cloud-readiness and deploy files; Lab 6 fixes PR #63 (B2-01, `errorHandler.ts`) and PR #64 (#60, `Templates.tsx` wheel blur). None changes BR-03. No Sprint 2 code is on `main`. |
 | Contract (this document, SRS v1.2, F-02 v1.7, F-04 v1.5, system SDS v1.1) | PR #69, merged before any test or code |
