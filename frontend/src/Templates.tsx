@@ -97,6 +97,7 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
             className="input"
             value={minValue}
             onChange={(event) => setMinValue(event.target.value)}
+            onWheel={(event) => event.currentTarget.blur()}
             required
           />
         </div>
@@ -109,6 +110,7 @@ function TemplateForm({ mode, initial, onSaved, onCancel, onUnauthorized }: Temp
             className="input"
             value={maxValue}
             onChange={(event) => setMaxValue(event.target.value)}
+            onWheel={(event) => event.currentTarget.blur()}
             required
           />
         </div>

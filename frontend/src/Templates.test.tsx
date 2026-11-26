@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Templates } from "./Templates";
 import App from "./App";
@@ -225,6 +225,30 @@ describe("AC-02.18 edit flow", () => {
 
     await waitFor(() => expect(updateHandler).toHaveBeenCalledTimes(1));
     expect(await screen.findByText(/75/)).toBeInTheDocument();
+  });
+});
+
+describe("#60 mouse wheel on a focused number field", () => {
+  // jsdom does not implement the browser's native number-input spinner
+  // behaviour, so a wheel event never changes `.value` here even without a
+  // fix — asserting on the value would pass today regardless of the bug.
+  // What we can assert, and what the fix (blur on wheel) actually changes,
+  // is focus: before the fix nothing moves focus off the field on wheel;
+  // after the fix the field blurs, which is exactly what stops a real
+  // browser from applying its wheel-to-value behaviour in the first place.
+  it("blurs the min/max value field on wheel instead of leaving it focused", async () => {
+    mockFetch({ "GET /templates": () => jsonResponse(200, []) });
+
+    render(<Templates role="MANAGER" onUnauthorized={vi.fn()} />);
+
+    const form = await screen.findByRole("form", { name: /create/i });
+    const maxInput = within(form).getByLabelText(/max/i);
+    maxInput.focus();
+    expect(document.activeElement).toBe(maxInput);
+
+    fireEvent.wheel(maxInput);
+
+    expect(document.activeElement).not.toBe(maxInput);
   });
 });
 

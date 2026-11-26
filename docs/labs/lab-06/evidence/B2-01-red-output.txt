@@ -1,0 +1,59 @@
+B2-01 RED test output
+Date/time: 2026-11-25 21:30:44 +07 (Asia/Bangkok)
+Commit: 49bfc1b (test: add failing test for oversized template name (B2-01))
+Command: npx vitest run tests/templates.test.ts -t "B2-01"
+Captured in a temporary git worktree checked out at commit 49bfc1b (removed after capture; no changes made to the branch's working tree).
+
+--- output (verbatim) ---
+ RUN  v5.1.0 /private/tmp/b2-01-red/backend
+
+ ❯ tests/templates.test.ts (33 tests | 2 failed | 28 skipped) 1624ms
+   ❯ B2-01 oversized request body (AC-02.11, AC-02.17) (5)
+     × POST /templates with a 110,000-character name returns 400 VALIDATION_ERROR, not 500 (body over the 100 kB limit) 302ms
+     × PUT /templates/:id with a 110,000-character name returns 400 VALIDATION_ERROR, not 500, and leaves the template unchanged 297ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > POST /templates with a 110,000-character name returns 400 VALIDATION_ERROR, not 500 (body over the 100 kB limit)
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ tests/templates.test.ts:373:24
+    371|       .send({ name: "a".repeat(110_000), unit: "km", minValue: 0, maxV…
+    372|
+    373|     expect(res.status).toBe(400);
+       |                        ^
+    374|     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    375|     expect(typeof res.body.error.message).toBe("string");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > PUT /templates/:id with a 110,000-character name returns 400 VALIDATION_ERROR, not 500, and leaves the template unchanged
+AssertionError: expected 500 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 500
+
+ ❯ tests/templates.test.ts:391:24
+    389|       .send({ name: "a".repeat(110_000), unit: "km", minValue: 0, maxV…
+    390|
+    391|     expect(res.status).toBe(400);
+       |                        ^
+    392|     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    393|     expect(typeof res.body.error.message).toBe("string");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed | 28 skipped (33)
+   Start at  21:31:09
+   Duration  2.05s (tests 83%, import 11%, transform 4%, setup 2%)
