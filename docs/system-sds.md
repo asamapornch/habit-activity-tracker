@@ -1,6 +1,6 @@
 # System-Level Software Design Specification — Habit & Activity Tracking
 
-Version 1.1 (Sprint 1 baseline; v1.1 adds the Lab 7 template back-dating limit, Issue #65). Requirement IDs refer to `docs/srs.md`.
+Version 1.2 (proposed) (Sprint 1 baseline; v1.1 adds the Lab 7 template back-dating limit, Issue #65; v1.2 (proposed) adds the planned `GoalRevision` table for the Sprint 2 F-06 contract — not yet implemented). Requirement IDs refer to `docs/srs.md`.
 
 ## 1. Architecture overview
 
@@ -69,6 +69,15 @@ erDiagram
       date date
       float value
     }
+    GoalRevision {
+      int id PK
+      int goalId FK "planned, F-06 contract, not yet implemented"
+      float dailyTarget
+      date endDate
+      date effectiveFrom
+      datetime createdAt
+    }
+    Goal ||--o{ GoalRevision : "revised into (planned, F-06)"
 ```
 
 Constraints:
@@ -93,6 +102,12 @@ Constraints:
   (Asia/Bangkok). Changing it, like the range, affects only new entries.
 - Overlap (BR-04) is computed from stored start and end dates; nothing extra is stored.
 - Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
+- `GoalRevision` (planned, Sprint 2, F-06 contract `docs/sprints/sprint-2/F-06-goal-revisions.md`): one
+  row per revision of a goal's `dailyTarget` and/or `endDate`, with the date it takes effect
+  (`effectiveFrom`, always today when created, SRS D-13 proposed). The `Goal` table itself is not
+  altered; a goal's own `dailyTarget`/`endDate` columns keep their Sprint-1 meaning (the value in
+  effect from `startDate` until the first revision, if any), so a goal with zero revisions is
+  unaffected. Not yet implemented — no migration exists yet.
 
 ## 4. Roles and permissions
 
@@ -204,6 +219,10 @@ if `DATABASE_URL_TEST` is missing or equal to `DATABASE_URL`, so a test reset ca
 - Access tests call the API directly with no session, the wrong role, and another user's id.
 - A small number of UI end-to-end journeys cover the main flow (add when the UI exists).
 - One command runs the whole suite (NFR-04): `npm test` in `backend/`.
+- Planned (Sprint 2, F-06, SRS D-15 proposed): one small unit-test layer for the pure "value in
+  effect on day D" revision-resolution function, in addition to the API-level tests above. This is a
+  departure from the "no separate unit-test layer" Sprint-1 policy, scoped to that one reusable
+  function; it does not replace any required API-level BR-10/BR-11 test.
 
 ## 10. Deployment plan (design for later)
 
