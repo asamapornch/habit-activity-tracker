@@ -85,7 +85,7 @@
 
 ### Evidence
 
-Screenshots `UAT-03-S2.png`, `S3.png`, `A2.png`, `A8.png`, `A9.png`, `B1.png`, `B2.png`, `B5.png`, `B7.png`, `C1.png`, `C2.png`, `C6.png`, `D1.png`, `D5.png` in `~/uat-work/results/evidence/`. Console-step results above are the exact status/body text printed by each request (run as equivalent `fetch()` calls in the page context).
+Screenshots `UAT-03-S2.png`, `S3.png`, `A2.png`, `A8.png`, `A9.png`, `B1.png`, `B2.png`, `B5.png`, `B7.png`, `C1.png`, `C2.png`, `C6.png`, `D1.png` (image withheld from the repository because it showed a masked password field; the step result is recorded in the text above), `D5.png` in `~/uat-work/results/evidence/`. Console-step results above are the exact status/body text printed by each request (run as equivalent `fetch()` calls in the page context).
 
 ### Notes
 

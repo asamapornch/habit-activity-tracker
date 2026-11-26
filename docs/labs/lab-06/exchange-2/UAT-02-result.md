@@ -72,7 +72,7 @@
 
 ### Evidence
 
-Screenshots `UAT-02-A1.png` through `UAT-02-D5.png` in `~/uat-work/results/evidence/` (one per step; `UAT-02-B5-check.png` and `UAT-02-C2.png` etc. include intermediate verification shots).
+Screenshots `UAT-02-A1.png` through `UAT-02-D5.png` (image withheld from the repository because it showed a masked password field; the step result is recorded in the text above) in `~/uat-work/results/evidence/` (one per step; `UAT-02-B5-check.png` and `UAT-02-C2.png` etc. include intermediate verification shots).
 
 ### Tooling notes (not app findings)
 
