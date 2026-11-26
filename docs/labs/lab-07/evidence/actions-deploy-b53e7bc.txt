@@ -1,0 +1,50 @@
+CLI output captured 2026-11-27 04:09 Asia/Bangkok, not a screenshot.
+Reason: no browser-control tool was connected to this session, so the GitHub Actions run page
+could not be captured visually. Read-only `gh run view` output below instead (our repo only).
+
+Note: there is one CI run ID here, not two. Run 45812026155 is the "Deploy demo" workflow run
+triggered by the push of commit b53e7bc (PR #72's merge) to `main`. Its first job,
+`test / test-and-docker`, is the test/build job (what the original task called "the CI run"); its
+second job, `deploy`, performs the actual deployment. The "CI" workflow (a separate GitHub Actions
+workflow in this repo) does not trigger on `main` at all, so there is no separate CI-workflow run
+to show for this commit — "the CI run 45812026155" and "the Deploy demo run" refer to the same run.
+
+Command:
+  gh run view 45812026155 --repo asamapornch/habit-activity-tracker \
+    --json databaseId,workflowName,displayTitle,headBranch,headSha,status,conclusion,createdAt,updatedAt,event,url,jobs
+
+Output (env/variable data stripped; job names, statuses and timestamps only):
+
+{
+  "databaseId": 45812026155,
+  "workflowName": "Deploy demo",
+  "displayTitle": "Merge pull request #72 from asamapornch/sprint-1-staging",
+  "headBranch": "main",
+  "headSha": "b53e7bcb7b23e6287e829b8bb150cfd0669dedb1",
+  "status": "completed",
+  "conclusion": "success",
+  "createdAt": "2026-11-26T11:35:52Z",
+  "updatedAt": "2026-11-26T11:39:52Z",
+  "event": "push",
+  "url": "https://github.com/asamapornch/habit-activity-tracker/actions/runs/45812026155",
+  "jobs": [
+    {
+      "name": "test / test-and-docker",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-11-26T11:35:54Z",
+      "completedAt": "2026-11-26T11:37:48Z"
+    },
+    {
+      "name": "deploy",
+      "status": "completed",
+      "conclusion": "success",
+      "startedAt": "2026-11-26T11:37:50Z",
+      "completedAt": "2026-11-26T11:39:51Z"
+    }
+  ]
+}
+
+Confirms: the Deploy demo run for the Lab 7 release (commit b53e7bc, PR #72) completed with
+overall conclusion "success", on both its test-and-docker job and its deploy job. No step-level
+logs (which would include CI env var blocks) were included.
