@@ -1,6 +1,6 @@
 # Traceability Matrix — Habit & Activity Tracking
 
-Requirement → feature or responsibility → sprint → verification. IDs are from `docs/srs.md` v1.1 and
+Requirement → feature or responsibility → sprint → verification. IDs are from `docs/srs.md` v1.2 and
 `docs/features.md`. Each acceptance criterion AC-0X.n is verified by the test(s) with the same number,
 TEST-0X.n (with letter variants such as TEST-04.6a to 04.6c), listed in the STS of its contract.
 
@@ -15,9 +15,9 @@ F-05 `backend/tests/access.test.ts`.
 | --- | --- | --- | --- | --- |
 | FR-01 Login | F-01 | 1 | AC-01.1, 01.2, 01.12, 01.14 / TEST-01.1, 01.2, 01.12, 01.14 | Verified |
 | FR-02 Logout, current user | F-01 | 1 | AC-01.3, 01.8, 01.14 to 01.16 / TEST-01.3, 01.8, 01.14 to 01.16 | Verified |
-| FR-03 Create template | F-02 | 1 | AC-02.1, 02.15, 02.16 / TEST-02.1, 02.15, 02.16 | Verified |
-| FR-04 Update template | F-02 | 1 | AC-02.6, 02.15, 02.18 / TEST-02.6, 02.15, 02.18 | Verified |
-| FR-05 List templates | F-02 | 1 | AC-02.9, 02.13 / TEST-02.9, 02.13 | Verified |
+| FR-03 Create template | F-02 | 1 | AC-02.1, 02.15, 02.16 / TEST-02.1, 02.15, 02.16; Lab 7: AC-02.21, 02.26 / TEST-02.21, 02.26 | Verified; Lab 7 part specified, tests pending |
+| FR-04 Update template | F-02 | 1 | AC-02.6, 02.15, 02.18 / TEST-02.6, 02.15, 02.18; Lab 7: AC-02.23, 02.26 / TEST-02.23, 02.26 | Verified; Lab 7 part specified, tests pending |
+| FR-05 List templates | F-02 | 1 | AC-02.9, 02.13 / TEST-02.9, 02.13; Lab 7: AC-02.24, 02.27 / TEST-02.24, 02.27 | Verified; Lab 7 part specified, tests pending |
 | FR-06 Create and read goals | F-03 | 1 | AC-03.1, 03.11, 03.12, 03.15 to 03.17 / TEST-03.1, 03.11, 03.12, 03.15 to 03.17 | Verified |
 | FR-07 Record an entry | F-04 | 1 | AC-04.1, 04.20 / TEST-04.1, 04.20a to 04.20c | Verified |
 | FR-08 Progress | F-04 | 1 | AC-04.14, 04.18, 04.20 / TEST-04.14, 04.18, 04.20a | Verified |
@@ -34,10 +34,10 @@ F-05 `backend/tests/access.test.ts`.
 | --- | --- | --- | --- | --- |
 | BR-01 One entry per day (409) | F-04 | 1 | AC-04.10, 04.11 (concurrent), 04.21 / TEST-04.10, 04.11, 04.21a | Verified |
 | BR-02 Value within template range | F-04 | 1 | AC-04.9, 04.12, 04.21 / TEST-04.9, 04.12 | Verified |
-| BR-03 No future date, inside goal dates | F-04 | 1 | AC-04.6 to 04.8 (Asia/Bangkok today), 04.21 / TEST-04.6 to 04.8, 04.21b | Verified |
+| BR-03 No future date, within the template's back-dating limit (Lab 7), inside goal dates | F-04 | 1 | AC-04.6 to 04.8 (Asia/Bangkok today), 04.21 / TEST-04.6 to 04.8, 04.21b; Lab 7: AC-04.24 to 04.29 / TEST-04.24a to 04.29 | Verified; Lab 7 part specified, tests pending |
 | BR-04 No overlapping goals per template (409) | F-03 | 1 | AC-03.8 to 03.10 (concurrent), 03.18 / TEST-03.8 to 03.10, 03.18a | Verified |
 | BR-05 Target in range, end not before start | F-03 | 1 | AC-03.5, 03.7, 03.13, 03.18 / TEST-03.5, 03.7, 03.13, 03.18b | Verified |
-| BR-06 Only a Manager writes templates (403) | F-02, F-05 | 1 | AC-02.2, 02.7, 02.10, 02.14, 05.2 / TEST-02.2, 02.7, 02.10, 02.14, 05.2 | Verified |
+| BR-06 Only a Manager writes templates (403) | F-02, F-05 | 1 | AC-02.2, 02.7, 02.10, 02.14, 05.2 / TEST-02.2, 02.7, 02.10, 02.14, 05.2; Lab 7: AC-02.25 / TEST-02.25 | Verified; Lab 7 part specified, tests pending |
 | BR-07 Template min < max | F-02 | 1 | AC-02.4 / TEST-02.4 | Verified |
 | BR-08 Private goals and entries (404 / 403) | F-03, F-04, F-05 | 1 | AC-03.3, 03.11, 03.12, 04.3, 04.5, 04.13, 05.3 to 05.9 / same TEST IDs | Verified |
 | BR-09 Progress calculation | F-04 | 1 | AC-04.14 to 04.16 / TEST-04.14a to 04.14e, 04.15, 04.16 | Verified |
@@ -80,4 +80,5 @@ F-05 `backend/tests/access.test.ts`.
 | Clock set before login; progress as a percentage rounded to two decimals (D-10) | F-04 v1.1, SRS D-10 | PR #29 review |
 | UI criteria for goals, entries and progress added | F-03 v1.2, F-04 v1.2 | PR #31 |
 | History shows no UI-side "target met"; saved entry survives a failed progress refresh | F-04 v1.3 | PR #31 review |
+| Per-template back-dating limit `backdateDays` (D-12): template field, migration, BR-03 check | SRS v1.2, F-02 v1.7, F-04 v1.5, system SDS v1.1 | Issue #65 (Lab 7), PR #69 review |
 | Sprint 2 and 3 requirements added to the baseline; D-09 limited to goal creation | SRS v1.1, D-11 | PR #33 |
