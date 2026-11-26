@@ -9,7 +9,7 @@
 | Needed by | F-03, F-04, F-05 |
 | Owner | Student 1 |
 | Reviewer | Student 2 |
-| Status | Implemented and merged into `sprint-1-staging` (PR #11, #12, #14, #21). v1.6: Lab 7 back-dating limit specified (Issue #65), implementation pending |
+| Status | Implemented and merged into `sprint-1-staging` (PR #11, #12, #14, #21). v1.6/v1.7: Lab 7 back-dating limit specified (Issue #65), implementation pending |
 
 ## 1. Purpose
 
@@ -166,16 +166,16 @@ every test.
 | TEST-02.8d | AC-02.8 | Manager `PUT /templates/99999999999` (exceeds Postgres's 32-bit `integer` range) | 400 `VALIDATION_ERROR`, not 500 |
 | TEST-02.9a | AC-02.9 | Two templates exist; Manager `GET /templates` | 200; list has both, ordered by `id` ascending |
 | TEST-02.9b | AC-02.9 | same, as Participant | 200; list has both |
-| TEST-02.21a | AC-02.21 | Manager `POST` `{ "Running", "km", 0, 50, backdateDays: 7 }` | 201; body `backdateDays` 7; stored row `backdateDays` 7 |
-| TEST-02.21b | AC-02.21 | Manager `POST` with `backdateDays` 0, then another with 30 | 201 for each; stored 0 and 30 |
-| TEST-02.21c | AC-02.21 | Manager `POST` without the key, then another with `backdateDays: null` | 201 for each; body and stored row `backdateDays` `null` |
+| TEST-02.21a | AC-02.21 | Manager `POST` `{ "Running", "km", 0, 50, backdateDays: 7 }` | 201; body `backdateDays` 7; a later `GET /templates` shows 7 |
+| TEST-02.21b | AC-02.21 | Manager `POST` with `backdateDays` 0, then another with 30 | 201 for each; `GET /templates` shows 0 and 30 |
+| TEST-02.21c | AC-02.21 | Manager `POST` without the key, then another with `backdateDays: null` | 201 for each; each body and `GET /templates` show `backdateDays` `null` |
 | TEST-02.22a | AC-02.22 | Manager `POST` with `backdateDays` -1, 31, 2.5, `"7"`, `true` (one request each) | 400 `VALIDATION_ERROR` `Invalid template fields.` for each; template table empty |
-| TEST-02.22b | AC-02.22 | Manager creates a template with `backdateDays` 7; `PUT` it with `backdateDays` 31, then `"7"` | 400 `VALIDATION_ERROR` `Invalid template id or fields.` for each; stored template unchanged (`backdateDays` 7) |
+| TEST-02.22b | AC-02.22 | Manager creates a template with `backdateDays` 7 (201); `PUT` it with `backdateDays` -1, 31, 2.5, then `"7"` | 400 `VALIDATION_ERROR` `Invalid template id or fields.` for each; `GET /templates` shows the template unchanged (`backdateDays` 7) |
 | TEST-02.23a | AC-02.23 | Manager creates with `backdateDays` 7; `PUT` the same fields with `backdateDays` 3; `GET /templates` | PUT 200 with `backdateDays` 3, `createdById` unchanged; GET shows 3 |
 | TEST-02.23b | AC-02.23 | Manager creates with `backdateDays` 3; `PUT` without the key; then creates another with 5 and `PUT`s it with `backdateDays: null` | 200 for each; both now `backdateDays` `null` |
-| TEST-02.24 | AC-02.24 | Templates with `backdateDays` 7 and without the key exist; Manager and Participant `GET /templates` | 200 for each; the first has `backdateDays` 7, the second `null` |
+| TEST-02.24 | AC-02.24 | Manager creates through `POST /templates` one template with `backdateDays` 7 and one without the key (201 each); Manager and Participant `GET /templates` | 200 for each; the first has `backdateDays` 7, the second `null` |
 | TEST-02.25a | AC-02.25 | Participant `POST /templates` with a valid body plus `backdateDays: 7` | 403 `FORBIDDEN`; template table empty |
-| TEST-02.25b | AC-02.25 | Manager creates without a limit; Participant `PUT` it with `backdateDays: 1` | 403 `FORBIDDEN`; stored `backdateDays` still `null` |
+| TEST-02.25b | AC-02.25 | Manager creates without a limit; Participant `PUT` it with `backdateDays: 1` | 403 `FORBIDDEN`; `GET /templates` shows `backdateDays` still `null` |
 
 ### 5.2 Frontend tests
 
@@ -199,6 +199,20 @@ mocked per test.
 | TEST-02.26c | AC-02.26 | Manager opens the edit control of a template with `backdateDays` 5, changes it to 2 and saves | the field is pre-filled with `5`; `PUT /templates/:id` body has `backdateDays: 2` |
 | TEST-02.27 | AC-02.27 | `GET /templates` returns one template with `backdateDays` 7 and one with `null` | the first row shows `back-dating 7 days`; the second row's text has no "back-dating" |
 
+**v1.7 (Lab 7) expected red and controls.** The new backend tests create every template with a limit
+through `POST /templates` (never by inserting the column through Prisma) and read `backdateDays` from
+API responses, so the test files run unchanged on the pre-change schema and each failure is an
+assertion on a status or a value. On the pre-change code `5d0e4ba`:
+
+- Expected red, because the limit is missing: TEST-02.21a, 02.21b, 02.22b, 02.23a, 02.23b, 02.24
+  (201 expected, 400 `Invalid template fields.` returned, since the old validator rejects the unknown
+  key); TEST-02.21c and 02.25b (`backdateDays` `null` expected, the key is missing from the old
+  responses); TEST-02.26a to 02.26c and 02.27 (the form has no "Back-dating limit (days)" field and
+  the list shows no "back-dating" text, so the request body has no `backdateDays`).
+- Controls that pass before and after the change: TEST-02.22a (the old validator already returns 400
+  for any unknown key and stores nothing) and TEST-02.25a (the role check already returns 403 first).
+  They stay because after the change they guard the new validation and BR-06.
+
 ## 6. Definition of done
 
 - [x] This contract is committed before any implementation code (separate earlier commit).
@@ -209,9 +223,10 @@ mocked per test.
       approved by the other student with comments describing what was checked.
 - [x] Failed or skipped tests, if any, are listed in the evidence report.
 - [x] `NOT_FOUND` is added to the shared `ErrorCode` type used by the error handler.
-- [ ] (v1.6, Lab 7) TEST-02.21 to TEST-02.27 are committed and fail first (red) on the pre-change code
-      `5d0e4ba` because the limit is missing (assertion failures, not compile or setup errors), with the
-      output saved under `docs/labs/lab-07/evidence/`.
+- [ ] (v1.7, Lab 7) TEST-02.21a to TEST-02.27 are committed before the implementation and run on the
+      pre-change code `5d0e4ba`: the tests listed as expected red in §5.2 fail on assertions because the
+      limit is missing (not compile or setup errors), and the controls TEST-02.22a and 02.25a pass; the
+      output is saved under `docs/labs/lab-07/evidence/`.
 - [ ] (v1.6) The migration and implementation make them pass (green); all existing TEST-01 to TEST-05
       pass without editing any existing expected result; outputs saved.
 - [ ] (v1.6) Pull request into `sprint-1-staging` with `Refs #65`, reviewed and approved by Student 2.
@@ -227,3 +242,4 @@ mocked per test.
 | 1.4 | 2026-11-07 | Added TEST-02.16b (decimal Min/Max values sent as JSON numbers) and TEST-02.17b (verbatim 400 message and preserved values on update, not just create); clarified TEST-02.19 to render through the signed-in view rather than `Templates` standalone | PR #21 review |
 | 1.5 | 2026-11-07 | Status set to implemented; Definition of done checked against the merged PRs and saved evidence (no change to behaviour, AC or tests) | Part B/D, Sprint 1 close-out |
 | 1.6 | 2026-11-26 | Optional `backdateDays` (0 to 30 or `null`) on create, update and list; nullable column migration; form field and list text; AC-02.21 to AC-02.27, TEST-02.21a to TEST-02.27. Existing AC and tests unchanged | Lab 7 change request, Issue #65 (SRS v1.2, D-12) |
+| 1.7 | 2026-11-26 | Expected red vs control list for the new tests (§5.2): TEST-02.22a and 02.25a are controls; the Definition of done matches it. New tests create templates with a limit through the API and read `backdateDays` from responses. TEST-02.22b also sends -1 and 2.5 on `PUT` | PR #69 review |
