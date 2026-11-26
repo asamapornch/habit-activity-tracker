@@ -1,0 +1,72 @@
+# F-02 Lab 7 GREEN (backend)
+# Tested commit: 3d3d538 (lab7/f02-backdate-field)
+# Run at: 2026-11-26 18:08 +07; Node v26.13.1; Postgres 16 (docker compose db)
+# Commands: cd backend && npx vitest run tests/templates.test.ts --reporter=verbose ; npx vitest run ; npm run typecheck ; npm run build
+
+
+ RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 317ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value 264ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.2 rejects a Participant with 403 and stores nothing 264ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3a GET /templates with no cookie returns 401 UNAUTHENTICATED 262ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3b POST /templates with no cookie returns 401 259ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3c PUT /templates/1 with no cookie returns 401 260ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4a rejects minValue equal to maxValue on create 254ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4b rejects minValue greater than maxValue on create 256ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4c rejects minValue greater than maxValue on update, leaving the template unchanged 265ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5a rejects an empty body and stores nothing 260ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5b rejects a whitespace-only name 257ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5c rejects a non-numeric minValue 255ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5d rejects a maxValue with more than two decimals 256ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5e rejects an unknown field 255ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5f rejects a name longer than 100 characters after trimming 257ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5g rejects a unit longer than 20 characters after trimming 262ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5h rejects a numeric string for minValue 257ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5i rejects a maxValue outside the allowed range 255ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5j accepts a negative minValue 260ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6a updates a template, keeps createdById, and GET reflects the change 267ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6b allows a different Manager to update, and createdById stays the original Manager's id 389ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.7 rejects a Participant with 403 and leaves the template unchanged 263ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8a returns 404 NOT_FOUND for a Manager updating a missing id 259ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8b returns 400 for a non-integer id 253ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8c returns 403 (not 404) for a Participant updating a missing id 255ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range 254ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > accepts a 100-character name (boundary) 264ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > rejects a 99,000-character name with 400 VALIDATION_ERROR (body under the 100 kB limit) 258ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > rejects a 102,000-character name with 400 VALIDATION_ERROR (body still under the 100 kB limit) 257ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > POST /templates with a 110,000-character name returns 400 VALIDATION_ERROR, not 500 (body over the 100 kB limit) 255ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > PUT /templates/:id with a 110,000-character name returns 400 VALIDATION_ERROR, not 500, and leaves the template unchanged 259ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9a returns both templates to a Manager, ordered by id ascending 271ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9b returns both templates to a Participant 269ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21a creates a template with backdateDays 7 and GET shows 7 262ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21b accepts the limits 0 and 30 268ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21c stores null when the key is left out or sent as null 270ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: invalid values (AC-02.22) > TEST-02.22a rejects -1, 31, 2.5, "7" and true on POST and stores nothing 268ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: invalid values (AC-02.22) > TEST-02.22b rejects -1, 31, 2.5 and "7" on PUT and leaves the limit at 7 274ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23a changes the limit from 7 to 3, keeps createdById, and GET shows 3 272ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23b clears the limit with a PUT without the key and with backdateDays null 275ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: list (AC-02.24) > TEST-02.24 returns backdateDays for every template to a Manager and a Participant 278ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: Manager only (AC-02.25) > TEST-02.25a rejects a Participant POST with backdateDays with 403 and stores nothing 254ms
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: Manager only (AC-02.25) > TEST-02.25b rejects a Participant PUT with backdateDays with 403 and the limit stays null 262ms
+
+ Test Files  1 passed (1)
+      Tests  43 passed (43)
+   Start at  18:08:15
+   Duration  11.73s (tests 99%, import 1%)
+
+
+## Full backend suite
+
+ RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+
+
+ Test Files  15 passed (15)
+      Tests  184 passed (184)
+   Start at  18:08:27
+   Duration  60.10s (tests 97%, import 2%)
+
+## npm run typecheck
+typecheck: exit 0
+## npm run build
+build: exit 0
