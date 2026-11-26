@@ -1,0 +1,222 @@
+# F-02 Lab 7 RED (backend)
+# Tested commit: 7d9888a (lab7/f02-backdate-field, tests only on top of sprint-1-staging 87def4c)
+# Code under test is identical to pre-change main 5d0e4ba: `git diff --name-only 5d0e4ba 87def4c` lists only docs/ files.
+# Run at: 2026-11-26 18:06 +07; Node v26.13.1
+# Command: cd backend && npx vitest run tests/templates.test.ts --reporter=verbose
+# Expected (F-02 v1.7 section 5.2): red = TEST-02.21a, 21b, 21c, 22b, 23a, 23b, 24, 25b (backend) and 26a, 26b, 26c, 27 (frontend); controls TEST-02.22a and 25a pass.
+
+
+ RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 317ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value 265ms
+ ✓ tests/templates.test.ts > POST /templates > TEST-02.2 rejects a Participant with 403 and stores nothing 260ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3a GET /templates with no cookie returns 401 UNAUTHENTICATED 260ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3b POST /templates with no cookie returns 401 259ms
+ ✓ tests/templates.test.ts > AC-02.3 anonymous access > TEST-02.3c PUT /templates/1 with no cookie returns 401 254ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4a rejects minValue equal to maxValue on create 257ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4b rejects minValue greater than maxValue on create 256ms
+ ✓ tests/templates.test.ts > AC-02.4 min/max ordering > TEST-02.4c rejects minValue greater than maxValue on update, leaving the template unchanged 262ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5a rejects an empty body and stores nothing 256ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5b rejects a whitespace-only name 254ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5c rejects a non-numeric minValue 253ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5d rejects a maxValue with more than two decimals 256ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5e rejects an unknown field 258ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5f rejects a name longer than 100 characters after trimming 262ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5g rejects a unit longer than 20 characters after trimming 256ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5h rejects a numeric string for minValue 256ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5i rejects a maxValue outside the allowed range 255ms
+ ✓ tests/templates.test.ts > AC-02.5 / AC-02.11 / AC-02.12 validation > TEST-02.5j accepts a negative minValue 257ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6a updates a template, keeps createdById, and GET reflects the change 271ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.6b allows a different Manager to update, and createdById stays the original Manager's id 385ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.7 rejects a Participant with 403 and leaves the template unchanged 263ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8a returns 404 NOT_FOUND for a Manager updating a missing id 263ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8b returns 400 for a non-integer id 259ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8c returns 403 (not 404) for a Participant updating a missing id 257ms
+ ✓ tests/templates.test.ts > PUT /templates/:id > TEST-02.8d returns 400 VALIDATION_ERROR, not 500, for an id beyond Postgres's int4 range 256ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > accepts a 100-character name (boundary) 262ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > rejects a 99,000-character name with 400 VALIDATION_ERROR (body under the 100 kB limit) 257ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > rejects a 102,000-character name with 400 VALIDATION_ERROR (body still under the 100 kB limit) 258ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > POST /templates with a 110,000-character name returns 400 VALIDATION_ERROR, not 500 (body over the 100 kB limit) 253ms
+ ✓ tests/templates.test.ts > B2-01 oversized request body (AC-02.11, AC-02.17) > PUT /templates/:id with a 110,000-character name returns 400 VALIDATION_ERROR, not 500, and leaves the template unchanged 261ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9a returns both templates to a Manager, ordered by id ascending 263ms
+ ✓ tests/templates.test.ts > GET /templates > TEST-02.9b returns both templates to a Participant 271ms
+ × tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21a creates a template with backdateDays 7 and GET shows 7 257ms
+   → expected 400 to be 201 // Object.is equality
+ × tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21b accepts the limits 0 and 30 258ms
+   → expected 400 to be 201 // Object.is equality
+ × tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21c stores null when the key is left out or sent as null 260ms
+   → expected { id: 46, name: 'Running', …(4) } to have property "backdateDays" with value null
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: invalid values (AC-02.22) > TEST-02.22a rejects -1, 31, 2.5, "7" and true on POST and stores nothing 268ms
+ × tests/templates.test.ts > Lab 7 back-dating limit: invalid values (AC-02.22) > TEST-02.22b rejects -1, 31, 2.5 and "7" on PUT and leaves the limit at 7 257ms
+   → expected 400 to be 201 // Object.is equality
+ × tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23a changes the limit from 7 to 3, keeps createdById, and GET shows 3 267ms
+   → expected 400 to be 201 // Object.is equality
+ × tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23b clears the limit with a PUT without the key and with backdateDays null 258ms
+   → expected 400 to be 201 // Object.is equality
+ × tests/templates.test.ts > Lab 7 back-dating limit: list (AC-02.24) > TEST-02.24 returns backdateDays for every template to a Manager and a Participant 258ms
+   → expected 400 to be 201 // Object.is equality
+ ✓ tests/templates.test.ts > Lab 7 back-dating limit: Manager only (AC-02.25) > TEST-02.25a rejects a Participant POST with backdateDays with 403 and stores nothing 257ms
+ × tests/templates.test.ts > Lab 7 back-dating limit: Manager only (AC-02.25) > TEST-02.25b rejects a Participant PUT with backdateDays with 403 and the limit stays null 262ms
+   → expected { id: 48, name: 'Running', …(4) } to have property "backdateDays" with value null
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21a creates a template with backdateDays 7 and GET shows 7
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:455:24
+    453|       .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    454|
+    455|     expect(res.status).toBe(201);
+       |                        ^
+    456|     expect(res.body.backdateDays).toBe(7);
+    457|     expect(await listedTemplate(res.body.id)).toHaveProperty("backdate…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21b accepts the limits 0 and 30
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:470:25
+    468|       .send({ ...VALID_TEMPLATE, name: "Cycling", backdateDays: 30 });
+    469|
+    470|     expect(zero.status).toBe(201);
+       |                         ^
+    471|     expect(thirty.status).toBe(201);
+    472|     expect(await listedTemplate(zero.body.id)).toHaveProperty("backdat…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: create (AC-02.21) > TEST-02.21c stores null when the key is left out or sent as null
+AssertionError: expected { id: 46, name: 'Running', …(4) } to have property "backdateDays" with value null
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/templates.test.ts:484:29
+    482|
+    483|     expect(withoutKey.status).toBe(201);
+    484|     expect(withoutKey.body).toHaveProperty("backdateDays", null);
+       |                             ^
+    485|     expect(withNull.status).toBe(201);
+    486|     expect(withNull.body).toHaveProperty("backdateDays", null);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: invalid values (AC-02.22) > TEST-02.22b rejects -1, 31, 2.5 and "7" on PUT and leaves the limit at 7
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:513:28
+    511|       .set("Cookie", managerCookie)
+    512|       .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    513|     expect(created.status).toBe(201);
+       |                            ^
+    514|
+    515|     for (const backdateDays of [-1, 31, 2.5, "7"]) {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23a changes the limit from 7 to 3, keeps createdById, and GET shows 3
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:534:28
+    532|       .set("Cookie", managerCookie)
+    533|       .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    534|     expect(created.status).toBe(201);
+       |                            ^
+    535|
+    536|     const res = await request(app)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: update (AC-02.23) > TEST-02.23b clears the limit with a PUT without the key and with backdateDays null
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:552:26
+    550|       .set("Cookie", managerCookie)
+    551|       .send({ ...VALID_TEMPLATE, backdateDays: 3 });
+    552|     expect(first.status).toBe(201);
+       |                          ^
+    553|     const clearedByOmission = await request(app)
+    554|       .put(`/templates/${first.body.id}`)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: list (AC-02.24) > TEST-02.24 returns backdateDays for every template to a Manager and a Participant
+AssertionError: expected 400 to be 201 // Object.is equality
+
+- Expected
++ Received
+
+- 201
++ 400
+
+ ❯ tests/templates.test.ts:585:28
+    583|       .set("Cookie", managerCookie)
+    584|       .send({ ...VALID_TEMPLATE, name: "Cycling" });
+    585|     expect(limited.status).toBe(201);
+       |                            ^
+    586|     expect(unlimited.status).toBe(201);
+    587|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/templates.test.ts > Lab 7 back-dating limit: Manager only (AC-02.25) > TEST-02.25b rejects a Participant PUT with backdateDays with 403 and the limit stays null
+AssertionError: expected { id: 48, name: 'Running', …(4) } to have property "backdateDays" with value null
+
+- Expected:
+null
+
++ Received:
+undefined
+
+ ❯ tests/templates.test.ts:618:51
+    616|     expect(res.status).toBe(403);
+    617|     expect(res.body.error.code).toBe("FORBIDDEN");
+    618|     expect(await listedTemplate(created.body.id)).toHaveProperty("back…
+       |                                                   ^
+    619|   });
+    620| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 35 passed (43)
+   Start at  18:06:02
+   Duration  11.63s (tests 99%, import 1%)
+
