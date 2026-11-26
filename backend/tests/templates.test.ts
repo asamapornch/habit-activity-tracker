@@ -429,3 +429,192 @@ describe("GET /templates", () => {
     expect(res.body).toHaveLength(2);
   });
 });
+
+// Lab 7 (Issue #65): per-template back-dating limit, F-02 contract v1.7 §5.1.
+// Templates with a limit are created through POST /templates and backdateDays is
+// read from API responses, so this file runs unchanged on the pre-change schema.
+type TemplateBody = { id: number; backdateDays?: number | null; createdById: number };
+
+async function listTemplates(cookie: string): Promise<TemplateBody[]> {
+  const res = await request(app).get("/templates").set("Cookie", cookie);
+  expect(res.status).toBe(200);
+  return res.body as TemplateBody[];
+}
+
+async function listedTemplate(id: number, cookie = managerCookie): Promise<TemplateBody | undefined> {
+  return (await listTemplates(cookie)).find((t) => t.id === id);
+}
+
+describe("Lab 7 back-dating limit: create (AC-02.21)", () => {
+  it("TEST-02.21a creates a template with backdateDays 7 and GET shows 7", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+
+    expect(res.status).toBe(201);
+    expect(res.body.backdateDays).toBe(7);
+    expect(await listedTemplate(res.body.id)).toHaveProperty("backdateDays", 7);
+  });
+
+  it("TEST-02.21b accepts the limits 0 and 30", async () => {
+    const zero = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 0 });
+    const thirty = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, name: "Cycling", backdateDays: 30 });
+
+    expect(zero.status).toBe(201);
+    expect(thirty.status).toBe(201);
+    expect(await listedTemplate(zero.body.id)).toHaveProperty("backdateDays", 0);
+    expect(await listedTemplate(thirty.body.id)).toHaveProperty("backdateDays", 30);
+  });
+
+  it("TEST-02.21c stores null when the key is left out or sent as null", async () => {
+    const withoutKey = await request(app).post("/templates").set("Cookie", managerCookie).send(VALID_TEMPLATE);
+    const withNull = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, name: "Cycling", backdateDays: null });
+
+    expect(withoutKey.status).toBe(201);
+    expect(withoutKey.body).toHaveProperty("backdateDays", null);
+    expect(withNull.status).toBe(201);
+    expect(withNull.body).toHaveProperty("backdateDays", null);
+    expect(await listedTemplate(withoutKey.body.id)).toHaveProperty("backdateDays", null);
+    expect(await listedTemplate(withNull.body.id)).toHaveProperty("backdateDays", null);
+  });
+});
+
+describe("Lab 7 back-dating limit: invalid values (AC-02.22)", () => {
+  const INVALID_VALUES: unknown[] = [-1, 31, 2.5, "7", true];
+
+  it("TEST-02.22a rejects -1, 31, 2.5, \"7\" and true on POST and stores nothing", async () => {
+    for (const backdateDays of INVALID_VALUES) {
+      const res = await request(app)
+        .post("/templates")
+        .set("Cookie", managerCookie)
+        .send({ ...VALID_TEMPLATE, backdateDays });
+
+      expect(res.status, `backdateDays ${JSON.stringify(backdateDays)}`).toBe(400);
+      expect(res.body.error).toEqual({ code: "VALIDATION_ERROR", message: "Invalid template fields." });
+    }
+    await expect(prisma.template.count()).resolves.toBe(0);
+  });
+
+  it("TEST-02.22b rejects -1, 31, 2.5 and \"7\" on PUT and leaves the limit at 7", async () => {
+    const created = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    expect(created.status).toBe(201);
+
+    for (const backdateDays of [-1, 31, 2.5, "7"]) {
+      const res = await request(app)
+        .put(`/templates/${created.body.id}`)
+        .set("Cookie", managerCookie)
+        .send({ ...VALID_TEMPLATE, backdateDays });
+
+      expect(res.status, `backdateDays ${JSON.stringify(backdateDays)}`).toBe(400);
+      expect(res.body.error).toEqual({ code: "VALIDATION_ERROR", message: "Invalid template id or fields." });
+    }
+    expect(await listedTemplate(created.body.id)).toHaveProperty("backdateDays", 7);
+  });
+});
+
+describe("Lab 7 back-dating limit: update (AC-02.23)", () => {
+  it("TEST-02.23a changes the limit from 7 to 3, keeps createdById, and GET shows 3", async () => {
+    const created = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    expect(created.status).toBe(201);
+
+    const res = await request(app)
+      .put(`/templates/${created.body.id}`)
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 3 });
+
+    expect(res.status).toBe(200);
+    expect(res.body.backdateDays).toBe(3);
+    expect(res.body.createdById).toBe(manager.id);
+    expect(await listedTemplate(created.body.id)).toHaveProperty("backdateDays", 3);
+  });
+
+  it("TEST-02.23b clears the limit with a PUT without the key and with backdateDays null", async () => {
+    const first = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 3 });
+    expect(first.status).toBe(201);
+    const clearedByOmission = await request(app)
+      .put(`/templates/${first.body.id}`)
+      .set("Cookie", managerCookie)
+      .send(VALID_TEMPLATE);
+
+    const second = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, name: "Cycling", backdateDays: 5 });
+    expect(second.status).toBe(201);
+    const clearedByNull = await request(app)
+      .put(`/templates/${second.body.id}`)
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, name: "Cycling", backdateDays: null });
+
+    expect(clearedByOmission.status).toBe(200);
+    expect(clearedByNull.status).toBe(200);
+    expect(await listedTemplate(first.body.id)).toHaveProperty("backdateDays", null);
+    expect(await listedTemplate(second.body.id)).toHaveProperty("backdateDays", null);
+  });
+});
+
+describe("Lab 7 back-dating limit: list (AC-02.24)", () => {
+  it("TEST-02.24 returns backdateDays for every template to a Manager and a Participant", async () => {
+    const limited = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+    const unlimited = await request(app)
+      .post("/templates")
+      .set("Cookie", managerCookie)
+      .send({ ...VALID_TEMPLATE, name: "Cycling" });
+    expect(limited.status).toBe(201);
+    expect(unlimited.status).toBe(201);
+
+    for (const cookie of [managerCookie, participantCookie]) {
+      expect(await listedTemplate(limited.body.id, cookie)).toHaveProperty("backdateDays", 7);
+      expect(await listedTemplate(unlimited.body.id, cookie)).toHaveProperty("backdateDays", null);
+    }
+  });
+});
+
+describe("Lab 7 back-dating limit: Manager only (AC-02.25)", () => {
+  it("TEST-02.25a rejects a Participant POST with backdateDays with 403 and stores nothing", async () => {
+    const res = await request(app)
+      .post("/templates")
+      .set("Cookie", participantCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 7 });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe("FORBIDDEN");
+    await expect(prisma.template.count()).resolves.toBe(0);
+  });
+
+  it("TEST-02.25b rejects a Participant PUT with backdateDays with 403 and the limit stays null", async () => {
+    const created = await request(app).post("/templates").set("Cookie", managerCookie).send(VALID_TEMPLATE);
+    expect(created.status).toBe(201);
+
+    const res = await request(app)
+      .put(`/templates/${created.body.id}`)
+      .set("Cookie", participantCookie)
+      .send({ ...VALID_TEMPLATE, backdateDays: 1 });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error.code).toBe("FORBIDDEN");
+    expect(await listedTemplate(created.body.id)).toHaveProperty("backdateDays", null);
+  });
+});
