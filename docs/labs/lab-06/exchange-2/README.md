@@ -1,0 +1,16 @@
+# Lab 6 – Exchange 2: our UAT results on the partner's app
+
+Our team's (asamapornch, warunwora) results from running UAT against the partner's app (`phittayanan/habit-tracker`, tag `v1.3`, commit `50f5605d266d881b4afba3f8ac96d40882f26fd2`), plus an exploratory round and a local, code-level investigation. Evidence screenshots are in `evidence/`.
+
+| Case | Category | Verdict | Testers | Date and approximate time | File |
+| --- | --- | --- | --- | --- | --- |
+| UAT-01 | Normal journey | PASS | asamapornch and warunwora (warunwora gave his opinion on the results) | 2026-11-25, approx. 13:34–13:54 Asia/Bangkok | [UAT-01-result.md](UAT-01-result.md) |
+| UAT-02 | Business rule/boundary | PASS | asamapornch and warunwora (warunwora gave his opinion on the results) | 2026-11-25, approx. 14:03–14:17 Asia/Bangkok | [UAT-02-result.md](UAT-02-result.md) |
+| UAT-03 | Forbidden role/ownership | PASS | asamapornch and warunwora (warunwora gave his opinion on the results) | 2026-11-25, approx. 14:22–14:36 Asia/Bangkok | [UAT-03-result.md](UAT-03-result.md) |
+| UAT-04 | State/history/persistence | PASS | asamapornch and warunwora (warunwora gave his opinion on the results) | 2026-11-25, approx. 14:40–14:49 Asia/Bangkok | [UAT-04-result.md](UAT-04-result.md) |
+| EXP-1 | Exploratory (acceptance criteria not reached by UAT-01 to UAT-04) | PASS (confirmed by asamapornch on 2026-11-26) | asamapornch and warunwora | 2026-11-25, approx. 15:06–17:35 Asia/Bangkok | [EXP-1-result.md](EXP-1-result.md) |
+| LOCAL-1 | Local code-read and local test of the partner's code at commit `50f5605` | 3 differences found, reported as Issues [#126](https://github.com/phittayanan/habit-tracker/issues/126) and [#127](https://github.com/phittayanan/habit-tracker/issues/127); not a PASS/FAIL case | not recorded in the file | not recorded in the file | [LOCAL-1-result.md](LOCAL-1-result.md) |
+
+All dates/times above are as recorded in each file (derived from evidence file modification times, not a stopwatch record, except where the file itself says otherwise). `LOCAL-1-result.md` records no tester or date/time field; this is stated here rather than guessed.
+
+`results-template.md` in this directory is the original empty template for the partner's own UAT cases against our app and is unchanged.

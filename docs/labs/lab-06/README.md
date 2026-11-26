@@ -16,6 +16,7 @@ No passwords or tokens are ever stored in this repository. Passwords are exchang
 | --- | --- |
 | `exchange-1/our-uat-package.md` | Our UAT package sent to the partner team (handoff, 6 cases, result sheet, AI prompt) |
 | `exchange-1/partner-package.md` | Partner team's UAT package sent to us (placeholder until received) |
+| `exchange-2/README.md` | Our filled UAT results on the partner's app: case, category, verdict, testers, date/time, and a link to each result file |
 | `exchange-2/results-template.md` | Template for the result sheet we fill in when we test the partner's cases |
 | `exchange-2/evidence/` | Screenshots and other evidence supporting our result sheet |
 | `exchange-3/triage-template.md` | Template for triaging defects reported against our product |
@@ -26,5 +27,5 @@ No passwords or tokens are ever stored in this repository. Passwords are exchang
 | Exchange | Date | State |
 | --- | --- | --- |
 | 1 – packages and cases | | not started |
-| 2 – results and defect reports | | not started |
+| 2 – results and defect reports | 2026-11-26 | Happened. Our results delivered in [phittayanan/habit-tracker#130](https://github.com/phittayanan/habit-tracker/issues/130), posted 2026-11-26 15:48 Asia/Bangkok (see `exchange-2/README.md`). Partner results received in their repository. Defect Issues [#126](https://github.com/phittayanan/habit-tracker/issues/126) and [#127](https://github.com/phittayanan/habit-tracker/issues/127) opened by us against their app; [#60](https://github.com/asamapornch/habit-activity-tracker/issues/60) and [#61](https://github.com/asamapornch/habit-activity-tracker/issues/61) triaged by us against our app. Our #126 fix ([PR #129](https://github.com/phittayanan/habit-tracker/pull/129)) merged by the partner; retest pending. |
 | 3 – fix/retest and final decision | | not started |
