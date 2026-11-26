@@ -47,4 +47,4 @@ No other template was edited.
 | #127 (template create NUL) | **PASS** — fix confirmed on `build 056ee5c` |
 | #127 (template edit NUL) | **PASS** — retested against our own unused `EXP-EditA` (id 18), fix confirmed on `build 056ee5c`; template confirmed unchanged afterward |
 
-Nothing was posted to GitHub. No password, token, or cookie value was printed, logged, or stored anywhere in this file or in the course of this retest.
+The retest results were posted to GitHub by asamapornch on 2026-11-26 as comments on https://github.com/phittayanan/habit-tracker/issues/126#issuecomment-7194992804 (21:33:33 Asia/Bangkok) and https://github.com/phittayanan/habit-tracker/issues/127#issuecomment-7194997077 (21:33:43 Asia/Bangkok). The partner agreed with both results and closed both Issues at 22:01 (Asia/Bangkok). No password, token, or cookie value was printed, logged, or stored anywhere in this file or in the course of this retest.
