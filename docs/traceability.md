@@ -15,9 +15,9 @@ F-05 `backend/tests/access.test.ts`.
 | --- | --- | --- | --- | --- |
 | FR-01 Login | F-01 | 1 | AC-01.1, 01.2, 01.12, 01.14 / TEST-01.1, 01.2, 01.12, 01.14 | Verified |
 | FR-02 Logout, current user | F-01 | 1 | AC-01.3, 01.8, 01.14 to 01.16 / TEST-01.3, 01.8, 01.14 to 01.16 | Verified |
-| FR-03 Create template | F-02 | 1 | AC-02.1, 02.15, 02.16 / TEST-02.1, 02.15, 02.16; Lab 7: AC-02.21, 02.26 / TEST-02.21, 02.26 | Verified; Lab 7 part specified, tests pending |
-| FR-04 Update template | F-02 | 1 | AC-02.6, 02.15, 02.18 / TEST-02.6, 02.15, 02.18; Lab 7: AC-02.23, 02.26 / TEST-02.23, 02.26 | Verified; Lab 7 part specified, tests pending |
-| FR-05 List templates | F-02 | 1 | AC-02.9, 02.13 / TEST-02.9, 02.13; Lab 7: AC-02.24, 02.27 / TEST-02.24, 02.27 | Verified; Lab 7 part specified, tests pending |
+| FR-03 Create template | F-02 | 1 | AC-02.1, 02.15, 02.16 / TEST-02.1, 02.15, 02.16; Lab 7: AC-02.21, 02.26 / TEST-02.21a to 02.21c, 02.26a to 02.26c | Verified (Lab 7 part: PR #70) |
+| FR-04 Update template | F-02 | 1 | AC-02.6, 02.15, 02.18 / TEST-02.6, 02.15, 02.18; Lab 7: AC-02.23, 02.26 / TEST-02.23a, 02.23b, 02.26a to 02.26c | Verified (Lab 7 part: PR #70) |
+| FR-05 List templates | F-02 | 1 | AC-02.9, 02.13 / TEST-02.9, 02.13; Lab 7: AC-02.24, 02.27 / TEST-02.24, 02.27 | Verified (Lab 7 part: PR #70) |
 | FR-06 Create and read goals | F-03 | 1 | AC-03.1, 03.11, 03.12, 03.15 to 03.17 / TEST-03.1, 03.11, 03.12, 03.15 to 03.17 | Verified |
 | FR-07 Record an entry | F-04 | 1 | AC-04.1, 04.20 / TEST-04.1, 04.20a to 04.20c | Verified |
 | FR-08 Progress | F-04 | 1 | AC-04.14, 04.18, 04.20 / TEST-04.14, 04.18, 04.20a | Verified |
@@ -37,7 +37,7 @@ F-05 `backend/tests/access.test.ts`.
 | BR-03 No future date, within the template's back-dating limit (Lab 7), inside goal dates | F-04 | 1 | AC-04.6 to 04.8 (Asia/Bangkok today), 04.21 / TEST-04.6 to 04.8, 04.21b; Lab 7: AC-04.24 to 04.29 / TEST-04.24a to 04.29 | Verified; Lab 7 part specified, tests pending |
 | BR-04 No overlapping goals per template (409) | F-03 | 1 | AC-03.8 to 03.10 (concurrent), 03.18 / TEST-03.8 to 03.10, 03.18a | Verified |
 | BR-05 Target in range, end not before start | F-03 | 1 | AC-03.5, 03.7, 03.13, 03.18 / TEST-03.5, 03.7, 03.13, 03.18b | Verified |
-| BR-06 Only a Manager writes templates (403) | F-02, F-05 | 1 | AC-02.2, 02.7, 02.10, 02.14, 05.2 / TEST-02.2, 02.7, 02.10, 02.14, 05.2; Lab 7: AC-02.25 / TEST-02.25 | Verified; Lab 7 part specified, tests pending |
+| BR-06 Only a Manager writes templates (403) | F-02, F-05 | 1 | AC-02.2, 02.7, 02.10, 02.14, 05.2 / TEST-02.2, 02.7, 02.10, 02.14, 05.2; Lab 7: AC-02.25 / TEST-02.25a, 02.25b | Verified (Lab 7 part: PR #70) |
 | BR-07 Template min < max | F-02 | 1 | AC-02.4 / TEST-02.4 | Verified |
 | BR-08 Private goals and entries (404 / 403) | F-03, F-04, F-05 | 1 | AC-03.3, 03.11, 03.12, 04.3, 04.5, 04.13, 05.3 to 05.9 / same TEST IDs | Verified |
 | BR-09 Progress calculation | F-04 | 1 | AC-04.14 to 04.16 / TEST-04.14a to 04.14e, 04.15, 04.16 | Verified |

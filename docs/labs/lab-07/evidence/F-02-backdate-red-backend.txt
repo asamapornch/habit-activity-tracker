@@ -6,7 +6,7 @@
 # Expected (F-02 v1.7 section 5.2): red = TEST-02.21a, 21b, 21c, 22b, 23a, 23b, 24, 25b (backend) and 26a, 26b, 26c, 27 (frontend); controls TEST-02.22a and 25a pass.
 
 
- RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+ RUN  v5.1.0 <repo>/backend
 
  ✓ tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 317ms
  ✓ tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value 265ms

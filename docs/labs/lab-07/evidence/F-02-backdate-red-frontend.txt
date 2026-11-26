@@ -6,7 +6,7 @@
 # Expected (F-02 v1.7 section 5.2): red = TEST-02.21a, 21b, 21c, 22b, 23a, 23b, 24, 25b (backend) and 26a, 26b, 26c, 27 (frontend); controls TEST-02.22a and 25a pass.
 
 
- RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/frontend
+ RUN  v5.1.0 <repo>/frontend
 
  ✓ src/Templates.test.tsx > loading and error states > TEST-02.13a shows a loading message while GET /templates is pending 19ms
  ✓ src/Templates.test.tsx > loading and error states > TEST-02.13b shows an error message if GET /templates fails, not endless loading 16ms

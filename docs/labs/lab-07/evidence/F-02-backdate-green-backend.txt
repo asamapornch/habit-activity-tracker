@@ -4,7 +4,7 @@
 # Commands: cd backend && npx vitest run tests/templates.test.ts --reporter=verbose ; npx vitest run ; npm run typecheck ; npm run build
 
 
- RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+ RUN  v5.1.0 <repo>/backend
 
  ✓ tests/templates.test.ts > POST /templates > TEST-02.1a creates a template and returns it with createdById equal to the Manager's id 317ms
  ✓ tests/templates.test.ts > POST /templates > TEST-02.1b trims name and unit and stores the trimmed value 264ms
@@ -58,7 +58,7 @@
 
 ## Full backend suite
 
- RUN  v5.1.0 /Users/tn/Developer/GitHub/habit-lab7-f02/backend
+ RUN  v5.1.0 <repo>/backend
 
 
  Test Files  15 passed (15)
