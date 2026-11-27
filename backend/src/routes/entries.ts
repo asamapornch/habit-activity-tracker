@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma.js";
 import { sendError } from "../lib/errors.js";
 import { requireRole } from "../middleware/auth.js";
 import { todayInBangkok } from "../lib/today.js";
+import { effectiveOn, type EffectiveRevision } from "../lib/goalRevisions.js";
 import {
   formatDateOnly,
   hasExactKeys,
@@ -154,11 +155,28 @@ entriesRouter.get("/goals/:id/progress", requireRole("PARTICIPANT"), async (req,
     if (lastDay >= start) {
       const lastDate = parseDateOnly(lastDay)!;
       daysElapsed = Math.round((lastDate.getTime() - goal.startDate.getTime()) / DAY_MS) + 1;
-      const target = round2(goal.dailyTarget);
       const entries = await prisma.entry.findMany({
         where: { goalId: goal.id, date: { gte: goal.startDate, lte: lastDate } },
       });
-      daysMet = entries.filter((e) => round2(e.value) >= target).length;
+      // F-06 §3.2 (BR-09 change, planned there): the target in effect on
+      // each entry's own date, not one scalar comparison. A goal with no
+      // revisions falls through to goal.dailyTarget for every entry, so
+      // this reproduces the Sprint-1 comparison exactly when unrevised.
+      const revisions: EffectiveRevision[] = (
+        await prisma.goalRevision.findMany({ where: { goalId: goal.id } })
+      ).map((r) => ({
+        id: r.id,
+        dailyTarget: r.dailyTarget,
+        endDate: formatDateOnly(r.endDate),
+        effectiveFrom: formatDateOnly(r.effectiveFrom),
+      }));
+      const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+      daysMet = entries.filter((e) => {
+        const targetOnDate = round2(
+          effectiveOn(goalLike, revisions, formatDateOnly(e.date), "dailyTarget") as number,
+        );
+        return round2(e.value) >= targetOnDate;
+      }).length;
     }
 
     const progress = daysElapsed === 0 ? 0 : round2((daysMet / daysElapsed) * 100);

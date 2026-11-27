@@ -48,8 +48,25 @@ model Goal {
   startDate   DateTime @db.Date
   endDate     DateTime @db.Date
   entries     Entry[]
+  revisions   GoalRevision[]
 
   @@map("goals")
+}
+
+// F-06 (SRS D-13, D-14): one row per revision of a goal's dailyTarget/endDate.
+// effectiveFrom is always "today" at creation time (D-13); the Goal row's own
+// dailyTarget/endDate keep their Sprint-1 meaning as the value in effect
+// before any revision (F-06 contract §3.2) — no column added to Goal.
+model GoalRevision {
+  id            Int      @id @default(autoincrement())
+  goalId        Int
+  goal          Goal     @relation(fields: [goalId], references: [id])
+  dailyTarget   Float
+  endDate       DateTime @db.Date
+  effectiveFrom DateTime @db.Date
+  createdAt     DateTime @default(now())
+
+  @@map("goal_revisions")
 }
 
 model Entry {
