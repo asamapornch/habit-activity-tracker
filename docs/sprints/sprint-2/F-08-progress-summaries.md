@@ -109,10 +109,18 @@ other.
 
 ### 3.3 UI
 
-Not built in this contract. Planned: a "This week / this month" panel on the goal screen (F-04 §3.3,
-alongside F-07's streak panel) showing both windows' `daysRecorded`/`daysMet`/`total`/`average`,
-fetched from `GET /goals/:id/summary`. Full UI AC and STS are written at the start of the
-implementation phase, following the same pattern F-03/F-04 used.
+Added in v1.4 (UI implementation start, as F-03 v1.2/F-04 v1.2 did; F-07's own panel is out of scope
+here). On the goal screen (`frontend/src/GoalDetail.tsx`, F-04 §3.3), a "This week / this month"
+panel fetched from `GET /goals/:id/summary` alongside the existing progress panel, shows each
+window's date range (`start` to `end`) and its `daysRecorded`, `daysMet`, `total` and `average`. A
+window with `daysRecorded` 0 shows an explicit empty message ("No entries recorded this
+week."/"...this month.") instead of zero-styled figures, so a reader is not left wondering whether
+zero is a real result or a loading/error artifact. A loading message is shown while the summary is
+being fetched; an error fetching it shows an error message (`role="alert"`), not a stuck loading
+state; a 401 returns to the login screen (AC-04.22 pattern). After a goal revision (F-06 §3.3)
+succeeds, the panel refetches so `daysMet` reflects the new target without a page reload. The panel
+is reachable only from the goal screen, which only the owning Participant can open (AC-03.16,
+AC-04.22) — this feature's UI adds no separate visibility check.
 
 ## 4. Acceptance criteria
 
@@ -127,6 +135,12 @@ implementation phase, following the same pattern F-03/F-04 used.
 | AC-08.7 | Anonymous requests receive 401; a Manager receives 403. | NFR-02 |
 | AC-08.8 | A goal that does not exist and another Participant's goal return the same 404; a malformed `:id` returns 400 `Invalid goal id.` | BR-08, NFR-05 |
 | AC-08.9 | The check order of §2.2 holds: 401 before 400, 403 before 400, 404 before any summary computation. | NFR-02, NFR-05, BR-08 |
+| AC-08.10 (UI) | The goal screen shows a "This week / this month" panel with `daysRecorded`, `daysMet`, `total` and `average` for both windows, fetched from `GET /goals/:id/summary`; a loading message is shown while it is fetched. | FR-12, §3.3 |
+| AC-08.11 (UI) | Each window shows its date range (`start` to `end`) alongside its figures. | FR-12 |
+| AC-08.12 (UI) | A window with `daysRecorded` 0 shows an explicit empty-state message instead of zero-styled figures. | FR-12 |
+| AC-08.13 (UI) | An error fetching the summary shows an error message (`role="alert"`), not a stuck loading state; a 401 returns to the login screen. | NFR-02, NFR-05 |
+| AC-08.14 (UI) | The panel is only reachable from the goal screen, which only the owning Participant can open (AC-03.16, AC-04.22); this feature's UI adds no separate visibility check. | BR-08 |
+| AC-08.15 (UI) | After a goal revision (F-06 §3.3) succeeds, the panel refetches and `daysMet` reflects the new target without a page reload. | BR-11 |
 
 ## 5. Software test specification (STS) — planned, not yet written as executable tests
 
@@ -146,7 +160,19 @@ implementation phase, following the same pattern F-03/F-04 used.
 | TEST-08.8b | API integration | AC-08.8 | `P1` `GET /goals/abc/summary` | 400 `VALIDATION_ERROR` `Invalid goal id.` |
 | TEST-08.9 | API/DB integration | AC-08.9 | **control** `M` `GET /goals/:G1/summary` (403, owned by `P1`); then `P2` `GET /goals/:G1/summary` | `M` 403; `P2` 404 |
 
-### 5.2 Frontend tests — planned, written when the UI (§3.3) is scoped at the start of implementation.
+### 5.2 Frontend tests
+
+File: `frontend/src/GoalDetail.test.tsx`.
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-08.10a | AC-08.10 | Goal screen rendered; `GET /goals/11/summary` left pending, then resolved with week/month figures | a loading message is shown first; then the panel shows both windows' `daysRecorded`/`daysMet`/`total`/`average` |
+| TEST-08.10b | AC-08.10 | `GET /goals/11/summary` rejected | an error message (`role="alert"`) is shown, not an endless loading state (also covers AC-08.13) |
+| TEST-08.11 | AC-08.11 | `GET /goals/11/summary` resolves with `week.start "2026-11-09"`, `week.end "2026-11-12"` | the week panel shows "2026-11-09 to 2026-11-12" (and similarly for month) |
+| TEST-08.12 | AC-08.12 | `GET /goals/11/summary` resolves with `week.daysRecorded` 0 | the week panel shows "No entries recorded this week." instead of `0`/`0`/`0`/`0` |
+| TEST-08.13 | AC-08.13 | Rendered through `App`; `GET /goals/11/summary` mocked to 401 | the login form is shown |
+| TEST-08.14 | AC-08.14 | `Goals` rendered as a Participant with one own goal, then (fresh render) as a Manager | Participant: opening the goal shows the summary panel; Manager: no goal screen exists to open (AC-03.16), so the panel is unreachable by construction |
+| TEST-08.15 | AC-08.15 | Goal screen rendered; a revision submitted via the "Revise goal" control (F-06 §3.3) succeeds | `GET /goals/11/summary` is called a second time after the revision resolves, and the panel shows the refreshed figures |
 
 ### 5.3 Regression — must stay unchanged
 
@@ -170,7 +196,8 @@ implementation phase, following the same pattern F-03/F-04 used.
       approved by the other student with comments describing what was checked.
 - [ ] The two proposed decisions (D-18, D-19) are resolved by the reviewer before implementation
       starts.
-- [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
+- [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.4).
+- [ ] TEST-08.10 to TEST-08.15 are committed red before the UI code, then green.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
@@ -181,3 +208,4 @@ implementation phase, following the same pattern F-03/F-04 used.
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-18, D-14 → D-19); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
 | 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Flagged in PR #85's body, fixed here; author decision |
+| 1.4 | 2026-11-27 21:58 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-08.10 to AC-08.15 and TEST-08.10 to TEST-08.15 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
