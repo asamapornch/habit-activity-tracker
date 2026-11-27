@@ -1,0 +1,33 @@
+# F-07 GREEN (backend)
+# Tested commit: a16411c (feature/f07-streaks, route added on top of the RED commit bd4beb0)
+# Run at: 2026-11-28 06:15 +07; Node v26.13.1; Postgres 16 (docker compose db)
+# Command: cd backend && npx vitest run tests/streaks.test.ts --reporter=verbose
+# Expected (F-07 v1.5 §5): all 17 tests green, same tests that were red at bd4beb0.
+# Full backend suite on the same commit: Tests  246 passed (246).
+
+
+ RUN  v5.1.0 <repo>/backend
+
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1a three met days up to lastDay after a missing day: currentStreak 3 763ms
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1b an entry below target inside the run breaks it: only the run touching lastDay counts 484ms
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.2 an entry for lastDay below target gives currentStreak 0 even after met days 461ms
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.3 no entry for lastDay yet: counts from lastDay - 1 backward 421ms
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4a a goal with no entries: 0 and 0 413ms
+ ✓ tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4b a goal that has not started yet: 0 and 0 420ms
+ ✓ tests/streaks.test.ts > longest streak (FR-11) > TEST-07.5 an earlier 5-day run beats the current 2-day run 415ms
+ ✓ tests/streaks.test.ts > longest streak (FR-11) > TEST-07.6 the only run is the current one: longest equals current 404ms
+ ✓ tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.7 a revision raising the target from day 3 turns days 3 to 5 unmet; days 1 to 2 keep the old target 450ms
+ ✓ tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.8 a revision lowering the target from day 3 turns days 3 to 5 met; days 1 to 2 stay unmet 419ms
+ ✓ tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.12 lastDay uses the end date in effect: a revision extending a past stored end counts up to today 407ms
+ ✓ tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.13 an ended goal still reports the run ending at its end date (D-16) 407ms
+ ✓ tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9a no cookie gets 401 399ms
+ ✓ tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9b a Manager gets 403 440ms
+ ✓ tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10a another Participant's goal and a missing goal give the same 404 (control: the owner gets 200) 409ms
+ ✓ tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10b a malformed id gives 400 Invalid goal id. 406ms
+ ✓ tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.11 check order: a Manager gets 403 before any ownership lookup; another Participant gets 404 (control) 398ms
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  06:14:14
+   Duration  8.17s (tests 94%, import 4%, transform 2%)
+
