@@ -4,12 +4,12 @@
 | --- | --- |
 | Feature ID | F-06 |
 | Sprint | 2 |
-| Linked requirements | FR-10, BR-10, BR-11; SRS D-13, D-14, D-15, D-24 (this contract, proposed) |
+| Linked requirements | FR-10, BR-10, BR-11; SRS D-13, D-14, D-15, D-24 (this contract; settled by warunwora on PR #76, 2026-11-28) |
 | Depends on | F-01 (`requireRole`), F-02 (templates; current range), F-03 (goals; BR-04 overlap, BR-05 range check), F-04 (entries; BR-09 progress, `findOwnGoal`) |
 | Needed by | F-07 (streaks), F-08 (progress summaries) — both read "the target in effect per day" defined here |
 | Owner | asamapornch (implementation, PR #84) |
 | Reviewer | warunwora (contract PR #76 and implementation PR #84) |
-| Status | **AC-06.1 to AC-06.19 implemented, tested and green on PR #84 (not yet merged). v1.4 adds AC-06.20 to AC-06.25 (end-date-in-effect fix + D-24 ended-goal rule, review finding) — contract written, implementation in progress.** |
+| Status | **AC-06.1 to AC-06.19 implemented, tested and green on PR #84 (not yet merged). v1.4 adds AC-06.20 to AC-06.25 (end-date-in-effect fix + D-24 ended-goal rule, review finding) — implemented on PR #84 (not yet merged). v1.5: D-13, D-14, D-15 and D-24 settled.** |
 
 ## 1. Purpose
 
@@ -36,7 +36,7 @@ on the same "target in effect per day" lookup this feature defines, so they depe
    4. goal existence and ownership: **404** `Goal not found.` — identical response for a goal that
       does not exist and a goal of another Participant (BR-08, same as F-03/F-04);
    5. the goal has not already ended — its **end date in effect today** (§3.2) is not before today
-      (**Decision D-24, proposed, needs review**, see below): **409** `CONFLICT` `This goal has
+      (**Decision D-24**, see below): **409** `CONFLICT` `This goal has
       already ended and cannot be revised.`; a goal whose effective end date is today itself has not
       yet ended and may still be revised;
    6. BR-10, the new `dailyTarget` (when given) checked against the template's **current** range
@@ -54,12 +54,12 @@ on the same "target in effect per day" lookup this feature defines, so they depe
       `CONFLICT` `You already have a goal for this template that overlaps these dates.` (the exact
       F-03 message, reused).
 
-**Decision D-24 (proposed, needs review — review finding by warunwora on #76):** revising an
+**Decision D-24 (settled — review finding by warunwora on #76, accepted by him as written on 2026-11-28):** revising an
 already-ended goal was previously undefined — nothing in v1.0–v1.3 rejected it, and because a
 revision's `effectiveFrom` is always today (D-13) while an ended goal's window never reaches today
 again, such a revision would be stored but have no visible effect on anything (progress, entries)
 that only ever looks at days up to the goal's own end — a confusing "succeeds but does nothing"
-state. Proposed fix: reject with 409 before any field-specific check, using the same `CONFLICT` code
+state. Rule: reject with 409 before any field-specific check, using the same `CONFLICT` code
 already used for BR-04 (no new `ErrorCode` value). "Already ended" means the goal's end date in
 effect today (§3.2) is strictly before today; a goal ending today is not yet ended. If the reviewer
 prefers a different status/message, or prefers to allow revising `dailyTarget` alone on an ended goal
@@ -75,19 +75,19 @@ while only blocking `endDate` changes, that is a one-line change to this step, n
 5. **Target (or end date) in effect on day `D`:** the latest revision of the goal whose
    `effectiveFrom <= D`, if any exists; otherwise the goal's own stored `dailyTarget` / `endDate` from
    creation. "Latest" orders by `effectiveFrom` descending, then by `id` descending for revisions that
-   share the same `effectiveFrom` (**Decision D-14, proposed**, §2.7). This lookup is what F-04's
+   share the same `effectiveFrom` (**Decision D-14**, §2.7). This lookup is what F-04's
    BR-09, F-07's BR-12 and F-08 all call per day; see §3.4.
 6. `GET /goals/:id` and `GET /goals` (F-03) start returning the **currently effective** `dailyTarget`
    and `endDate` (today's lookup from §2.5), not necessarily the values stored on the `Goal` row
    itself. This is the only change to F-03's read endpoints; their request shape, roles, ownership
    rules and error behaviour are unchanged.
 7. **Effective date of a revision.** A revision always takes effect from **today** (Asia/Bangkok) —
-   the caller cannot set a past or future `effectiveFrom` (**Decision D-13, proposed, needs review**:
+   the caller cannot set a past or future `effectiveFrom` (**Decision D-13**:
    simplest reading consistent with BR-10's "new end date must not be before today," which only makes
    sense if the revision itself is immediate; a back-dated or scheduled revision is not requested
    anywhere in the SRS or the Sprint 2 "done when" row in `docs/sprints/plan.md` §3). If two revisions
    are made on the same goal on the same calendar day, the later one (higher `id`) is in effect for
-   that day and afterward until superseded (**Decision D-14, proposed, needs review**).
+   that day and afterward until superseded (**Decision D-14**).
 
 Field rules (request body of `PATCH /goals/:id`), checked in step 3 unless stated:
 
@@ -138,7 +138,7 @@ Error body: `{ "error": { "code", "message" } }` (system SDS §6, unchanged).
 | 401 | `UNAUTHENTICATED` | `Authentication required.` (F-01) | no valid session |
 | 403 | `FORBIDDEN` | `You do not have permission to perform this action.` (F-01) | Manager |
 | 404 | `NOT_FOUND` | `Goal not found.` (same as F-03/F-04) | goal does not exist or belongs to another Participant |
-| 409 | `CONFLICT` | `This goal has already ended and cannot be revised.` | D-24, proposed (step 5) — the goal's end date in effect today is before today |
+| 409 | `CONFLICT` | `This goal has already ended and cannot be revised.` | D-24 (step 5) — the goal's end date in effect today is before today |
 | 400 | `VALIDATION_ERROR` | `Daily target must be within the template range.` | BR-10 target (step 6; exact F-03 BR-05 message, reused) |
 | 400 | `VALIDATION_ERROR` | `New end date must not be before today.` | BR-10 end-date floor 1 (step 7) |
 | 400 | `VALIDATION_ERROR` | `New end date must not be before the goal's start date.` | BR-10 end-date floor 2 (step 7) |
@@ -229,8 +229,10 @@ A single function, informally `effectiveOn(goal, date, field)`, is the one place
 on day `D`" is computed (§2.5): look at the goal's `GoalRevision` rows with `effectiveFrom <= D`,
 take the one with the greatest `effectiveFrom` (ties broken by greatest `id`), and read `field` from
 it; if none qualify, read `field` from the `Goal` row itself. F-07 (streaks) and F-08 (summaries) call
-the same function for `dailyTarget`; nothing in this feature needs the `endDate` side of it beyond
-BR-10's own floor check and F-03's read endpoints (§2.6).
+the same function for `dailyTarget`. Since v1.4 the `endDate` side is read in several places too:
+BR-10's own floor check, D-24's ended-goal check (§2 step 5), F-03's read endpoints (§2.6), the entry
+date range in `POST /goals/:id/entries`, both BR-04 overlap call sites and the `lastDay` of
+`GET /goals/:id/progress` (§3.2), and the `lastDay` of F-07 and F-08.
 
 ### 3.3 UI
 
@@ -263,7 +265,7 @@ role/ownership check.
 | AC-06.9 | A revised `endDate` that would overlap another of the Participant's goals on the same template (the goal being revised excluded from its own check) returns 409 `CONFLICT`, and nothing is stored; a revision that does not create an overlap, including one that now touches but does not overlap another goal, is accepted. | BR-10, BR-04 |
 | AC-06.10 | After a revision, `GET /goals/:id` and the goal's row in `GET /goals` show the new currently effective value(s); before any revision, both show exactly the goal's original stored values (unchanged Sprint-1 behaviour). | FR-10 |
 | AC-06.11 | A revision never changes, deletes or revalidates an existing entry (F-04); the goal's history (`GET /goals/:id/entries`) is unaffected by a revision. | BR-11, D-06 pattern |
-| AC-06.12 | Two revisions on the same goal on the same calendar day: the later one (by creation order) is the one in effect for that day and afterward, until superseded by a later revision. | D-14 (proposed) |
+| AC-06.12 | Two revisions on the same goal on the same calendar day: the later one (by creation order) is the one in effect for that day and afterward, until superseded by a later revision. | D-14 |
 | AC-06.13 | The check order of §2 holds under combined faults: 401 before 400, 403 before 400, 404 before BR-10, BR-10 target/end-date checks before the BR-04 overlap re-check. | NFR-02, NFR-05, BR-08 |
 | AC-06.14 (UI) | The goal screen shows a "Revise goal" control; opening it shows a form pre-filled with the currently effective `dailyTarget` and `endDate`. | FR-10, §3.3 |
 | AC-06.15 (UI) | Submitting sends `PATCH /goals/:id` with only the field(s) actually changed from the prefilled values; on success the form closes and the screen shows the new effective value(s) from the response, with no extra request. | FR-10, §2 field rules |
@@ -276,7 +278,7 @@ role/ownership check.
 | AC-06.22 | BR-04's overlap check — at `POST /goals` creation and at `PATCH /goals/:id`'s own re-check — treats another of the Participant's goals as occupying its currently effective end date, not its stored one: a new or revised date range that only overlaps the other goal's *extended* end is rejected; one that only overlaps its original stored end but not its (shorter) effective end is not. | BR-04, §3.2 |
 | AC-06.23 | `GET /goals/:id/progress`'s `daysElapsed`/`lastDay` (BR-09) is capped at the goal's currently effective end date, not its stored one; a day added to the window by an `endDate` extension is included once an entry exists for it. | BR-09, §3.2 |
 | AC-06.24 | For a goal with zero revisions, AC-06.20 to AC-06.23's behaviour is bit-for-bit identical to Sprint 1 (the effective end date equals the stored one) — verified by the full existing regression suite (§5.3), not a separate new test. | §3.2 |
-| AC-06.25 (D-24, proposed) | Any revision attempt (either field) on a goal whose currently effective end date is before today returns 409 `CONFLICT` `This goal has already ended and cannot be revised.`, and nothing is stored; a goal whose effective end date is today itself is not yet ended and a revision on it succeeds normally. | D-24 |
+| AC-06.25 (D-24) | Any revision attempt (either field) on a goal whose currently effective end date is before today returns 409 `CONFLICT` `This goal has already ended and cannot be revised.`, and nothing is stored; a goal whose effective end date is today itself is not yet ended and a revision on it succeeds normally. | D-24 |
 
 ## 5. Software test specification (STS) — planned, not yet written as executable tests
 
@@ -305,7 +307,7 @@ role/ownership check.
 | TEST-06.12 | API/DB integration | AC-06.12 | `P1` revises `G1` twice on the same (mocked) day, different targets | `effectiveOn(G1, today)` resolves to the second revision's target |
 | TEST-06.13a | API/DB integration | AC-06.13 | no cookie, body `{}` | 401 (not 400) |
 | TEST-06.13b | API/DB integration | AC-06.13 | **control** `P1` revises with an out-of-range target (400); then the same request with an also-overlapping `endDate` | 400 `Daily target...` (BR-10 target check before the BR-04 overlap re-check) |
-| TEST-06.14 | Unit (pure function, no DB; **Decision D-15, proposed**, §2 note) | §2.5 resolution logic | `effectiveOn` called directly with a fabricated list of revisions (no revisions; one revision before `D`; one before and one after `D`; two revisions with the same `effectiveFrom`) | returns the goal's own value (none qualify); the qualifying revision's value; the later-`effectiveFrom` revision's value; the higher-`id` revision's value (D-14 tie-break) |
+| TEST-06.14 | Unit (pure function, no DB; **Decision D-15**, §2 note) | §2.5 resolution logic | `effectiveOn` called directly with a fabricated list of revisions (no revisions; one revision before `D`; one before and one after `D`; two revisions with the same `effectiveFrom`) | returns the goal's own value (none qualify); the qualifying revision's value; the later-`effectiveFrom` revision's value; the higher-`id` revision's value (D-14 tie-break) |
 | TEST-06.21 | API/DB integration | AC-06.20 | `G` stored `endDate` day 10; revised to extend to day 20; `POST /goals/:id/entries` dated day 15 (between the two) | 201 — accepted against the effective end, not the stale stored end 10 |
 | TEST-06.22 | API/DB integration | AC-06.21 | same `G` (effective end day 20); entry dated day 21 | 400 `Entry date must be within the goal's start and end dates.` |
 | TEST-06.23a | API/DB integration | AC-06.22 | `Y` (template `T`) stored end day 10, revised/extended to day 20; **then** `POST /goals` a new `X` on `T` starting day 15 (inside `Y`'s extended window, outside `Y`'s original stored window) | 409 `CONFLICT` — creation-time overlap check reads `Y`'s effective end, not its stored one |
@@ -374,11 +376,9 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
       approved by the other student with comments describing what was checked. (PR #76 itself:
       reviewed by warunwora, changes requested 2026-11-28, addressed in v1.4 above; PR #84
       implementation: reviewer requested, not yet approved.)
-- [ ] The three proposed decisions (D-13, D-14, D-15) **and the new D-24** are resolved by the
-      reviewer before implementation starts/continues (accepted, amended, or replaced), and the SRS
-      §7 row for each is updated from "(proposed, needs review)" to settled wording. **Left
-      unsettled here on purpose — the author does not mark these settled; only the reviewer's
-      explicit confirmation on the PR does.**
+- [x] The three proposed decisions (D-13, D-14, D-15) **and the new D-24** are resolved by the
+      reviewer: warunwora accepted all four as written on PR #76 (2026-11-28, https://github.com/asamapornch/habit-activity-tracker/pull/76#issuecomment-7229307813),
+      and the SRS §7 rows are updated to settled wording (v1.5).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase, following
       the same pattern F-03 v1.2 and F-04 v1.2 used (v1.3).
 - [x] TEST-06.15 to TEST-06.20 are committed red before the UI code, then green.
@@ -392,3 +392,4 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
 | 1.2 | 2026-11-27 | STS fixture corrected, TEST-06.8d added; found while writing RED tests, before any implementation; no AC or behaviour change. TEST-06.8b now uses a new fixture `G3` (startDate = today + 5) so the start-date floor is reachable without also tripping the today floor, per §2.6's own check-order rule; TEST-06.8d is new and proves that same check order (today checked before start date) using `G1` alone. | Contract problem found while writing TEST-06.8b against the STS's own check-order rule, before any implementation code; reviewed and decided by the author before Step 3 resumed |
 | 1.3 | 2026-11-27 21:56 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-06.14 to AC-06.19 and TEST-06.15 to TEST-06.20 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
 | 1.4 | 2026-11-28 02:34 +07 | Review finding by warunwora on #76; no scope creep. §3.2 corrected: `POST /goals/:id/entries`, both BR-04 overlap call sites and `GET /goals/:id/progress` were wrongly claimed to need no change for `endDate` — they read the stored column directly and must instead use the end date in effect (`effectiveOn(..., "endDate")`). AC-06.20 to AC-06.24 added for this. New Decision D-24 (proposed): revising an already-ended goal returns 409 `CONFLICT` "This goal has already ended and cannot be revised."; AC-06.25 added. TEST-06.21 to TEST-06.26 added (§5.1). Header Status, Owner and Reviewer corrected to match actual PR state (was stale at "no code yet" since v1.3). | Review finding by warunwora on #76; no scope creep |
+| 1.5 | 2026-11-28 | D-13, D-14, D-15 and D-24 settled: warunwora accepted all four as written on #76; "(proposed, needs review)" removed from the header, §2 steps 5 and 7, §2.5, §3.1, AC-06.12, AC-06.25 and TEST-06.14; §6 item checked. §3.4 last sentence corrected: since v1.4 the `endDate` side of `effectiveOn` is also read by D-24, the entry date range, both BR-04 overlap call sites and the progress and F-07/F-08 `lastDay`. No behaviour, AC or test change. | Re-review by warunwora on #76 (2026-11-28) |
