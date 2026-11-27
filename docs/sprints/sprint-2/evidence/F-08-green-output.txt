@@ -1,0 +1,53 @@
+F-08 Progress Summaries — GREEN output (after implementation)
+
+Working tree on top of commit 8b45da2 (the F-08 RED commit on
+feature/f08-progress-summaries); the implementation below was not yet
+committed at the time of this run (committed immediately after).
+
+Command 1 (typecheck):
+  cd backend && npm run typecheck
+Result: no errors.
+
+Command 2 (backend full suite):
+  cd backend && npm test
+Result: 18 test files passed (18), 235 tests passed (235), 0 failed, 0 skipped.
+  - 222 pre-existing tests (194 Sprint 1-5 + 28 F-06): all still pass.
+  - 13 new tests in tests/goalSummaries.test.ts (TEST-08.1a to TEST-08.9).
+  222 + 13 = 235, matching exactly.
+
+Command 3 (frontend full suite, unaffected - F-08 §3.3 builds no UI):
+  cd frontend && npm test
+Result: 4 test files passed (4), 43 tests passed (43), 0 failed, 0 skipped.
+  Unchanged from the pre-existing 43.
+
+Full raw backend output follows, then full raw frontend output.
+
+=== BACKEND ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+
+ Test Files  18 passed (18)
+      Tests  235 passed (235)
+   Start at  21:06:44
+   Duration  90.91s (tests 97%, import 3%)
+
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  43 passed (43)
+   Start at  21:08:19
+   Duration  1.65s (tests 46%, environment 40%, setup 7%, import 6%, transform 1%)
+
