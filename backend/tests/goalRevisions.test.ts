@@ -22,6 +22,8 @@ const BEFORE_TODAY = "New end date must not be before today.";
 const BEFORE_START = "New end date must not be before the goal's start date.";
 const BEFORE_ENTRY = "New end date must not be before the goal's latest entry date.";
 const OVERLAP = "You already have a goal for this template that overlaps these dates.";
+const OUTSIDE_GOAL = "Entry date must be within the goal's start and end dates.";
+const ENDED = "This goal has already ended and cannot be revised.";
 
 // 12:00 on 10 November 2026 in Bangkok: today is 2026-11-10.
 const DEFAULT_NOW = "2026-11-10T05:00:00Z";
@@ -104,6 +106,24 @@ function patchGoal(cookie: string | null, goalId: number | string, body: unknown
   const req = request(app).patch(`/goals/${goalId}`);
   if (cookie) req.set("Cookie", cookie);
   return req.send(body as object);
+}
+
+function postGoal(cookie: string | null, body: unknown) {
+  const req = request(app).post("/goals");
+  if (cookie) req.set("Cookie", cookie);
+  return req.send(body as object);
+}
+
+function postEntry(cookie: string | null, goalId: number | string, body: unknown) {
+  const req = request(app).post(`/goals/${goalId}/entries`);
+  if (cookie) req.set("Cookie", cookie);
+  return req.send(body as object);
+}
+
+function getProgress(cookie: string | null, goalId: number | string) {
+  const req = request(app).get(`/goals/${goalId}/progress`);
+  if (cookie) req.set("Cookie", cookie);
+  return req;
 }
 
 function getGoal(cookie: string | null, goalId: number | string) {
@@ -383,5 +403,115 @@ describe("AC-06.13 combined check order (TEST-06.13)", () => {
 
     const combined = await patchGoal(p1Cookie, G1.id, { dailyTarget: 999, endDate: "2026-12-16" });
     expectError(combined, 400, "VALIDATION_ERROR", RANGE);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Review finding by warunwora on PR #76 (F-06 v1.4): several places read the
+// stored Goal.endDate directly instead of the end date in effect (§3.2).
+// TEST-06.21 to TEST-06.26 below.
+// ---------------------------------------------------------------------------
+
+// These tests use a fresh template (never T), so the only goal(s) on it are
+// the ones each test creates itself - G1 (on T) never interferes here.
+async function freshTemplate() {
+  return prisma.template.create({
+    data: { name: "Reading", unit: "pages", minValue: 0, maxValue: 500, createdById: manager.id },
+  });
+}
+
+describe("AC-06.20 an extended end date accepts an entry in the new window (TEST-06.21)", () => {
+  it("TEST-06.21 an entry between the old stored end and the new effective end is accepted", async () => {
+    const T2 = await freshTemplate();
+    const G = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    await start("2026-11-10T05:00:00Z");
+    const res = await postEntry(p1Cookie, G.id, { date: "2026-11-08", value: 5 });
+    expect(res.status).toBe(201);
+  });
+});
+
+describe("AC-06.21 an entry after the effective end is rejected (TEST-06.22)", () => {
+  it("TEST-06.22 an entry after the revised effective end date is rejected, not against a stale stored end", async () => {
+    const T2 = await freshTemplate();
+    const G = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    await start("2026-11-15T05:00:00Z");
+    const res = await postEntry(p1Cookie, G.id, { date: "2026-11-12", value: 5 });
+    expectError(res, 400, "VALIDATION_ERROR", OUTSIDE_GOAL);
+  });
+});
+
+describe("AC-06.22 BR-04 overlap uses the other goal's effective end (TEST-06.23)", () => {
+  it("TEST-06.23a creation-time overlap: a new goal starting inside Y's extended (not stored) window is rejected", async () => {
+    const T2 = await freshTemplate();
+    const Y = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, Y.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    const res = await postGoal(p1Cookie, {
+      templateId: T2.id,
+      dailyTarget: 5,
+      startDate: "2026-11-08",
+      endDate: "2026-11-20",
+    });
+    expectError(res, 409, "CONFLICT", OVERLAP);
+  });
+
+  it("TEST-06.23b revision-time re-check: revising X's own end detects overlap with Y's extended end", async () => {
+    const T2 = await freshTemplate();
+    const Y = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, Y.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    const X = await insertGoal(p1.id, T2.id, "2026-11-08", "2026-11-20");
+    const res = await patchGoal(p1Cookie, X.id, { endDate: "2026-11-21" });
+    expectError(res, 409, "CONFLICT", OVERLAP);
+  });
+});
+
+describe("AC-06.23 progress window uses the effective end date (TEST-06.24)", () => {
+  it("TEST-06.24 daysElapsed is capped at the revised effective end, not the stale stored end", async () => {
+    const T2 = await freshTemplate();
+    const G = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await insertEntry(G.id, "2026-11-01", 5);
+    await insertEntry(G.id, "2026-11-08", 5);
+
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    await start("2026-11-15T05:00:00Z");
+    const res = await getProgress(p1Cookie, G.id);
+    expect(res.status).toBe(200);
+    expect(res.body.daysElapsed).toBe(10); // 2026-11-01 to 2026-11-10 inclusive
+    expect(res.body.daysMet).toBe(2);
+  });
+});
+
+describe("AC-06.25 (D-24) revising an already-ended goal is rejected (TEST-06.25, TEST-06.26)", () => {
+  it("TEST-06.25 a goal whose effective end date is before today returns 409 and stores nothing", async () => {
+    const T2 = await freshTemplate();
+    const G = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-05");
+    await start("2026-11-10T05:00:00Z"); // today is after the (unrevised) stored end
+    const res = await patchGoal(p1Cookie, G.id, { dailyTarget: 8 });
+    expectError(res, 409, "CONFLICT", ENDED);
+    expect(await revisionCount()).toBe(0);
+  });
+
+  it("TEST-06.26 a goal whose effective end date is exactly today is not yet ended", async () => {
+    const T2 = await freshTemplate();
+    const G = await insertGoal(p1.id, T2.id, "2026-11-01", "2026-11-10");
+    await start("2026-11-10T05:00:00Z"); // today equals the stored end exactly
+    const res = await patchGoal(p1Cookie, G.id, { dailyTarget: 8 });
+    expect(res.status).toBe(200);
   });
 });

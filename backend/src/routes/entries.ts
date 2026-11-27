@@ -102,7 +102,13 @@ entriesRouter.post("/goals/:id/entries", requireRole("PARTICIPANT"), async (req,
         return;
       }
     }
-    if (date < formatDateOnly(goal.startDate) || date > formatDateOnly(goal.endDate)) {
+    // Review fix (warunwora, F-06 v1.4): the goal's end date *in effect
+    // today* (§3.2), not the stored endDate column - a revision extending
+    // (or shortening) the end must apply here too.
+    const entryRevisions = await fetchRevisionList(goal.id);
+    const entryGoalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const effectiveGoalEnd = effectiveOn(entryGoalLike, entryRevisions, today, "endDate") as string;
+    if (date < formatDateOnly(goal.startDate) || date > effectiveGoalEnd) {
       sendError(res, 400, "VALIDATION_ERROR", "Entry date must be within the goal's start and end dates.");
       return;
     }
@@ -156,10 +162,14 @@ entriesRouter.get("/goals/:id/progress", requireRole("PARTICIPANT"), async (req,
     const goal = await findOwnGoal(req, res, parseIdParam(req.params.id));
     if (!goal) return;
 
-    // BR-09 (SRS D-10): days from start to the earlier of today and end, both inclusive.
+    // BR-09 (SRS D-10): days from start to the earlier of today and end, both
+    // inclusive. Review fix (warunwora, F-06 v1.4): "end" is the end date in
+    // effect today (§3.2), not the stored endDate column.
     const today = todayInBangkok();
     const start = formatDateOnly(goal.startDate);
-    const end = formatDateOnly(goal.endDate);
+    const revisions = await fetchRevisionList(goal.id);
+    const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const end = effectiveOn(goalLike, revisions, today, "endDate") as string;
     const lastDay = today < end ? today : end;
 
     let daysElapsed = 0;
@@ -170,12 +180,11 @@ entriesRouter.get("/goals/:id/progress", requireRole("PARTICIPANT"), async (req,
       const entries = await prisma.entry.findMany({
         where: { goalId: goal.id, date: { gte: goal.startDate, lte: lastDate } },
       });
-      // F-06 §3.2 (BR-09 change, planned there): the target in effect on
-      // each entry's own date, not one scalar comparison. A goal with no
-      // revisions falls through to goal.dailyTarget for every entry, so
-      // this reproduces the Sprint-1 comparison exactly when unrevised.
-      const revisions = await fetchRevisionList(goal.id);
-      const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+      // F-06 §3.2: the target in effect on each entry's own date, not one
+      // scalar comparison. A goal with no revisions falls through to
+      // goal.dailyTarget for every entry, so this reproduces the Sprint-1
+      // comparison exactly when unrevised. (revisions/goalLike already
+      // computed above, for the effective end date.)
       daysMet = entries.filter((e) => {
         const targetOnDate = round2(
           effectiveOn(goalLike, revisions, formatDateOnly(e.date), "dailyTarget") as number,

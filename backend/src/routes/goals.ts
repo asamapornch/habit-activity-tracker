@@ -132,18 +132,24 @@ goalsRouter.post("/goals", requireRole("PARTICIPANT"), async (req, res, next) =>
     }
 
     const userId = req.session.userId!;
+    const today = todayInBangkok();
+    const rangeStart = formatDateOnly(input.startDate);
 
     // BR-04: serialise per (user, template), then check overlap and insert (system SDS §3).
+    // Review fix (warunwora, F-06 v1.4): compare against each candidate's end
+    // date *in effect today* (§3.2), not its stored endDate column - another
+    // goal revised to extend its end must not be missed here.
     const goal = await prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SELECT pg_advisory_xact_lock(${userId}::int, ${input.templateId}::int)`;
 
-      const overlapping = await tx.goal.findFirst({
-        where: {
-          userId,
-          templateId: input.templateId,
-          startDate: { lte: input.endDate },
-          endDate: { gte: input.startDate },
-        },
+      const candidates = await tx.goal.findMany({
+        where: { userId, templateId: input.templateId, startDate: { lte: input.endDate } },
+        include: { revisions: true },
+      });
+      const overlapping = candidates.find((g) => {
+        const gLike = { dailyTarget: g.dailyTarget, endDate: formatDateOnly(g.endDate) };
+        const effectiveEnd = effectiveOn(gLike, g.revisions.map(toRevisionLike), today, "endDate") as string;
+        return effectiveEnd >= rangeStart;
       });
       if (overlapping) throw new OverlapError();
 
@@ -240,6 +246,14 @@ goalsRouter.patch("/goals/:id", requireRole("PARTICIPANT"), async (req, res, nex
     const currentTarget = effectiveOn(goalLike, revisionList, today, "dailyTarget") as number;
     const currentEndDate = effectiveOn(goalLike, revisionList, today, "endDate") as string;
 
+    // D-24 (proposed, review finding warunwora): a goal whose effective end
+    // date is already before today cannot be revised at all. Ending exactly
+    // today is not yet "ended".
+    if (currentEndDate < today) {
+      sendError(res, 409, "CONFLICT", "This goal has already ended and cannot be revised.");
+      return;
+    }
+
     // BR-10 target range (current template range, SRS D-06), only if given.
     if (input.dailyTarget !== undefined) {
       const template = await prisma.template.findUniqueOrThrow({ where: { id: goal.templateId } });
@@ -287,16 +301,24 @@ goalsRouter.patch("/goals/:id", requireRole("PARTICIPANT"), async (req, res, nex
     try {
       const revision = await prisma.$transaction(async (tx) => {
         // BR-04 re-check, only if endDate changed: serialise per (user, template) as POST /goals does.
+        // Review fix (warunwora, F-06 v1.4): compare against each other
+        // goal's end date *in effect today*, not its stored endDate column.
         if (input.endDate !== undefined) {
           await tx.$executeRaw`SELECT pg_advisory_xact_lock(${userId}::int, ${goal.templateId}::int)`;
-          const overlapping = await tx.goal.findFirst({
+          const rangeStart = formatDateOnly(goal.startDate);
+          const candidates = await tx.goal.findMany({
             where: {
               id: { not: goal.id },
               userId,
               templateId: goal.templateId,
               startDate: { lte: input.endDate },
-              endDate: { gte: goal.startDate },
             },
+            include: { revisions: true },
+          });
+          const overlapping = candidates.find((g) => {
+            const gLike = { dailyTarget: g.dailyTarget, endDate: formatDateOnly(g.endDate) };
+            const effectiveEnd = effectiveOn(gLike, g.revisions.map(toRevisionLike), today, "endDate") as string;
+            return effectiveEnd >= rangeStart;
           });
           if (overlapping) throw new RevisionConflictError();
         }

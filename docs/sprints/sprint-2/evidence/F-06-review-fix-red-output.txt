@@ -1,0 +1,170 @@
+F-06 review-fix (end date in effect + D-24) — RED output
+
+Review finding by warunwora on PR #76. Commit SHA this was run against:
+3362131 (feature/f06-goal-revisions, after merging F-06 v1.4). The fix
+itself (entries.ts BR-03, both BR-04 overlap call sites, progress's
+lastDay, the new D-24 ended-goal check) is NOT yet implemented at this
+commit - only the new tests (TEST-06.21 to TEST-06.26) were added.
+
+Command: cd backend && npx vitest run tests/goalRevisions.test.ts
+Result: 1 test file failed (1), 30 tests: 6 failed, 24 passed, 0 skipped.
+
+- TEST-06.21, 06.22, 06.23a, 06.23b, 06.24: all fail, each because the
+  code under test still reads the stale stored Goal.endDate instead of
+  the end date in effect - exactly the bug the review found.
+- TEST-06.25: fails because the D-24 ended-goal check does not exist
+  yet (a revision on an ended goal currently succeeds, 200).
+- TEST-06.26 (the "ends exactly today, not yet ended" boundary case)
+  PASSES already at RED, disclosed rather than hidden: with no ended-
+  goal check implemented yet, every revision on an unrevised goal
+  currently succeeds regardless of its end date, so this assertion
+  (200) happens to already hold before the fix. It is kept as a
+  regression-safety check, re-verified for the real reason once D-24
+  is implemented at GREEN.
+- All 23 pre-existing TEST-06.* tests (backend + unit) still pass,
+  unaffected by adding these new tests.
+
+Full backend suite (cd backend && npm test): 17 test files (1 failed,
+16 passed), 229 tests: 6 failed (the new ones above), 223 passed (222
+pre-existing + TEST-06.26). Confirms no other collateral breakage.
+
+Full raw output (single-file run) follows.
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+ ❯ tests/goalRevisions.test.ts (30 tests | 6 failed) 13727ms
+   ❯ AC-06.20 an extended end date accepts an entry in the new window (TEST-06.21) (1)
+     × TEST-06.21 an entry between the old stored end and the new effective end is accepted 454ms
+   ❯ AC-06.21 an entry after the effective end is rejected (TEST-06.22) (1)
+     × TEST-06.22 an entry after the revised effective end date is rejected, not against a stale stored end 456ms
+   ❯ AC-06.22 BR-04 overlap uses the other goal's effective end (TEST-06.23) (2)
+     × TEST-06.23a creation-time overlap: a new goal starting inside Y's extended (not stored) window is rejected 460ms
+     × TEST-06.23b revision-time re-check: revising X's own end detects overlap with Y's extended end 449ms
+   ❯ AC-06.23 progress window uses the effective end date (TEST-06.24) (1)
+     × TEST-06.24 daysElapsed is capped at the revised effective end, not the stale stored end 449ms
+   ❯ AC-06.25 (D-24) revising an already-ended goal is rejected (TEST-06.25, TEST-06.26) (2)
+     × TEST-06.25 a goal whose effective end date is before today returns 409 and stores nothing 452ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.20 an extended end date accepts an entry in the new window (TEST-06.21) > TEST-06.21 an entry between the old stored end and the new effective end is accepted
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/goalRevisions.test.ts:420:29
+    418|     await start("2026-11-01T05:00:00Z");
+    419|     const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-…
+    420|     expect(revision.status).toBe(200);
+       |                             ^
+    421|
+    422|     await start("2026-11-10T05:00:00Z");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.21 an entry after the effective end is rejected (TEST-06.22) > TEST-06.22 an entry after the revised effective end date is rejected, not against a stale stored end
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/goalRevisions.test.ts:433:29
+    431|     await start("2026-11-01T05:00:00Z");
+    432|     const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-…
+    433|     expect(revision.status).toBe(200);
+       |                             ^
+    434|
+    435|     await start("2026-11-15T05:00:00Z");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.22 BR-04 overlap uses the other goal's effective end (TEST-06.23) > TEST-06.23a creation-time overlap: a new goal starting inside Y's extended (not stored) window is rejected
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/goalRevisions.test.ts:446:29
+    444|     await start("2026-11-01T05:00:00Z");
+    445|     const revision = await patchGoal(p1Cookie, Y.id, { endDate: "2026-…
+    446|     expect(revision.status).toBe(200);
+       |                             ^
+    447|
+    448|     const res = await postGoal(p1Cookie, {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.22 BR-04 overlap uses the other goal's effective end (TEST-06.23) > TEST-06.23b revision-time re-check: revising X's own end detects overlap with Y's extended end
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/goalRevisions.test.ts:461:29
+    459|     await start("2026-11-01T05:00:00Z");
+    460|     const revision = await patchGoal(p1Cookie, Y.id, { endDate: "2026-…
+    461|     expect(revision.status).toBe(200);
+       |                             ^
+    462|
+    463|     const X = await insertGoal(p1.id, T.id, "2026-11-08", "2026-11-20"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.23 progress window uses the effective end date (TEST-06.24) > TEST-06.24 daysElapsed is capped at the revised effective end, not the stale stored end
+AssertionError: expected 409 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 409
+
+ ❯ tests/goalRevisions.test.ts:477:29
+    475|     await start("2026-11-01T05:00:00Z");
+    476|     const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-…
+    477|     expect(revision.status).toBe(200);
+       |                             ^
+    478|
+    479|     await start("2026-11-15T05:00:00Z");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.25 (D-24) revising an already-ended goal is rejected (TEST-06.25, TEST-06.26) > TEST-06.25 a goal whose effective end date is before today returns 409 and stores nothing
+AssertionError: expected 200 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 200
+
+ ❯ expectError tests/goalRevisions.test.ts:53:22
+     51|
+     52| function expectError(res: Response, status: number, code: string, mess…
+     53|   expect(res.status).toBe(status);
+       |                      ^
+     54|   expect(res.body.error?.code).toBe(code);
+     55|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:492:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 24 passed (30)
+   Start at  02:41:43
+   Duration  14.05s (tests 98%, import 1%)
+
