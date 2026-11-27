@@ -1,0 +1,79 @@
+F-06 review-fix (end date in effect + D-24) — GREEN output
+
+Working tree on top of commit 3fc8fe4f65681b22a0c310efc3d3b695c298bd9c
+(the RED commit on feature/f06-goal-revisions); the implementation below
+was not yet committed at the time of this run.
+
+One bug found and fixed in the TEST file itself during this pass (not
+the implementation): TEST-06.21/22/23a/23b/24/25/26 originally reused
+the shared template T, which already carries the file's own G1 fixture
+(2026-11-01 to 2026-11-30, created in the global beforeEach). The fixed
+BR-04 overlap check correctly detected G1 as a real overlap for nearly
+every date range these new tests constructed - a test-design collision,
+not an implementation bug (confirmed by an isolated manual repro against
+a fresh template, which passed immediately). Fixed by giving these six
+tests their own fresh template (never T), so only the goal(s) each test
+itself creates exist on it.
+
+Command 1 (typecheck): cd backend && npm run typecheck
+Result: no errors.
+
+Command 2 (single file): cd backend && npx vitest run tests/goalRevisions.test.ts
+Result: 1 test file passed (1), 30 tests passed (30), 0 failed, 0 skipped.
+  23 pre-existing + 7 new (TEST-06.21 to TEST-06.26, with TEST-06.23
+  counted as 06.23a/06.23b) = 30, matching exactly.
+
+Command 3 (full backend suite): cd backend && npm test
+Result: 17 test files passed (17), 229 tests passed (229), 0 failed, 0 skipped.
+  222 pre-existing (194 Sprint 1-5 + 28 F-06 original) + 7 new = 229.
+  All pre-existing tests, including Sprint 1's BR-03/BR-04/BR-09 tests,
+  still pass unmodified - confirms the end-date-in-effect fix is a
+  strict generalisation for every goal with zero revisions.
+
+Command 4 (full frontend suite, unaffected - backend-only change):
+  cd frontend && npm test
+Result: 4 test files passed (4), 50 tests passed (50), 0 failed, 0 skipped.
+  Unchanged from before this fix.
+
+Full raw output follows: single-file run, then full backend, then frontend.
+
+=== SINGLE FILE ===
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+
+ Test Files  1 passed (1)
+      Tests  30 passed (30)
+   Start at  02:50:34
+   Duration  15.90s (tests 98%, import 1%)
+
+
+=== FULL BACKEND ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+
+ Test Files  17 passed (17)
+      Tests  229 passed (229)
+   Start at  02:48:42
+   Duration  89.27s (tests 97%, import 2%)
+
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  50 passed (50)
+   Start at  02:50:15
+   Duration  1.59s (tests 46%, environment 38%, setup 8%, import 6%, transform 1%)
+
