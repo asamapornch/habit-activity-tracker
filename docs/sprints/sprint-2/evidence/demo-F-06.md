@@ -144,3 +144,81 @@ Actual: matches, both at the database and through a freshly-logged-in cookie (no
 **05-manager-no-goals-section.png** (AC-06.19) — Manager logs in and sees only the Templates screen;
 no Goals section, no path to a goal screen, so no path to the Revise control either — consistent with
 the forbidden-role API evidence above (iii).
+
+## Review fix (v1.4): end date in effect — AC-06.20 to AC-06.25, D-24
+
+Review finding by warunwora on PR #76. Tested commit: `30e31d7` (`feature/f06-goal-revisions`).
+Server run locally on `http://localhost:4001` again (fresh restart, same local setup). A fresh
+template id 2 ("Review Fix Demo") was created for this demo, to avoid any interaction with the
+goal(s) already in use above.
+
+**AC-06.22 (BR-04 overlap uses the other goal's effective end), live against the real clock:**
+
+```
+$ curl -s -b p1.jar -X POST http://localhost:4001/goals -H "Content-Type: application/json" \
+  -d '{"templateId":2,"dailyTarget":5,"startDate":"2026-12-01","endDate":"2026-12-10"}'
+{"id":2,"userId":2,"templateId":2,"dailyTarget":5,"startDate":"2026-12-01","endDate":"2026-12-10"}
+
+$ curl -s -b p1.jar -X PATCH http://localhost:4001/goals/2 -H "Content-Type: application/json" \
+  -d '{"endDate":"2026-12-20"}'
+{"id":2,"userId":2,"templateId":2,"dailyTarget":5,"startDate":"2026-12-01","endDate":"2026-12-20"}
+
+$ curl -s -o resp.json -w "%{http_code}\n" -b p1.jar -X POST http://localhost:4001/goals \
+  -H "Content-Type: application/json" -d '{"templateId":2,"dailyTarget":5,"startDate":"2026-12-15","endDate":"2026-12-25"}'
+409
+$ cat resp.json
+{"error":{"code":"CONFLICT","message":"You already have a goal for this template that overlaps these dates."}}
+```
+Expected: a new goal starting 2026-12-15 does not overlap goal 2's *stored* end (2026-12-10), but
+does overlap its *effective* end (2026-12-20, from the revision just above) — so creation must be
+rejected. Actual: matches (409).
+
+Database proof that the stored column is genuinely untouched and the new goal was never created:
+```
+$ docker exec f06-test-pg psql -U habit -d habit_tracker -c \
+  "SELECT id, \"goalId\", \"dailyTarget\", \"endDate\", \"effectiveFrom\" FROM goal_revisions WHERE \"goalId\"=2;"
+ id | goalId | dailyTarget |  endDate   | effectiveFrom
+----+--------+-------------+------------+---------------
+  4 |      2 |           5 | 2026-12-20 | 2026-11-28
+
+$ docker exec f06-test-pg psql -U habit -d habit_tracker -c \
+  "SELECT id, \"startDate\", \"endDate\" FROM goals WHERE id=2;"
+ id | startDate  |  endDate
+----+------------+------------
+  2 | 2026-12-01 | 2026-12-10
+
+$ docker exec f06-test-pg psql -U habit -d habit_tracker -c \
+  "SELECT id, \"startDate\", \"endDate\" FROM goals WHERE \"templateId\"=2;"
+ id | startDate  |  endDate
+----+------------+------------
+  2 | 2026-12-01 | 2026-12-10
+```
+Expected: goal 2's own row still shows the original stored `endDate` 2026-12-10 (F-06 never alters
+it — the effective value lives only in `goal_revisions`); exactly one goal exists on template 2 (the
+rejected creation left no row). Actual: matches.
+
+**AC-06.25/D-24 (an already-ended goal cannot be revised), live against the real clock:**
+
+```
+$ curl -s -b p1.jar -X POST http://localhost:4001/goals -H "Content-Type: application/json" \
+  -d '{"templateId":2,"dailyTarget":5,"startDate":"2026-11-01","endDate":"2026-11-20"}'
+{"id":3,"userId":2,"templateId":2,"dailyTarget":5,"startDate":"2026-11-01","endDate":"2026-11-20"}
+
+$ curl -s -o resp.json -w "%{http_code}\n" -b p1.jar -X PATCH http://localhost:4001/goals/3 \
+  -H "Content-Type: application/json" -d '{"dailyTarget":8}'
+409
+$ cat resp.json
+{"error":{"code":"CONFLICT","message":"This goal has already ended and cannot be revised."}}
+```
+Expected: this goal's end date (2026-11-20) is already before the real current date (2026-11-28,
+Asia/Bangkok) at the moment of this demo, so any revision is rejected, even one that only touches
+`dailyTarget`. Actual: matches. `SELECT count(*) FROM goal_revisions WHERE "goalId"=3` returned `0`
+afterward — nothing stored.
+
+**AC-06.20/06.21/06.23 (entry acceptance and the progress window use the effective end), not shown
+live:** these specifically require advancing "today" *past* an end date that was extended *before*
+that point — a genuine passage of time the real server's real clock cannot be made to skip within one
+sitting (and D-24 above means a goal already past its effective end can no longer be revised at all,
+closing off any live workaround). These are proven instead by the automated tests TEST-06.21,
+TEST-06.22 and TEST-06.24 (fake-timers, two distinct "today"s each), with their real `vitest` output
+in `F-06-review-fix-green-output.txt` — not asserted here without evidence.

@@ -130,3 +130,20 @@ snapshots in `F-08-ui-green-output.txt`'s underlying test run, rather than re-st
 a `daysRecorded: 0` window or a live network failure on demand would require tearing down the one
 populated demo goal or killing the local server mid-session, which would undermine the rest of this
 demo rather than add independent evidence.
+
+## Review fix (v1.5): summary window uses the effective end date — AC-08.16
+
+Review finding by warunwora on F-06 PR #76, extended to F-08. Tested commit: `7d6caf0`
+(`feature/f08-progress-summaries`).
+
+**Not demonstrated live, by design, and disclosed rather than worked around:** AC-08.16's visible
+effect (the week/month window's `end` and `daysRecorded` reflecting an *extended* end date) only
+differs from the old buggy behaviour once real time has advanced *past* the goal's original stored
+end — the same structural limitation noted in `demo-F-06.md`'s review-fix section for AC-06.20/21/23.
+Within a single live session the real clock cannot be advanced to create that gap, and (per D-24,
+implemented in the same fix) a goal already past its own effective end can no longer be revised at
+all, closing off any live workaround. This is proven instead by the automated test TEST-08.16
+(fake timers, two distinct "today"s: one to create the goal and revise its end while it is still
+active, a later one to fetch the summary), with its real `vitest` output in
+`F-08-review-fix-green-output.txt` (passes); the real failing run before the fix, asserting the same
+`month.end` and getting the stale stored end back instead, is in `F-08-review-fix-red-output.txt`.
