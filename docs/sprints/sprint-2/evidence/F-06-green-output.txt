@@ -42,7 +42,7 @@ Full raw backend output follows, then full raw frontend output.
 > vitest run
 
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
 
  Test Files  17 passed (17)
@@ -57,7 +57,7 @@ Full raw backend output follows, then full raw frontend output.
 > vitest run
 
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+ RUN  v5.1.0 <repo>/frontend
 
 
  Test Files  4 passed (4)
