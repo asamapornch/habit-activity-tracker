@@ -7,8 +7,8 @@
 | Linked requirements | FR-12, BR-11; SRS D-18, D-19 (this contract; accepted as written by warunwora in the #77 approval, 2026-11-28) |
 | Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution; merged in #84) |
 | Needed by | — |
-| Owner | — (not yet assigned) |
-| Reviewer | — (not yet assigned) |
+| Owner | asamapornch (implementation, PR #85) |
+| Reviewer | warunwora (contract PR #77 and implementation PR #85) |
 | Status | **Implemented and merged: AC-08.1 to AC-08.16 with TEST-08.* green, including the AC-08.16 end-date-in-effect fix (`7d6caf0`). PR #85 merged to `sprint-1-staging` after F-06 (`7ade62c`, 2026-11-28).** |
 
 **Dependency note:** like F-07, this feature must not be merged before F-06 is merged to
@@ -189,25 +189,30 @@ File: `frontend/src/GoalDetail.test.tsx`.
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (this PR).
-- [ ] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
-      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging`.
-- [ ] Tests TEST-08.* are committed and fail first (red) because the route is missing, with the
-      failing output saved under `docs/sprints/sprint-2/evidence/`.
-- [ ] Implementation makes all TEST-08.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No existing test file is edited.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
-      approved by the other student with comments describing what was checked.
+- [x] This contract is committed before any implementation code (`25be22e`, 2026-11-27 02:22, before the first F-08 test commit `8b45da2`).
+- [x] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
+      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging`. (#84
+      merged as `418e2af`, then #85 as `7ade62c`.)
+- [x] Tests TEST-08.* are committed and fail first (red) because the route is missing, with the
+      failing output saved under `docs/sprints/sprint-2/evidence/` (`8b45da2`, 13 failed,
+      `F-08-red-output.txt`).
+- [x] Implementation makes all TEST-08.* pass (green), with the passing output saved (`bab6915`, `F-08-green-output.txt`).
+- [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (283 passed on `sprint-1-staging` `d1eddad`).
+- [x] No existing test is changed. The backend tests are a new file (`goalSummaries.test.ts`); the UI tests TEST-08.10 to TEST-08.15 were added to the existing `frontend/src/GoalDetail.test.tsx` as new cases only (150 lines added, 0 removed in `ee82bcc`), with no existing expected result edited.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+      approved by the other student with comments describing what was checked (PR #85, Refs #81,
+      approved by warunwora).
 - [ ] The two proposed decisions (D-18, D-19) are resolved by the reviewer before implementation
-      starts.
+      starts. **Not met as written:** warunwora accepted both as written in the #77 approval on
+      2026-11-28, after F-08 was implemented on #85; the implementation already followed them, so no
+      code changed.
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.4).
-- [ ] TEST-08.10 to TEST-08.15 are committed red before the UI code, then green.
-- [ ] **New in v1.5 (review finding, warunwora on F-06 PR #76):** TEST-08.16 is committed red before
+- [x] TEST-08.10 to TEST-08.15 are committed red before the UI code, then green (`ee82bcc` 7 failed → `cb98b7b`; `F-08-ui-red-output.txt`, `F-08-ui-green-output.txt`).
+- [x] **New in v1.5 (review finding, warunwora on F-06 PR #76):** TEST-08.16 is committed red before
       its implementation and green after, with output saved to
       `docs/sprints/sprint-2/evidence/F-08-review-fix-red-output.txt` /
       `F-08-review-fix-green-output.txt`.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Failed or skipped tests, if any, are listed in the evidence report: none failed or skipped in the green runs.
 
 ## 7. Version history
 
@@ -221,3 +226,4 @@ File: `frontend/src/GoalDetail.test.tsx`.
 | 1.5 | 2026-11-28 03:05 +07 | §2 step 3's `lastDay` corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column. AC-08.16 and TEST-08.16 added. | Review finding by warunwora on F-06 PR #76; no scope creep |
 | 1.6 | 2026-11-28 | Status line updated: F-08 is implemented on PR #85 (was "no code yet"). §2 step 4 says "the end date in effect today" instead of "the goal's `endDate`", so it does not read as the stored column. No behaviour, AC or test change. | Review by warunwora on #77 |
 | 1.7 | 2026-11-28 | Status: PR #85 merged. D-18/D-19 marked settled (accepted as written by warunwora in the #77 approval; note: after F-08 was implemented, not before). Owner/Reviewer and the DoD are left to the owner. | Combined Sprint 2/3 docs update after the merges |
+| 1.8 | 2026-11-28 | Owner asamapornch and Reviewer warunwora filled in. Definition of done ticked with evidence (commits, outputs, PR #85); the "no existing test file is edited" item reworded, because TEST-08.10 to TEST-08.15 were added to `GoalDetail.test.tsx` as new cases only; the D-18/D-19 item stays unticked with a note (accepted after implementation). No behaviour, AC or test change. | Owner check on #97 |
