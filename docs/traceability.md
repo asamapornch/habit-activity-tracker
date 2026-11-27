@@ -25,8 +25,8 @@ F-05 `backend/tests/access.test.ts`.
 | FR-10 Goal revision | F-06 | 2 | AC-06.1 to AC-06.25 / TEST-06.1 to TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 | AC-06.1 to AC-06.25: implemented, green on PR #84 (not yet merged) |
 | FR-11 Streaks | F-07 | 2 | AC-07.1 to AC-07.11 / TEST-07.1a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.4 | Contract written (planned) |
 | FR-12 Summaries | F-08 | 2 | AC-08.1 to AC-08.16 / TEST-08.1a to TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.6 | Implemented, green on PR #85 (not yet merged) |
-| FR-13 Reminder schedule | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
-| FR-14 Upcoming reminders | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
+| FR-13 Reminder schedule | F-09 | 3 | AC-09.1 to AC-09.9 / TEST-09.1 to TEST-09.9 (Slice 1), `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.0 | Contract written (planned) |
+| FR-14 Upcoming reminders | F-09 | 3 | AC-09.10 to AC-09.13 / TEST-09.10 to TEST-09.13 (Slice 2), `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.0 | Contract written (planned) |
 
 ## 2. Business rules
 
@@ -44,7 +44,7 @@ F-05 `backend/tests/access.test.ts`.
 | BR-10 Revision limits | F-06 | 2 | AC-06.7 to AC-06.9, AC-06.25 (D-24) / TEST-06.7 to TEST-06.9, TEST-06.25, TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 | AC-06.7 to AC-06.9: implemented, green on PR #84. AC-06.25 (D-24, settled on PR #76): implemented, green on PR #84 (not yet merged) |
 | BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: AC-06.5, AC-06.10 to AC-06.12, AC-06.20 to AC-06.24 / TEST-06.5, TEST-06.10 to TEST-06.14, TEST-06.21 to TEST-06.24, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 §2.5/§3.2/§3.4; F-07 part: AC-07.7, AC-07.8 / TEST-07.7, TEST-07.8, `docs/sprints/sprint-2/F-07-streaks.md` v1.4; F-08 part: AC-08.6, AC-08.16 / TEST-08.6, TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.6 | F-06 part: AC-06.5/06.10-06.12 implemented and green on PR #84; AC-06.20-06.24 (review fix) implemented and green on PR #84. F-07 part: Contract written (planned); F-08 part: implemented, green on PR #85 (not yet merged) |
 | BR-12 Streak definition | F-07 | 2 | AC-07.1 to AC-07.6, AC-07.9 to AC-07.11 / TEST-07.1a to TEST-07.6, TEST-07.9a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.4 | Contract written (planned) |
-| BR-13 Reminder schedule limits | F-09 | 3 | Sprint 3 F-09 contract | Allocated |
+| BR-13 Reminder schedule limits | F-09 | 3 | AC-09.6, AC-09.11 / TEST-09.6, TEST-09.11, `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.0 | Contract written (planned) |
 
 ## 3. Non-functional requirements
 
@@ -55,15 +55,16 @@ F-05 `backend/tests/access.test.ts`.
 | NFR-03 No secrets in Git | Configuration responsibility | 1 / 1 | Manual: repository inspection; `.env` git-ignored, `.env.example` placeholders, seed reads passwords from env | Verified (manual) |
 | NFR-04 One-command test suite | README | 1 / 1 | Manual: clean-checkout `npm test` in `backend/` and `frontend/` recorded in the evidence README | Verified (manual) |
 | NFR-05 Clear 4xx errors, no crash | Error-handling responsibility | 1 / 1, extended each sprint | AC-01.2, 01.7, 01.11, 01.13, 01.17, 01.18, 02.5, 02.8, 02.11, 02.12, 02.17, 02.20, 03.4, 03.6, 03.14, 03.18, 03.20, 04.4, 04.17, 04.21, 04.23 / same TEST IDs; Lab 7: AC-02.22 / TEST-02.22a, 02.22b (added after release `b53e7bc` on 2026-11-26 23:25 +07: correction of an omission; the AC and tests existed and were implemented in PRs #69/#70) | Verified for Sprint 1 endpoints |
-| NFR-06 Docker, durable DB, GCP | F-10 | 3 (Lab 5) | Container build and deployed health check | Allocated |
-| NFR-07 Response time 500 ms | F-10 | 3 | Automated timing test | Allocated |
-| NFR-08 CI on every PR | F-10 | 3 (Lab 5) | CI run on each PR | Allocated |
+| NFR-06 Docker, durable DB, GCP | F-10 | 3 (Lab 5) | AC-10.1 to AC-10.3, `docs/sprints/sprint-3/F-10-deployment-hardening.md` v1.0 section 2.1, citing Lab 5 evidence already on main | Verified (Lab 5, already released) |
+| NFR-07 Response time 500 ms | F-10 | 3 | AC-10.5 to AC-10.8 / TEST-10.1 to TEST-10.4, `docs/sprints/sprint-3/F-10-deployment-hardening.md` v1.0 section 2.2 | Contract written (planned); no timing test exists yet |
+| NFR-08 CI on every PR | F-10 | 3 (Lab 5) | AC-10.4, `docs/sprints/sprint-3/F-10-deployment-hardening.md` v1.0 section 2.1, citing ci-docker.yml and Lab 5 Issue C-02 evidence already on main | Verified (Lab 5, already released) |
 
 ## 4. Coverage gaps
 
 - No Sprint 1 requirement is without a feature and verification.
-- Not yet verified (by plan): FR-10 to FR-14, BR-10 to BR-13 and NFR-06 to NFR-08. Each has a feature and
-  sprint now; AC and tests are written in that sprint's contracts (SRS D-11).
+- Not yet verified (by plan): FR-10 to FR-14, BR-10 to BR-13, and NFR-07. Each has a feature and
+  sprint now; AC and tests are written in that sprint's contracts (SRS D-11). NFR-06 and NFR-08 are
+  already verified (Lab 5, released on `main`), ahead of their Sprint 3 allocation.
 - NFR-03 and NFR-04 are verified by manual checks, not automated tests.
 - No separate unit-test layer: rule logic is verified through API tests against the real database,
   which also cover persistence and permissions.
