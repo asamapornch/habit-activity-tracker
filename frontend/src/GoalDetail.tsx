@@ -3,14 +3,19 @@ import type { FormEvent } from "react";
 import {
   errorMessage,
   getProgress,
+  getSummary,
   isUnauthorized,
   listEntries,
   recordEntry,
+  reviseGoal,
   type Entry,
   type Goal,
   type Progress,
+  type Summary,
   type Template,
 } from "./api";
+import { StreaksPanel } from "./Streaks";
+import { ReminderPanel } from "./Reminders";
 
 interface GoalDetailProps {
   goal: Goal;
@@ -30,6 +35,42 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  // F-07 AC-07.15: bumped after each recorded entry so the Streaks panel reloads.
+  const [entryCount, setEntryCount] = useState(0);
+
+  // F-06 §2.6/§3.1: the currently effective values (the PATCH response),
+  // not necessarily goal.dailyTarget/goal.endDate once a revision exists.
+  const [effectiveTarget, setEffectiveTarget] = useState(goal.dailyTarget);
+  const [effectiveEndDate, setEffectiveEndDate] = useState(goal.endDate);
+  const [revising, setRevising] = useState(false);
+  const [reviseTarget, setReviseTarget] = useState("");
+  const [reviseEndDate, setReviseEndDate] = useState("");
+  const [reviseError, setReviseError] = useState<string | null>(null);
+  const [reviseSubmitting, setReviseSubmitting] = useState(false);
+
+  // F-08 §3.3: fetched independently of entries/progress, so a summary
+  // failure never blocks the rest of the goal screen from rendering.
+  const [summary, setSummary] = useState<Summary | null>(null);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+  const [summaryRefreshKey, setSummaryRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    getSummary(goal.id)
+      .then((result) => {
+        if (cancelled) return;
+        setSummary(result);
+        setSummaryError(null);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        if (isUnauthorized(err)) onUnauthorized();
+        else setSummaryError("Could not load the weekly/monthly summary.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [goal.id, summaryRefreshKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,6 +99,7 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
     try {
       const entry = await recordEntry(goal.id, { date, value: Number(value) });
       setEntries((current) => [...(current ?? []), entry].sort(byDate));
+      setEntryCount((n) => n + 1);
       setValue("");
     } catch (err) {
       if (isUnauthorized(err)) onUnauthorized();
@@ -76,6 +118,36 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
     }
   }
 
+  function openRevise() {
+    setReviseTarget(String(effectiveTarget));
+    setReviseEndDate(effectiveEndDate);
+    setReviseError(null);
+    setRevising(true);
+  }
+
+  async function handleRevise(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setReviseError(null);
+
+    const body: { dailyTarget?: number; endDate?: string } = {};
+    if (Number(reviseTarget) !== effectiveTarget) body.dailyTarget = Number(reviseTarget);
+    if (reviseEndDate !== effectiveEndDate) body.endDate = reviseEndDate;
+
+    setReviseSubmitting(true);
+    try {
+      const revised = await reviseGoal(goal.id, body);
+      setEffectiveTarget(revised.dailyTarget);
+      setEffectiveEndDate(revised.endDate);
+      setRevising(false);
+      setSummaryRefreshKey((key) => key + 1); // F-08 AC-08.15: refetch so daysMet reflects the new target
+    } catch (err) {
+      if (isUnauthorized(err)) onUnauthorized();
+      else setReviseError(errorMessage(err));
+    } finally {
+      setReviseSubmitting(false);
+    }
+  }
+
   const header = (
     <div className="goal-detail__header">
       <button type="button" className="btn btn--secondary btn--small" onClick={onBack}>
@@ -83,8 +155,53 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
       </button>
       <h3 className="card-title">{template.name}</h3>
       <span className="goal-list__meta">
-        {goal.dailyTarget} {template.unit} a day · {goal.startDate} → {goal.endDate}
+        {effectiveTarget} {template.unit} a day · {goal.startDate} → {effectiveEndDate}
       </span>
+      {!revising && (
+        <button type="button" className="btn btn--secondary btn--small" onClick={openRevise}>
+          Revise goal
+        </button>
+      )}
+      {revising && (
+        <form onSubmit={handleRevise} aria-label="Revise goal" className="card template-form">
+          <h3 className="card-title">Revise goal</h3>
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="revise-target">Daily target</label>
+              <input
+                id="revise-target"
+                type="number"
+                step="0.01"
+                className="input"
+                value={reviseTarget}
+                onChange={(event) => setReviseTarget(event.target.value)}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="revise-end-date">End date</label>
+              <input
+                id="revise-end-date"
+                type="date"
+                className="input"
+                value={reviseEndDate}
+                onChange={(event) => setReviseEndDate(event.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <div className="template-form__actions">
+            <button type="submit" className="btn btn--primary" disabled={reviseSubmitting}>
+              Save
+            </button>
+          </div>
+          {reviseError && (
+            <p role="alert" className="error-box">
+              {reviseError}
+            </p>
+          )}
+        </form>
+      )}
     </div>
   );
 
@@ -123,6 +240,50 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
           </p>
         )}
       </div>
+
+      <StreaksPanel goalId={goal.id} refreshKey={entryCount} onUnauthorized={onUnauthorized} />
+
+      <section className="card summary-card" aria-label="Summary">
+        <h3 className="card-title">This week / this month</h3>
+        {!summary && !summaryError && <p className="status-message">Loading summary…</p>}
+        {summaryError && (
+          <p role="alert" className="error-box">
+            {summaryError}
+          </p>
+        )}
+        {summary && (
+          <div className="summary-windows">
+            <div className="summary-window">
+              <h4>This week</h4>
+              <p>
+                {summary.week.start} to {summary.week.end}
+              </p>
+              {summary.week.daysRecorded === 0 ? (
+                <p className="status-message">No entries recorded this week.</p>
+              ) : (
+                <p>
+                  {summary.week.daysRecorded} days recorded, {summary.week.daysMet} met, total{" "}
+                  {summary.week.total}, average {summary.week.average}
+                </p>
+              )}
+            </div>
+            <div className="summary-window">
+              <h4>This month</h4>
+              <p>
+                {summary.month.start} to {summary.month.end}
+              </p>
+              {summary.month.daysRecorded === 0 ? (
+                <p className="status-message">No entries recorded this month.</p>
+              ) : (
+                <p>
+                  {summary.month.daysRecorded} days recorded, {summary.month.daysMet} met, total{" "}
+                  {summary.month.total}, average {summary.month.average}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
 
       <form onSubmit={handleSubmit} aria-label="Record entry" className="card template-form">
         <h3 className="card-title">Record entry</h3>
@@ -186,6 +347,8 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
           </tbody>
         </table>
       )}
+
+      <ReminderPanel goalId={goal.id} onUnauthorized={onUnauthorized} />
     </section>
   );
 }

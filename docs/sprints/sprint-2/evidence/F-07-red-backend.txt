@@ -1,0 +1,392 @@
+# F-07 RED (backend)
+# Tested commit: bd4beb0 (feature/f07-streaks, tests only; no streaks route yet)
+# Run at: 2026-11-28 06:13 +07; Node v26.13.1; Postgres 16 (docker compose db)
+# Command: cd backend && npx vitest run tests/streaks.test.ts --reporter=verbose
+# Expected (F-07 v1.5 §5): all 17 tests red on assertions (404 from a missing route instead of the contract's status).
+# Full backend suite on the same commit: Tests  17 failed | 229 passed (246). Only these 17 fail.
+
+
+ RUN  v5.1.0 <repo>/backend
+
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1a three met days up to lastDay after a missing day: currentStreak 3 477ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1b an entry below target inside the run breaks it: only the run touching lastDay counts 408ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.2 an entry for lastDay below target gives currentStreak 0 even after met days 421ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.3 no entry for lastDay yet: counts from lastDay - 1 backward 432ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4a a goal with no entries: 0 and 0 431ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4b a goal that has not started yet: 0 and 0 425ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > longest streak (FR-11) > TEST-07.5 an earlier 5-day run beats the current 2-day run 440ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > longest streak (FR-11) > TEST-07.6 the only run is the current one: longest equals current 429ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.7 a revision raising the target from day 3 turns days 3 to 5 unmet; days 1 to 2 keep the old target 443ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.8 a revision lowering the target from day 3 turns days 3 to 5 met; days 1 to 2 stay unmet 440ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.12 lastDay uses the end date in effect: a revision extending a past stored end counts up to today 440ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.13 an ended goal still reports the run ending at its end date (D-16) 442ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9a no cookie gets 401 407ms
+   → expected 404 to be 401 // Object.is equality
+ × tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9b a Manager gets 403 401ms
+   → expected 404 to be 403 // Object.is equality
+ × tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10a another Participant's goal and a missing goal give the same 404 (control: the owner gets 200) 397ms
+   → expected 404 to be 200 // Object.is equality
+ × tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10b a malformed id gives 400 Invalid goal id. 398ms
+   → expected 404 to be 400 // Object.is equality
+ × tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.11 check order: a Manager gets 403 before any ownership lookup; another Participant gets 404 (control) 404ms
+   → expected 404 to be 403 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 17 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1a three met days up to lastDay after a missing day: currentStreak 3
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:107:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/17]⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.1b an entry below target inside the run breaks it: only the run touching lastDay counts
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:113:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/17]⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.2 an entry for lastDay below target gives currentStreak 0 even after met days
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:119:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/17]⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.3 no entry for lastDay yet: counts from lastDay - 1 backward
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:125:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/17]⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4a a goal with no entries: 0 and 0
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:130:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/17]⎯
+
+ FAIL  tests/streaks.test.ts > current streak (FR-11, BR-12) > TEST-07.4b a goal that has not started yet: 0 and 0
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:135:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/17]⎯
+
+ FAIL  tests/streaks.test.ts > longest streak (FR-11) > TEST-07.5 an earlier 5-day run beats the current 2-day run
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:147:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/17]⎯
+
+ FAIL  tests/streaks.test.ts > longest streak (FR-11) > TEST-07.6 the only run is the current one: longest equals current
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:153:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/17]⎯
+
+ FAIL  tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.7 a revision raising the target from day 3 turns days 3 to 5 unmet; days 1 to 2 keep the old target
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:163:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/17]⎯
+
+ FAIL  tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.8 a revision lowering the target from day 3 turns days 3 to 5 met; days 1 to 2 stay unmet
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:174:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/17]⎯
+
+ FAIL  tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.12 lastDay uses the end date in effect: a revision extending a past stored end counts up to today
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:184:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/17]⎯
+
+ FAIL  tests/streaks.test.ts > target in effect per day (BR-11, F-06) > TEST-07.13 an ended goal still reports the run ending at its end date (D-16)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ expectStreaks tests/streaks.test.ts:79:22
+     77| async function expectStreaks(goalId: number, currentStreak: number, lo…
+     78|   const res = await getStreaks(p1Cookie, goalId);
+     79|   expect(res.status).toBe(200);
+       |                      ^
+     80|   expect(res.body).toStrictEqual({ goalId, currentStreak, longestStrea…
+     81| }
+ ❯ tests/streaks.test.ts:190:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/17]⎯
+
+ FAIL  tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9a no cookie gets 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/streaks.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/streaks.test.ts:197:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/17]⎯
+
+ FAIL  tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.9b a Manager gets 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/streaks.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/streaks.test.ts:202:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/17]⎯
+
+ FAIL  tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10a another Participant's goal and a missing goal give the same 404 (control: the owner gets 200)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/streaks.test.ts:207:56
+    205|   it("TEST-07.10a another Participant's goal and a missing goal give t…
+    206|     const G1 = await insertGoal("2026-11-01", "2026-11-30");
+    207|     expect((await getStreaks(p1Cookie, G1.id)).status).toBe(200);
+       |                                                        ^
+    208|
+    209|     const other = await getStreaks(p2Cookie, G1.id);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/17]⎯
+
+ FAIL  tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.10b a malformed id gives 400 Invalid goal id.
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/streaks.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/streaks.test.ts:217:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/17]⎯
+
+ FAIL  tests/streaks.test.ts > access and check order (NFR-02, NFR-05, BR-08) > TEST-07.11 check order: a Manager gets 403 before any ownership lookup; another Participant gets 404 (control)
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/streaks.test.ts:47:22
+     45|
+     46| function expectError(res: Response, status: number, code: string, mess…
+     47|   expect(res.status).toBe(status);
+       |                      ^
+     48|   expect(res.body.error?.code).toBe(code);
+     49|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/streaks.test.ts:222:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/17]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  17 failed (17)
+   Start at  06:12:10
+   Duration  7.81s (tests 95%, setup 3%, import 2%, transform 1%)
+

@@ -4,6 +4,8 @@ import { prisma } from "../lib/prisma.js";
 import { sendError } from "../lib/errors.js";
 import { requireRole } from "../middleware/auth.js";
 import { todayInBangkok } from "../lib/today.js";
+import { effectiveOn, type EffectiveRevision } from "../lib/goalRevisions.js";
+import { isoWeekRange, monthRange } from "../lib/dateWindows.js";
 import {
   formatDateOnly,
   hasExactKeys,
@@ -45,6 +47,17 @@ async function findOwnGoal(req: Request, res: Response, id: number | null): Prom
     return null;
   }
   return goal;
+}
+
+/** F-06 §3.4: a goal's revisions, shaped for effectiveOn(). Shared by BR-09 progress and F-08 summaries. */
+async function fetchRevisionList(goalId: number): Promise<EffectiveRevision[]> {
+  const revisions = await prisma.goalRevision.findMany({ where: { goalId } });
+  return revisions.map((r) => ({
+    id: r.id,
+    dailyTarget: r.dailyTarget,
+    endDate: formatDateOnly(r.endDate),
+    effectiveFrom: formatDateOnly(r.effectiveFrom),
+  }));
 }
 
 function parseEntryInput(body: unknown): { date: Date; value: number } | null {
@@ -89,7 +102,13 @@ entriesRouter.post("/goals/:id/entries", requireRole("PARTICIPANT"), async (req,
         return;
       }
     }
-    if (date < formatDateOnly(goal.startDate) || date > formatDateOnly(goal.endDate)) {
+    // Review fix (warunwora, F-06 v1.4): the goal's end date *in effect
+    // today* (§3.2), not the stored endDate column - a revision extending
+    // (or shortening) the end must apply here too.
+    const entryRevisions = await fetchRevisionList(goal.id);
+    const entryGoalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const effectiveGoalEnd = effectiveOn(entryGoalLike, entryRevisions, today, "endDate") as string;
+    if (date < formatDateOnly(goal.startDate) || date > effectiveGoalEnd) {
       sendError(res, 400, "VALIDATION_ERROR", "Entry date must be within the goal's start and end dates.");
       return;
     }
@@ -143,10 +162,14 @@ entriesRouter.get("/goals/:id/progress", requireRole("PARTICIPANT"), async (req,
     const goal = await findOwnGoal(req, res, parseIdParam(req.params.id));
     if (!goal) return;
 
-    // BR-09 (SRS D-10): days from start to the earlier of today and end, both inclusive.
+    // BR-09 (SRS D-10): days from start to the earlier of today and end, both
+    // inclusive. Review fix (warunwora, F-06 v1.4): "end" is the end date in
+    // effect today (§3.2), not the stored endDate column.
     const today = todayInBangkok();
     const start = formatDateOnly(goal.startDate);
-    const end = formatDateOnly(goal.endDate);
+    const revisions = await fetchRevisionList(goal.id);
+    const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const end = effectiveOn(goalLike, revisions, today, "endDate") as string;
     const lastDay = today < end ? today : end;
 
     let daysElapsed = 0;
@@ -154,15 +177,105 @@ entriesRouter.get("/goals/:id/progress", requireRole("PARTICIPANT"), async (req,
     if (lastDay >= start) {
       const lastDate = parseDateOnly(lastDay)!;
       daysElapsed = Math.round((lastDate.getTime() - goal.startDate.getTime()) / DAY_MS) + 1;
-      const target = round2(goal.dailyTarget);
       const entries = await prisma.entry.findMany({
         where: { goalId: goal.id, date: { gte: goal.startDate, lte: lastDate } },
       });
-      daysMet = entries.filter((e) => round2(e.value) >= target).length;
+      // F-06 §3.2: the target in effect on each entry's own date, not one
+      // scalar comparison. A goal with no revisions falls through to
+      // goal.dailyTarget for every entry, so this reproduces the Sprint-1
+      // comparison exactly when unrevised. (revisions/goalLike already
+      // computed above, for the effective end date.)
+      daysMet = entries.filter((e) => {
+        const targetOnDate = round2(
+          effectiveOn(goalLike, revisions, formatDateOnly(e.date), "dailyTarget") as number,
+        );
+        return round2(e.value) >= targetOnDate;
+      }).length;
     }
 
     const progress = daysElapsed === 0 ? 0 : round2((daysMet / daysElapsed) * 100);
     res.status(200).json({ goalId: goal.id, today, daysElapsed, daysMet, progress });
+  } catch (err) {
+    next(err);
+  }
+});
+
+interface SummaryWindow {
+  start: string;
+  end: string;
+  daysRecorded: number;
+  daysMet: number;
+  total: number;
+  average: number;
+}
+
+/** F-08 §2.4/§2.5: one window (week or month), clipped to [goal.startDate, lastDay]. */
+function computeWindow(
+  naturalStart: string,
+  naturalEnd: string,
+  goalStart: string,
+  lastDay: string,
+  entries: Entry[],
+  goalLike: { dailyTarget: number; endDate: string },
+  revisions: EffectiveRevision[],
+): SummaryWindow {
+  const windowStart = naturalStart > goalStart ? naturalStart : goalStart;
+  const windowEnd = naturalEnd < lastDay ? naturalEnd : lastDay;
+
+  if (windowStart > windowEnd) {
+    return { start: windowStart, end: windowEnd, daysRecorded: 0, daysMet: 0, total: 0, average: 0 };
+  }
+
+  const inWindow = entries.filter((e) => {
+    const date = formatDateOnly(e.date);
+    return date >= windowStart && date <= windowEnd;
+  });
+
+  let total = 0;
+  let daysMet = 0;
+  for (const entry of inWindow) {
+    const value = round2(entry.value);
+    total = round2(total + value);
+    const targetOnDate = round2(
+      effectiveOn(goalLike, revisions, formatDateOnly(entry.date), "dailyTarget") as number,
+    );
+    if (value >= targetOnDate) daysMet += 1;
+  }
+  const daysRecorded = inWindow.length;
+  const average = daysRecorded === 0 ? 0 : round2(total / daysRecorded);
+
+  return { start: windowStart, end: windowEnd, daysRecorded, daysMet, total, average };
+}
+
+/**
+ * F-08: the current week's and month's figures for an own goal. Check
+ * order per contract §2 step 2: 401 -> 403 -> 400 (id) -> 404 (ownership).
+ */
+entriesRouter.get("/goals/:id/summary", requireRole("PARTICIPANT"), async (req, res, next) => {
+  try {
+    const goal = await findOwnGoal(req, res, parseIdParam(req.params.id));
+    if (!goal) return;
+
+    // Review fix (warunwora, F-06 PR #76, extended to F-08 in v1.5): "end"
+    // is the end date in effect today (F-06 §3.2), not the stored endDate
+    // column.
+    const today = todayInBangkok();
+    const goalStart = formatDateOnly(goal.startDate);
+    const revisions = await fetchRevisionList(goal.id);
+    const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const goalEnd = effectiveOn(goalLike, revisions, today, "endDate") as string;
+    const lastDay = today < goalEnd ? today : goalEnd;
+
+    const entries = await prisma.entry.findMany({ where: { goalId: goal.id } });
+
+    const week = isoWeekRange(lastDay);
+    const month = monthRange(lastDay);
+
+    res.status(200).json({
+      goalId: goal.id,
+      week: computeWindow(week.start, week.end, goalStart, lastDay, entries, goalLike, revisions),
+      month: computeWindow(month.start, month.end, goalStart, lastDay, entries, goalLike, revisions),
+    });
   } catch (err) {
     next(err);
   }

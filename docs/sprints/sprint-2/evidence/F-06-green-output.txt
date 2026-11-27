@@ -1,0 +1,67 @@
+F-06 Goal Revisions — GREEN output (after implementation)
+
+DISCLOSURE: the Prisma migration (20261127134131_add_goal_revision) was
+hand-corrected after `prisma migrate dev` generated it: the tool also
+proposed an unrelated ALTER TABLE on "session" (TEXT/JSONB/index-name
+drift between the Prisma-ignored Session model's declared types and
+connect-pg-simple's actual varchar/json/IDX_session_expire schema from the
+Lab 5 migration). That unrelated block was removed by hand; this migration
+now creates only the goal_revisions table and its FK, nothing else. See
+the comment at the top of the migration.sql file itself.
+
+Working tree on top of commit 80deb118b94dec97a92ab9560b4b087fe8468f27
+(the RED commit on feature/f06-goal-revisions); the implementation below
+was not yet committed at the time of this run (committed immediately
+after, as its own commit).
+
+Command 1 (typecheck):
+  cd backend && npm run typecheck
+Result: no errors.
+
+Command 2 (backend full suite):
+  cd backend && npm test
+Result: 17 test files passed (17), 222 tests passed (222), 0 failed, 0 skipped.
+  - 194 pre-existing tests: all still pass (regression check, F-06 §5.3:
+    no existing test file was edited except resetDb.ts's helper, and no
+    existing test's expected numbers changed).
+  - 28 new tests: 23 in tests/goalRevisions.test.ts (TEST-06.1 to
+    TEST-06.13, including the corrected TEST-06.8b and new TEST-06.8d),
+    5 in tests/effectiveOn.test.ts (TEST-06.14).
+  194 + 28 = 222, matching exactly.
+
+Command 3 (frontend full suite, unaffected - F-06 §3.3 builds no UI):
+  cd frontend && npm test
+Result: 4 test files passed (4), 43 tests passed (43), 0 failed, 0 skipped.
+  Unchanged from the pre-existing 43; confirms no UI/frontend regression.
+
+Full raw backend output follows, then full raw frontend output.
+
+=== BACKEND ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 <repo>/backend
+
+
+ Test Files  17 passed (17)
+      Tests  222 passed (222)
+   Start at  20:57:33
+   Duration  85.13s (tests 96%, import 2%, setup 1%)
+
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  43 passed (43)
+   Start at  20:59:14
+   Duration  2.53s (tests 39%, environment 38%, import 11%, transform 6%, setup 6%)
+

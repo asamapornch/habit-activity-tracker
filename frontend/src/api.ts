@@ -151,5 +151,77 @@ export const recordEntry = (goalId: number, input: EntryInput) =>
 export const getProgress = (goalId: number) =>
   apiRequest(`/goals/${goalId}/progress`) as Promise<Progress>;
 
+/** F-06 §3.1: at least one of the two keys, never both omitted. */
+export interface GoalRevisionInput {
+  dailyTarget?: number;
+  endDate?: string;
+}
+
+export const reviseGoal = (goalId: number, input: GoalRevisionInput) =>
+  apiRequest(`/goals/${goalId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }) as Promise<Goal>;
+
+export interface SummaryWindow {
+  start: string;
+  end: string;
+  daysRecorded: number;
+  daysMet: number;
+  total: number;
+  average: number;
+}
+
+export interface Summary {
+  goalId: number;
+  week: SummaryWindow;
+  month: SummaryWindow;
+}
+
+export const getSummary = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/summary`) as Promise<Summary>;
+
+/** F-07 §3.1. */
+export interface Streaks {
+  goalId: number;
+  currentStreak: number;
+  longestStreak: number;
+}
+
+export const getStreaks = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/streaks`) as Promise<Streaks>;
+
+/** F-09 §3.1: weekdays 0 = Sunday to 6 = Saturday (D-20), time "HH:MM". */
+export interface ReminderSchedule {
+  goalId: number;
+  weekdays: number[];
+  time: string;
+}
+
+export interface ReminderInput {
+  weekdays: number[];
+  time: string;
+}
+
+export interface UpcomingReminder {
+  goalId: number;
+  date: string;
+  time: string;
+}
+
+export const getReminder = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/reminder`) as Promise<ReminderSchedule>;
+export const putReminder = (goalId: number, input: ReminderInput) =>
+  apiRequest(`/goals/${goalId}/reminder`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }) as Promise<ReminderSchedule>;
+export const deleteReminder = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/reminder`, { method: "DELETE" }).then(() => undefined);
+export const listUpcomingReminders = () =>
+  apiRequest("/reminders/upcoming") as Promise<UpcomingReminder[]>;
+
 export const isUnauthorized = (err: unknown) => err instanceof ApiError && err.status === 401;
 export const errorMessage = (err: unknown) => (err instanceof Error ? err.message : "Request failed.");
