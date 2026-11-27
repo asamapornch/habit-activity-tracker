@@ -289,3 +289,22 @@ describe("AC-08.9 combined check order (TEST-08.9)", () => {
     expectError(asP2, 404, "NOT_FOUND", GOAL404);
   });
 });
+
+// Review finding by warunwora on F-06 PR #76 (F-08 v1.5): lastDay must use
+// the end date in effect, not the stored Goal.endDate column.
+describe("AC-08.16 summary window uses the effective end date (TEST-08.16)", () => {
+  it("TEST-08.16 the month window's end and daysRecorded reflect the revised effective end, not the stale stored end", async () => {
+    const G = await insertGoal(p1.id, T.id, "2026-11-01", "2026-11-05", 5);
+    await start("2026-11-01T05:00:00Z");
+    const revision = await patchGoal(p1Cookie, G.id, { endDate: "2026-11-10" });
+    expect(revision.status).toBe(200);
+
+    await insertEntry(G.id, "2026-11-08", 5);
+
+    await start(); // back to DEFAULT_NOW (2026-11-12); re-login refreshes the session
+    const res = await getSummary(p1Cookie, G.id);
+    expect(res.status).toBe(200);
+    expect(res.body.month.end).toBe("2026-11-10");
+    expect(res.body.month.daysRecorded).toBe(1);
+  });
+});
