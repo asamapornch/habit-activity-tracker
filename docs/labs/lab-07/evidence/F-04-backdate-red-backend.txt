@@ -213,3 +213,11 @@ AssertionError: expected 201 to be 400 // Object.is equality
    Start at  18:19:30
    Duration  22.50s (tests 98%, setup 1%, import 1%)
 
+# Addendum (added after release, 2026-11-26 23:25 +07)
+# The RED run named in the header above was made on 5d0e4ba plus the F-02 schema/route commit
+# 3d3d538 (the precondition in the F-04 contract Definition of Done, since the backdateDays
+# column must exist). On raw 5d0e4ba, without the F-02 schema, the same tests fail with
+# PrismaClientValidationError instead (10 failures, setup errors, not assertion failures). The 7
+# clean assertion failures recorded above are the valid red evidence for this contract.
+# Independently re-run on 2026-11-26.
+
