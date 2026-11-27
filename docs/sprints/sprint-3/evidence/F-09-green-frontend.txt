@@ -1,0 +1,25 @@
+# F-09 GREEN (frontend)
+# Tested commit: cb85992 (feature/f09-reminder-schedules, panels added on top of the RED commit 643893b)
+# Run at: 2026-11-28 05:51 +07; Node v26.13.1
+# Command: cd frontend && npx vitest run src/Reminders.test.tsx --reporter=verbose
+# Expected (F-09 v1.2 §5.2): all 9 tests green, same tests that were red at 643893b.
+# Full frontend suite on the same commit: Tests  59 passed (59). Backend on the same commit: Tests  252 passed (252).
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ ✓ src/Reminders.test.tsx > AC-09.14 Reminder panel shows the current schedule > TEST-09.14a no schedule (404) shows 'No reminder set.' and no Remove button 130ms
+ ✓ src/Reminders.test.tsx > AC-09.14 Reminder panel shows the current schedule > TEST-09.14b a schedule shows its weekday names Sun to Sat and the time 15ms
+ ✓ src/Reminders.test.tsx > AC-09.15 saving a schedule > TEST-09.15 Save sends the ticked weekdays as ascending integers and HH:MM, then shows the saved schedule 106ms
+ ✓ src/Reminders.test.tsx > AC-09.15 saving a schedule > TEST-09.15b the form is pre-filled from an existing schedule 14ms
+ ✓ src/Reminders.test.tsx > AC-09.16 a rejected save > TEST-09.16 a 400 shows the server's message as returned and the form keeps what was typed 41ms
+ ✓ src/Reminders.test.tsx > AC-09.17 removing a schedule > TEST-09.17 Remove sends DELETE, then the panel shows 'No reminder set.' without Remove 29ms
+ ✓ src/Reminders.test.tsx > AC-09.18 Upcoming reminders panel on the Goals screen > TEST-09.18a lists each instance as date, time and goal name in the server's order 16ms
+ ✓ src/Reminders.test.tsx > AC-09.18 Upcoming reminders panel on the Goals screen > TEST-09.18b an empty list shows 'No reminders in the next 7 days.' 6ms
+ ✓ src/Reminders.test.tsx > AC-09.19 a 401 from a reminder request > TEST-09.19 the Reminder panel's GET returning 401 calls onUnauthorized 56ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  05:51:35
+   Duration  1.62s (environment 49%, tests 30%, setup 9%, import 6%, transform 5%)
+
