@@ -4,7 +4,7 @@
 | --- | --- |
 | Feature ID | F-09 |
 | Sprint | 3 |
-| Linked requirements | FR-13, FR-14, BR-13; SRS D-20, D-21 (this contract, proposed) |
+| Linked requirements | FR-13, FR-14, BR-13; SRS D-20, D-21 (this contract; settled by warunwora on PR #78, 2026-11-28) |
 | Depends on | F-01 (`requireRole`), F-03 (goals; `findOwnGoal`-equivalent ownership check) |
 | Needed by | — |
 | Owner | — (not yet assigned) |
@@ -37,8 +37,7 @@ shippable slices so the smaller one can be picked up first:
 ### 2.1 Set a goal's reminder schedule
 
 `PUT /goals/:id/reminder` (Participant, goal owner) creates or replaces the one reminder schedule for
-that goal (FR-13 reads "a reminder schedule" for a goal, singular — **Decision D-20 (proposed, needs
-review):** at most one schedule per goal, and `PUT` always replaces it wholesale, the same semantics
+that goal (FR-13 reads "a reminder schedule" for a goal, singular — **Decision D-20:** at most one schedule per goal, and `PUT` always replaces it wholesale, the same semantics
 F-02's `PUT /templates/:id` already uses for "replaces all fields, as today" — not a list of several
 schedules per goal, which nothing in the SRS asks for).
 
@@ -65,8 +64,7 @@ an error about the goal itself.
 
 ### 2.3 Remove a goal's reminder schedule
 
-`DELETE /goals/:id/reminder` (Participant, goal owner) removes the goal's schedule. **Decision D-21
-(proposed, needs review):** idempotent — returns **204** whether or not a schedule existed, rather
+`DELETE /goals/:id/reminder` (Participant, goal owner) removes the goal's schedule. **Decision D-21:** idempotent — returns **204** whether or not a schedule existed, rather
 than 404 when there was nothing to delete, following the common REST convention that a delete's
 success means "this resource is now absent," which was already true if it never existed. The goal
 existence/ownership check (§2.1 step 4) still applies first: deleting the reminder on another
@@ -231,8 +229,8 @@ following the same pattern F-03/F-04 used.
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
-      starts.
+- [x] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
+      starts: warunwora accepted both as written on PR #78 (2026-11-28, https://github.com/asamapornch/habit-activity-tracker/pull/78#issuecomment-7229418473).
 - [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
@@ -242,3 +240,4 @@ following the same pattern F-03/F-04 used.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 3 planning (`docs/sprints/plan.md` §4) |
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-20, D-14 → D-21); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
+| 1.1.1 | 2026-11-28 | D-20 and D-21 settled (warunwora accepted both as written on #78): "(proposed, needs review)" removed from the header, §2.1 and §2.3; §6 item checked. No behaviour, AC or test change. | Comment by warunwora on #78 |
