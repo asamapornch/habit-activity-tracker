@@ -36,8 +36,12 @@ their own goals (the **current streak**) and the longest such run they have ever
       body);
    4. goal existence and ownership: **404** `Goal not found.` (identical response for a goal that
       does not exist and a goal of another Participant, BR-08, same as F-03/F-04/F-06).
-3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's `endDate` — the same boundary
-   F-04's BR-09 already uses (`docs/sprints/sprint-1/F-04-entries.md` §2 Behaviour 9). **Decision
+3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's **end date in effect today**
+   (F-06 §3.2/§3.4, `effectiveOn(goal, revisions, today, "endDate")` — not the stored `Goal.endDate`
+   column; **note for the implementer, added after a review finding on F-06 PR #76**: F-06 v1.3
+   wrongly claimed several callers needed no change for `endDate`, F-07 included by implication
+   through this same `lastDay` definition — use the effective end date here once F-07 has code, the
+   same boundary F-04's BR-09 and F-06's own progress/entry/overlap fixes already use). **Decision
    D-16 (proposed, needs review, this branch):** BR-12's wording anchors the current streak on
    "today," which only makes sense while the goal is still active; this contract generalises that
    anchor to `lastDay` so a streak can still be read after a goal has ended, rather than always
@@ -189,3 +193,4 @@ used (§3.3 note in the F-06 contract applies here too).
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-16, D-14 → D-17); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
 | 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Found while checking F-08's PR #85 for the same stale wording; author decision |
+| 1.4 | 2026-11-28 02:50 +07 | §2 step 3's `lastDay` definition corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column; a note for the implementer only, since F-07 has no code yet. No AC/STS change (no code to test). | Review finding by warunwora on F-06 PR #76; no scope creep |
