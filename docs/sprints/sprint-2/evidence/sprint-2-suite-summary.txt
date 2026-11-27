@@ -1,0 +1,46 @@
+Sprint 2 (F-06 + F-08) — full suite summary, final tip
+
+Branch: feature/f08-progress-summaries
+Commit: bab69151734bbe47eb4f44cb0b33e21f76c5d488
+
+Backend (cd backend && npm test):
+  18 test files passed (18), 235 tests passed (235), 0 failed, 0 skipped.
+  Breakdown: 194 pre-existing (Sprint 1 + Lab 6/7) + 23 TEST-06.1-06.13 +
+  5 TEST-06.14 (unit) + 13 TEST-08.1-08.9 = 235.
+
+Frontend (cd frontend && npm test):
+  4 test files passed (4), 43 tests passed (43), 0 failed, 0 skipped.
+  Unchanged from the pre-existing 43 - neither F-06 nor F-08 built any UI
+  in this PR (both contracts leave §3.3 for the implementation phase).
+
+Full raw output follows: backend, then frontend.
+
+=== BACKEND ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+
+ Test Files  18 passed (18)
+      Tests  235 passed (235)
+   Start at  21:13:02
+   Duration  90.58s (tests 97%, import 3%)
+
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  43 passed (43)
+   Start at  21:14:37
+   Duration  1.40s (environment 44%, tests 40%, setup 8%, import 6%, transform 1%)
+
