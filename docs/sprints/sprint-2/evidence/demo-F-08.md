@@ -93,5 +93,40 @@ answers next), no session 401. Actual: all three match.
 
 ## UI
 
-Not applicable: F-08's contract §3.3 explicitly leaves the UI unbuilt in this contract. No
-screenshots to take.
+Tested commit: `cb98b7b` (feature/f08-progress-summaries). Captured with Playwright (Chromium,
+headless) driving the real local app at `http://localhost:5173` against the real local backend at
+`http://localhost:4001` — no mocks. Same screenshots as `demo-F-06.md` (the panel sits on the same
+goal screen), in `docs/sprints/sprint-2/evidence/screenshots/`; referenced here for their F-08
+content specifically.
+
+**01-goal-screen-with-summary.png** (AC-08.10/08.11) — the "This week / this month" panel shows
+"2026-11-23 to 2026-11-28" (week) and "2026-11-01 to 2026-11-28" (month) — note "today" had advanced
+to 2026-11-28 by the time this UI pass was run (a day after the API-level demo above), so the window
+end dates and the figures below differ slightly from the curl evidence further up this file: `3 days
+recorded, 2 met, total 21, average 7` for both windows, over the same three entries (the one extra
+day with no new entry between 11-27 and 11-28 changes nothing, per AC-08.4/08.1). This is the real,
+live app re-computing the summary on the actual current date, not a stale fixture — backed by the
+same `entries` table rows queried in (i) above, re-queried at this point in time:
+
+```
+$ docker exec f06-test-pg psql -U habit -d habit_tracker -c "SELECT count(*) FROM entries;"
+ count
+-------
+     3
+```
+Expected: still exactly 3 entries (none added/removed by any UI action in this pass). Actual: matches.
+
+**04-after-reload-persisted.png** (AC-08.15) — same screenshot as F-06's reload evidence: after
+revising the target to 15 and reloading, the summary panel is still present and correct (the panel
+refetches on its own `goal.id`/revision-refresh dependency, independent of the entries/progress
+fetch, so it survives the reload exactly like the rest of the screen).
+
+**05-manager-no-goals-section.png** (AC-08.14) — Manager has no path to any goal screen, so no path
+to the summary panel either — consistent with the forbidden-role API evidence (iii) above.
+
+No separate screenshot was taken for AC-08.12 (empty-window state) or AC-08.13 (summary-fetch error):
+both are exercised and asserted in the automated UI tests (TEST-08.12, TEST-08.10b) with full DOM
+snapshots in `F-08-ui-green-output.txt`'s underlying test run, rather than re-staged live — producing
+a `daysRecorded: 0` window or a live network failure on demand would require tearing down the one
+populated demo goal or killing the local server mid-session, which would undermine the rest of this
+demo rather than add independent evidence.

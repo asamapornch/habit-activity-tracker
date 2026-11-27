@@ -100,6 +100,47 @@ reveal that the goal exists). Actual: matches. `goal_revisions` row count stayed
 
 ## UI
 
-Not applicable: F-06's contract §3.3 explicitly leaves the UI unbuilt in this contract ("Sprint 2
-implementation phase adds it to the goal screen"). No screenshots to take — there is no new UI for
-this feature yet.
+Tested commit: `55b2003` (feature/f06-goal-revisions) for the Revise control; reran against
+`cb98b7b` (feature/f08-progress-summaries) for the combined screenshots below, since the summary
+panel (F-08) sits on the same goal screen. Captured with Playwright (Chromium, headless) driving the
+real local app at `http://localhost:5173` (frontend dev server) against the real local backend at
+`http://localhost:4001` — no mocks, same seeded accounts as above. Screenshots in
+`docs/sprints/sprint-2/evidence/screenshots/`.
+
+**01-goal-screen-with-summary.png** — P1 opens "Demo Running" goal: header shows the currently
+effective target (8, from the earlier API-level revision), the "Revise goal" control is present.
+
+**02-revise-form-prefilled.png** (AC-06.14) — clicking "Revise goal" opens a form prefilled with the
+currently effective `dailyTarget` (8) and `endDate` (2026-12-31) — matches `GET /goals/1` at the time.
+
+**03-revise-rejection.png** (AC-06.16 / BR-10) — typed `999` into Daily target and submitted; the
+form shows "Daily target must be within the template range." verbatim and stays open with `999` still
+in the field — same rejection as the API-level evidence above (ii), now shown in the UI.
+
+**04-after-reload-persisted.png** (AC-06.15 / persistence) — revised the target to `15` (an actual
+change from 8); the screen updated immediately from the PATCH response (no extra request); the page
+was then reloaded (full browser reload, not a client-side route change — this SPA has no routing, so
+a reload returns to the goals list and the goal was re-opened) and still shows "15 km a day", proving
+the value is read back from the server/database, not just held in React state. Backed by direct
+database and API evidence, captured at the same point:
+
+```
+$ docker exec f06-test-pg psql -U habit -d habit_tracker -c \
+  "SELECT id, \"goalId\", \"dailyTarget\", \"effectiveFrom\" FROM goal_revisions ORDER BY id;"
+ id | goalId | dailyTarget | effectiveFrom
+----+--------+-------------+---------------
+  1 |      1 |           8 | 2026-11-27
+  2 |      1 |          12 | 2026-11-28
+  3 |      1 |          15 | 2026-11-28
+(3 rows)
+
+$ curl -s -b p1fresh.jar http://localhost:4001/goals/1
+{"id":1,"userId":2,"templateId":1,"dailyTarget":15,"startDate":"2026-11-01","endDate":"2026-12-31"}
+```
+Expected: the highest-id revision for 2026-11-28 (id 3, target 15) is the one in effect (D-14
+tie-break — two revisions share `effectiveFrom` 2026-11-28 from this demo session's own work).
+Actual: matches, both at the database and through a freshly-logged-in cookie (not a cached session).
+
+**05-manager-no-goals-section.png** (AC-06.19) — Manager logs in and sees only the Templates screen;
+no Goals section, no path to a goal screen, so no path to the Revise control either — consistent with
+the forbidden-role API evidence above (iii).
