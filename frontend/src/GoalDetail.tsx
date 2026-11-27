@@ -12,6 +12,7 @@ import {
   type Progress,
   type Template,
 } from "./api";
+import { StreaksPanel } from "./Streaks";
 
 interface GoalDetailProps {
   goal: Goal;
@@ -31,6 +32,8 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+  // F-07 AC-07.15: bumped after each recorded entry so the Streaks panel reloads.
+  const [entryCount, setEntryCount] = useState(0);
 
   // F-06 §2.6/§3.1: the currently effective values (the PATCH response),
   // not necessarily goal.dailyTarget/goal.endDate once a revision exists.
@@ -69,6 +72,7 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
     try {
       const entry = await recordEntry(goal.id, { date, value: Number(value) });
       setEntries((current) => [...(current ?? []), entry].sort(byDate));
+      setEntryCount((n) => n + 1);
       setValue("");
     } catch (err) {
       if (isUnauthorized(err)) onUnauthorized();
@@ -208,6 +212,8 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
           </p>
         )}
       </div>
+
+      <StreaksPanel goalId={goal.id} refreshKey={entryCount} onUnauthorized={onUnauthorized} />
 
       <form onSubmit={handleSubmit} aria-label="Record entry" className="card template-form">
         <h3 className="card-title">Record entry</h3>
