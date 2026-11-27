@@ -1,0 +1,21 @@
+# F-07 GREEN (frontend)
+# Tested commit: 1d2de0d (feature/f07-streaks, panel added on top of the RED commit 1377816)
+# Run at: 2026-11-28 06:17 +07; Node v26.13.1
+# Command: cd frontend && npx vitest run src/Streaks.test.tsx --reporter=verbose
+# Expected (F-07 v1.5 §5.2): all 5 tests green, same tests that were red at 1377816.
+# Full frontend suite on the same commit: Tests  55 passed (55). Backend: Tests  246 passed (246).
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ ✓ src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14a shows the current and longest streak from the server 41ms
+ ✓ src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14b uses 'day' for 1 7ms
+ ✓ src/Streaks.test.tsx > AC-07.15 refresh after an entry > TEST-07.15 recording an entry loads the streaks again and shows the new numbers 34ms
+ ✓ src/Streaks.test.tsx > AC-07.16 a failed load stays inside the panel > TEST-07.16 streaks GET 500: panel message, no alert, the goal screen still works 7ms
+ ✓ src/Streaks.test.tsx > AC-07.17 a 401 from the streaks request > TEST-07.17 calls onUnauthorized 53ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  06:17:03
+   Duration  766ms (environment 53%, tests 23%, setup 11%, import 8%, transform 5%)
+
