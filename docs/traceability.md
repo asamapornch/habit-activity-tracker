@@ -22,9 +22,9 @@ F-05 `backend/tests/access.test.ts`.
 | FR-07 Record an entry | F-04 | 1 | AC-04.1, 04.20 / TEST-04.1, 04.20a to 04.20c | Verified |
 | FR-08 Progress | F-04 | 1 | AC-04.14, 04.18, 04.20 / TEST-04.14, 04.18, 04.20a | Verified |
 | FR-09 Own history | F-04 | 1 | AC-04.13, 04.18, 04.19 / TEST-04.13, 04.18, 04.19 | Verified |
-| FR-10 Goal revision | F-06 | 2 | AC-06.1 to AC-06.13 / TEST-06.1 to TEST-06.14, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.2 | Contract written (planned) |
-| FR-11 Streaks | F-07 | 2 | AC-07.1 to AC-07.11 / TEST-07.1a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.3 | Contract written (planned) |
-| FR-12 Summaries | F-08 | 2 | AC-08.1 to AC-08.9 / TEST-08.1a to TEST-08.9, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.3 | Contract written (planned) |
+| FR-10 Goal revision | F-06 | 2 | AC-06.1 to AC-06.25 / TEST-06.1 to TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 | AC-06.1 to AC-06.19: implemented, green on PR #84 (not yet merged). AC-06.20 to AC-06.25 (review fix): contract written, implementation in progress |
+| FR-11 Streaks | F-07 | 2 | AC-07.1 to AC-07.11 / TEST-07.1a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.4 | Contract written (planned) |
+| FR-12 Summaries | F-08 | 2 | AC-08.1 to AC-08.16 / TEST-08.1a to TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.5 | AC-08.1 to AC-08.15: implemented, green on PR #85 (not yet merged). AC-08.16 (review fix): contract written, implementation in progress |
 | FR-13 Reminder schedule | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
 | FR-14 Upcoming reminders | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
 
@@ -41,9 +41,9 @@ F-05 `backend/tests/access.test.ts`.
 | BR-07 Template min < max | F-02 | 1 | AC-02.4 / TEST-02.4 | Verified |
 | BR-08 Private goals and entries (404 / 403) | F-03, F-04, F-05 | 1 | AC-03.3, 03.11, 03.12, 04.3, 04.5, 04.13, 05.3 to 05.9 / same TEST IDs | Verified |
 | BR-09 Progress calculation | F-04 | 1 | AC-04.14 to 04.16 / TEST-04.14a to 04.14e, 04.15, 04.16 | Verified |
-| BR-10 Revision limits | F-06 | 2 | AC-06.7 to AC-06.9 / TEST-06.7 to TEST-06.9, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.2 | Contract written (planned) |
-| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: AC-06.5, AC-06.10 to AC-06.12 / TEST-06.5, TEST-06.10 to TEST-06.14, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.2 §2.5/§3.4; F-07 part: AC-07.7, AC-07.8 / TEST-07.7, TEST-07.8, `docs/sprints/sprint-2/F-07-streaks.md` v1.3; F-08 part: AC-08.6 / TEST-08.6, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.3 | Contract written (planned) for all three parts |
-| BR-12 Streak definition | F-07 | 2 | AC-07.1 to AC-07.6, AC-07.9 to AC-07.11 / TEST-07.1a to TEST-07.6, TEST-07.9a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.3 | Contract written (planned) |
+| BR-10 Revision limits | F-06 | 2 | AC-06.7 to AC-06.9, AC-06.25 (D-24) / TEST-06.7 to TEST-06.9, TEST-06.25, TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 | AC-06.7 to AC-06.9: implemented, green on PR #84. AC-06.25 (D-24, proposed): contract written, implementation in progress |
+| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: AC-06.5, AC-06.10 to AC-06.12, AC-06.20 to AC-06.24 / TEST-06.5, TEST-06.10 to TEST-06.14, TEST-06.21 to TEST-06.24, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 §2.5/§3.2/§3.4; F-07 part: AC-07.7, AC-07.8 / TEST-07.7, TEST-07.8, `docs/sprints/sprint-2/F-07-streaks.md` v1.4; F-08 part: AC-08.6, AC-08.16 / TEST-08.6, TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.5 | F-06 part: AC-06.5/06.10-06.12 implemented and green on PR #84; AC-06.20-06.24 (review fix) implementation in progress. F-07 part: Allocated. F-08 part: AC-08.6 implemented and green on PR #85; AC-08.16 (review fix) implementation in progress |
+| BR-12 Streak definition | F-07 | 2 | AC-07.1 to AC-07.6, AC-07.9 to AC-07.11 / TEST-07.1a to TEST-07.6, TEST-07.9a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.4 | Contract written (planned) |
 | BR-13 Reminder schedule limits | F-09 | 3 | Sprint 3 F-09 contract | Allocated |
 
 ## 3. Non-functional requirements

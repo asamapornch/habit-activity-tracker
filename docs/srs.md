@@ -1,6 +1,6 @@
 # Software Requirements Specification — Habit & Activity Tracking
 
-Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.3 (proposed) (whole-product baseline; Lab 7 change, Issue #65; v1.3 proposes D-13 to D-15 for the Sprint 2 F-06 contract and D-16/D-17 for F-07 and D-18/D-19 for F-08 — not yet reviewed)
+Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.3 (proposed) (whole-product baseline; Lab 7 change, Issue #65; v1.3 proposes D-13 to D-15 and D-24 for the Sprint 2 F-06 contract, and D-16/D-17 for F-07 and D-18/D-19 for F-08 — not yet reviewed)
 
 ## 1. Purpose and context
 
@@ -129,6 +129,7 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-17 (proposed, needs review) | F-07 adds its own `GET /goals/:id/streaks` endpoint rather than extending F-04's already-released `GET /goals/:id/progress` response. | Keeps F-04's already-implemented and released contract (v1.5, `v1.1-lab7`) untouched; a combined endpoint is a valid alternative but is a change to F-04, not F-07, and should be decided there if preferred. |
 | D-18 (F-08; proposed, needs review) | F-08's "week" is the Monday-to-Sunday ISO week containing `lastDay`; "month" is the calendar month containing `lastDay`; both are clipped to the goal's `startDate` and `lastDay`. | Neither the SRS nor `docs/sprints/plan.md` specifies a week/month convention; ISO weeks and calendar months need no extra "which day starts the week" configuration and are the least ambiguous default. |
 | D-19 (F-08; proposed, needs review) | F-08's `average` is `total ÷ daysRecorded`, rounded half up to two decimals, generalising D-10's rounding convention (written there for the BR-09 progress percentage) to a plain value average. | Keeps one rounding convention across the product rather than inventing a second one for this feature. |
+| D-24 (proposed, needs review) | Revising an already-ended goal (its end date in effect is before today) is rejected with 409 `CONFLICT` "This goal has already ended and cannot be revised."; a goal ending exactly today is not yet ended. | Review finding by warunwora on PR #76: without this, a revision on an ended goal was previously undefined — it would be stored but have no visible effect, since its `effectiveFrom` (today, D-13) is always after the ended goal's own window. |
 
 ## 8. Version history
 
@@ -140,3 +141,4 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | 1.2 | 2026-11-26 | Per-template back-dating limit: FR-03, FR-04, BR-03 and D-02 changed, D-12 added | Lab 7 change request, Issue #65 |
 | 1.3 (proposed) | 2026-11-27 | D-13, D-14, D-15 added, all marked "(proposed, needs review)" | Sprint 2 F-06 contract (`docs/sprints/sprint-2/F-06-goal-revisions.md`), written before any F-06 implementation |
 | 1.3 (proposed) | 2026-11-27 | D-16/D-17 proposed for F-07, D-18/D-19 proposed for F-08 (renumbered from the original D-13/D-14 on this branch to avoid collision with the independent Sprint 2 F-06 and Sprint 3 F-09/F-10 proposals on other PR branches; no semantic change to the decisions themselves) | Sprint 2 F-07/F-08 contracts (`docs/sprints/sprint-2/F-07-streaks.md`, `F-08-progress-summaries.md`), written before any implementation |
+| 1.3 (proposed, cont.) | 2026-11-28 | D-24 added, marked "(proposed, needs review)"; BR-10 text unchanged (D-24 is a new rule, not a BR-10 edit) | Review finding by warunwora on PR #76 (F-06 v1.4) |
