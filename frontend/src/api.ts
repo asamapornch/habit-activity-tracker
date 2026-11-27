@@ -151,5 +151,18 @@ export const recordEntry = (goalId: number, input: EntryInput) =>
 export const getProgress = (goalId: number) =>
   apiRequest(`/goals/${goalId}/progress`) as Promise<Progress>;
 
+/** F-06 §3.1: at least one of the two keys, never both omitted. */
+export interface GoalRevisionInput {
+  dailyTarget?: number;
+  endDate?: string;
+}
+
+export const reviseGoal = (goalId: number, input: GoalRevisionInput) =>
+  apiRequest(`/goals/${goalId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  }) as Promise<Goal>;
+
 export const isUnauthorized = (err: unknown) => err instanceof ApiError && err.status === 401;
 export const errorMessage = (err: unknown) => (err instanceof Error ? err.message : "Request failed.");
