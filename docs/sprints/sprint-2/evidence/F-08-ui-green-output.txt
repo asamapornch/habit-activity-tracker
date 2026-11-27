@@ -1,0 +1,53 @@
+F-08 UI — GREEN output (after implementation)
+
+Working tree on top of commit ee82bcc39b26d3dad4482a28f73ec37deeeac2b5
+(the F-08 UI RED commit on feature/f08-progress-summaries); the
+implementation below (frontend/src/api.ts: getSummary()/Summary types;
+frontend/src/GoalDetail.tsx: the "This week / this month" panel) was
+not yet committed at the time of this run.
+
+Command 1 (typecheck): cd frontend && npx tsc --noEmit
+Result: no errors.
+
+Command 2 (frontend full suite): cd frontend && npm test
+Result: 4 test files passed (4), 57 tests passed (57), 0 failed, 0 skipped.
+  50 pre-existing (43 F-03/F-04 + 7 F-06 UI) + 7 new (TEST-08.10 to
+  TEST-08.15) = 57, matching exactly. All 24 tests in GoalDetail.test.tsx
+  passed on the first implementation attempt (no second RED iteration).
+
+Command 3 (backend full suite, unaffected - this is a frontend-only change):
+  cd backend && npm test
+Result: 18 test files passed (18), 235 tests passed (235), 0 failed, 0 skipped.
+  Unchanged from before this UI work.
+
+Full raw output follows: frontend, then backend.
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  57 passed (57)
+   Start at  00:44:02
+   Duration  1.54s (tests 48%, environment 38%, setup 7%, import 6%, transform 1%)
+
+
+=== BACKEND ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+
+ Test Files  18 passed (18)
+      Tests  235 passed (235)
+   Start at  00:44:08
+   Duration  89.75s (tests 97%, import 2%)
+

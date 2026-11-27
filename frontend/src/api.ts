@@ -164,5 +164,23 @@ export const reviseGoal = (goalId: number, input: GoalRevisionInput) =>
     body: JSON.stringify(input),
   }) as Promise<Goal>;
 
+export interface SummaryWindow {
+  start: string;
+  end: string;
+  daysRecorded: number;
+  daysMet: number;
+  total: number;
+  average: number;
+}
+
+export interface Summary {
+  goalId: number;
+  week: SummaryWindow;
+  month: SummaryWindow;
+}
+
+export const getSummary = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/summary`) as Promise<Summary>;
+
 export const isUnauthorized = (err: unknown) => err instanceof ApiError && err.status === 401;
 export const errorMessage = (err: unknown) => (err instanceof Error ? err.message : "Request failed.");
