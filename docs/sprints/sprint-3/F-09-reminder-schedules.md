@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.3: Implemented on `feature/f09-reminder-schedules` (Issue #82): migration, API Slice 1 and 2, Reminder and Upcoming reminders panels. 23 backend and 9 UI tests red, then green; evidence in `docs/sprints/sprint-3/evidence/F-09-*`. Awaiting review.** |
+| Status | **v1.4: Implemented on `feature/f09-reminder-schedules` (Issue #82): migration, API Slice 1 and 2, Reminder and Upcoming reminders panels. 23 backend and 9 UI tests red, then green, plus 2 UI controls (TEST-09.20a/b); evidence in `docs/sprints/sprint-3/evidence/F-09-*`. Awaiting review.** |
 
 ## 1. Purpose
 
@@ -171,7 +171,8 @@ Added in v1.2 at implementation start (same pattern as F-03/F-04/F-06).
   from the goals and templates the screen already loaded; `Goal <id>` when unknown). An empty list
   shows "No reminders in the next 7 days." Nothing is sent or delivered (SRS §2.3).
 - A `401` from any reminder request returns to the login screen. A failed load shows a short message
-  inside the panel only, so the rest of the screen keeps working.
+  inside the panel only ("Could not load the reminder." / "Could not load upcoming reminders.", no
+  `role="alert"`, unlike the screen-level load errors of AC-02.13), so the rest of the screen keeps working.
 
 ## 4. Acceptance criteria
 
@@ -208,8 +209,9 @@ Added in v1.2 at implementation start (same pattern as F-03/F-04/F-06).
 | AC-09.17 | Remove sends `DELETE /goals/:id/reminder` and the panel then shows "No reminder set."; Remove is not shown when there is no schedule. | FR-13, D-21 |
 | AC-09.18 | The Goals screen's Upcoming reminders panel lists each instance from `GET /reminders/upcoming` as date, time and goal name in the server's order, and shows "No reminders in the next 7 days." for an empty list. | FR-14 |
 | AC-09.19 | A `401` from any reminder request returns the user to the login screen. | NFR-02 |
+| AC-09.20 (v1.4) | A failed load of either panel (e.g. 500) shows the panel's own message ("Could not load the reminder." / "Could not load upcoming reminders.") inside that panel only, with no `role="alert"`; the rest of the goal screen or the goal list still renders and works. | FR-13, FR-14 |
 
-## 5. Software test specification (STS) — planned, not yet written as executable tests
+## 5. Software test specification (STS)
 
 **Slice 1:**
 
@@ -257,6 +259,12 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | TEST-09.18a | UI component | AC-09.18 | Upcoming panel, `GET /reminders/upcoming` returns two instances for goal 11 | two rows with date, time and "Running" in that order |
 | TEST-09.18b | UI component | AC-09.18 | `GET /reminders/upcoming` returns `[]` | "No reminders in the next 7 days." |
 | TEST-09.19 | UI component | AC-09.19 | Reminder panel `GET` mocked 401 | `onUnauthorized` called |
+| TEST-09.20a | UI component (**control**, v1.4) | AC-09.20 | goal screen; `GET /goals/11/reminder` mocked 500 | "Could not load the reminder." inside the Reminder panel; no `alert`; progress and the Record entry form still shown |
+| TEST-09.20b | UI component (**control**, v1.4) | AC-09.20 | Goals screen; `GET /reminders/upcoming` mocked 500 | "Could not load upcoming reminders." inside the Upcoming panel; no `alert`; the goal list and Create goal form still shown |
+
+TEST-09.20a/b were added after the panels existed (review finding on #86), so they are **controls**:
+they pass on the code at `cb85992` and were not run red first. They pin the deliberate no-alert
+choice so a later change to it fails a test.
 
 ### 5.3 Regression — must stay unchanged
 
@@ -292,3 +300,4 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-20, D-14 → D-21); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
 | 1.2 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. §3.3 UI filled in, AC-09.14 to AC-09.19 and TEST-09.14a to TEST-09.19 added (§5.2). §2.4 and AC-09.11 use the end date in effect (F-06 §3.2), TEST-09.11b added. Duplicate "## 2" heading fixed (Slices moved to §1.1). §5.3 names the two shared one-line edits. | #78 review findings (1), (2) and the F-06 #76 end-date finding |
 | 1.3 | 2026-11-28 | Status only: implemented (migration, routes, UI); DoD ticked with the per-slice order deviation noted. No behaviour change. | Implementation done, before review |
+| 1.4 | 2026-11-28 | AC-09.20 and TEST-09.20a/b (controls) added for the panel-only load error of §3.3; §3.3 names the two messages; §5 heading no longer says "planned". | asamapornch review on #86, finding 1 and suggestion 1 |
