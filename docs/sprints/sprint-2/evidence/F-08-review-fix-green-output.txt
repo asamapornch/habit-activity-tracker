@@ -1,0 +1,70 @@
+F-08 review-fix (end date in effect for lastDay) — GREEN output
+
+Working tree on top of commit 67a9461295fb2a51065707fe09ac7e8474a5ff6d
+(the RED commit on feature/f08-progress-summaries); the implementation
+below (GET /goals/:id/summary's lastDay now via effectiveOn) was not
+yet committed at the time of this run.
+
+Command 1 (typecheck): cd backend && npm run typecheck
+Result: no errors.
+
+Command 2 (single file): cd backend && npx vitest run tests/goalSummaries.test.ts
+Result: 1 test file passed (1), 14 tests passed (14), 0 failed, 0 skipped.
+
+Command 3 (full backend suite): cd backend && npm test
+Result: 18 test files passed (18), 243 tests passed (243), 0 failed, 0 skipped.
+  242 pre-existing + 1 new (TEST-08.16) = 243, matching exactly.
+  Note: one earlier full-suite run in this pass reported a transient
+  5000ms timeout on an unrelated test (TEST-06.21, in
+  goalRevisions.test.ts, under system load after ~400s); re-run twice
+  more (isolated: 30/30 passed; full suite again: 243/243 passed) to
+  confirm it was not a real regression. Disclosed rather than hidden.
+
+Command 4 (full frontend suite, unaffected - backend-only change):
+  cd frontend && npm test
+Result: 4 test files passed (4), 57 tests passed (57), 0 failed, 0 skipped.
+  Unchanged from before this fix.
+
+Full raw output follows: single-file run, then the clean full backend
+run, then frontend.
+
+=== SINGLE FILE ===
+
+ RUN  v5.1.0 <repo>/backend
+
+
+ Test Files  1 passed (1)
+      Tests  14 passed (14)
+   Start at  05:13:47
+   Duration  7.18s (tests 97%, import 3%)
+
+
+=== FULL BACKEND (clean re-run) ===
+
+> habit-tracker-backend@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 <repo>/backend
+
+
+ Test Files  18 passed (18)
+      Tests  243 passed (243)
+   Start at  05:11:53
+   Duration  94.56s (tests 97%, import 2%)
+
+
+=== FRONTEND ===
+
+> frontend@0.0.0 test
+> vitest run
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+
+ Test Files  4 passed (4)
+      Tests  57 passed (57)
+   Start at  05:13:31
+   Duration  1.66s (tests 44%, environment 41%, setup 7%, import 7%, transform 1%)
+

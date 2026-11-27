@@ -164,6 +164,24 @@ export const reviseGoal = (goalId: number, input: GoalRevisionInput) =>
     body: JSON.stringify(input),
   }) as Promise<Goal>;
 
+export interface SummaryWindow {
+  start: string;
+  end: string;
+  daysRecorded: number;
+  daysMet: number;
+  total: number;
+  average: number;
+}
+
+export interface Summary {
+  goalId: number;
+  week: SummaryWindow;
+  month: SummaryWindow;
+}
+
+export const getSummary = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/summary`) as Promise<Summary>;
+
 /** F-07 §3.1. */
 export interface Streaks {
   goalId: number;
