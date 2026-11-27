@@ -1,0 +1,532 @@
+F-06 Goal Revisions — RED output (before any implementation)
+
+DISCLOSURE: A draft implementation (schema.prisma GoalRevision model, its
+migration, backend/src/lib/goalRevisions.ts, and the resetDb.ts update)
+already existed uncommitted in the worktree before this RED run. For TDD
+integrity, those files were moved out of the worktree (to /tmp, outside the
+repo) and the test database was rebuilt with only the three pre-F-06
+migrations applied, so this RED run reflects a true "nothing implemented
+yet" state: no GoalRevision table, no effectiveOn() module, no PATCH
+/goals/:id route. The implementation was restored immediately after this
+run, before continuing to GREEN (see F-06-green-output.txt).
+
+Commit SHA this was run against: a11dd07d01764a1281c5a430aa0b6052cb02ccbc
+(docs/sprint-2-f06-contract / feature/f06-goal-revisions, both at this SHA
+at RED time — contract v1.2, no implementation commit yet)
+
+Command:
+  cd backend && npx vitest run tests/effectiveOn.test.ts tests/goalRevisions.test.ts
+
+Result: 2 test files failed (2), 23 tests: 22 failed, 1 passed, 0 skipped.
+
+- tests/effectiveOn.test.ts: failed as a whole suite — "Cannot find module
+  '../src/lib/goalRevisions.js'" (the effectiveOn() function does not exist
+  yet — correct RED reason for a unit-level test of a not-yet-written pure
+  function).
+- tests/goalRevisions.test.ts: 22 of 23 tests failed, every one with a 404
+  from Express's own catch-all (PATCH /goals/:id is not a registered route
+  yet) instead of the expected 200/400/401/403/409 — correct RED reason
+  (route missing, not a compile/configuration error).
+- One test in tests/goalRevisions.test.ts PASSED at RED, for the wrong
+  reason, disclosed rather than hidden: TEST-06.11 ("a revision never
+  touches entries") calls PATCH /goals/:id and then asserts the entry list
+  is unchanged; since PATCH 404s and does nothing, the entries are
+  trivially unchanged. This is expected to keep passing at GREEN for the
+  real reason (a successful revision still does not touch entries) — it is
+  re-run and re-checked there, not treated as already proven here.
+
+Full raw output follows.
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+
+ ❯ tests/goalRevisions.test.ts (23 tests | 22 failed) 10442ms
+   ❯ AC-06.1 revise dailyTarget only (TEST-06.1) (1)
+     × TEST-06.1 200, dailyTarget updated, endDate unchanged, one GoalRevision row at today 546ms
+   ❯ AC-06.2 revise endDate only (TEST-06.2) (1)
+     × TEST-06.2 200, endDate updated, dailyTarget unchanged 452ms
+   ❯ AC-06.3 revise both fields in one request (TEST-06.3) (1)
+     × TEST-06.3 200, both updated, stored as one revision row 447ms
+   ❯ AC-06.4 anonymous and Manager are rejected (TEST-06.4) (2)
+     × TEST-06.4a no cookie returns 401 and stores nothing 444ms
+     × TEST-06.4b Manager returns 403 and stores nothing 445ms
+   ❯ AC-06.5 body shape and id format (TEST-06.5) (4)
+     × TEST-06.5a empty object returns 400 Invalid goal revision fields. 455ms
+     × TEST-06.5b an unknown key alongside a valid one returns 400 446ms
+     × TEST-06.5c a numeric string dailyTarget returns 400 447ms
+     × TEST-06.5d a malformed goal id returns 400 Invalid goal id. 449ms
+   ❯ AC-06.6 ownership and existence (TEST-06.6) (1)
+     × TEST-06.6 a missing goal and another Participant's goal both return the same 404 449ms
+   ❯ AC-06.7 dailyTarget within the template's current range (TEST-06.7) (2)
+     × TEST-06.7a above the template maximum returns 400 450ms
+     × TEST-06.7b the minimum and maximum are both accepted (inclusive) 450ms
+   ❯ AC-06.8 endDate floors (TEST-06.8) (4)
+     × TEST-06.8a before today returns 400 New end date must not be before today. 449ms
+     × TEST-06.8b before the goal's startDate returns 400 (start date floor, G3 fixture) 454ms
+     × TEST-06.8c before the goal's latest entry date returns 400 (entry-date floor) 452ms
+     × TEST-06.8d proves the §2.6 check order: today before start date 447ms
+   ❯ AC-06.9 BR-04 overlap re-check (TEST-06.9) (2)
+     × TEST-06.9a revising endDate to overlap another goal on the same template returns 409 448ms
+     × TEST-06.9b touching but not overlapping is accepted 452ms
+   ❯ AC-06.10 reads reflect the currently effective value (TEST-06.10) (1)
+     × TEST-06.10 GET /goals/:id and GET /goals show the new target; an unrevised goal is unaffected 450ms
+   ❯ AC-06.12 two revisions on the same day (TEST-06.12) (1)
+     × TEST-06.12 the later revision (by id) is in effect for that day 451ms
+   ❯ AC-06.13 combined check order (TEST-06.13) (2)
+     × TEST-06.13a no cookie with an empty body returns 401, not 400 443ms
+     × TEST-06.13b the BR-10 target check runs before the BR-04 overlap re-check 449ms
+ ❯ tests/effectiveOn.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/effectiveOn.test.ts [ tests/effectiveOn.test.ts ]
+Error: Cannot find module '../src/lib/goalRevisions.js' imported from /Users/asamagus/s2-wt/backend/tests/effectiveOn.test.ts
+ ❯ tests/effectiveOn.test.ts:2:1
+      1| import { describe, expect, it } from "vitest";
+      2| import { effectiveOn } from "../src/lib/goalRevisions.js";
+       | ^
+      3|
+      4| // TEST-06.14 (F-06 contract §5, Decision D-15): pure-function unit le…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 22 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.1 revise dailyTarget only (TEST-06.1) > TEST-06.1 200, dailyTarget updated, endDate unchanged, one GoalRevision row at today
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:157:24
+    155|     const res = await patchGoal(p1Cookie, G1.id, { dailyTarget: 8 });
+    156|
+    157|     expect(res.status).toBe(200);
+       |                        ^
+    158|     expect(res.body).toMatchObject({
+    159|       id: G1.id,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.2 revise endDate only (TEST-06.2) > TEST-06.2 200, endDate updated, dailyTarget unchanged
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:178:24
+    176|     const res = await patchGoal(p1Cookie, G1.id, { endDate: "2026-12-1…
+    177|
+    178|     expect(res.status).toBe(200);
+       |                        ^
+    179|     expect(res.body.endDate).toBe("2026-12-10");
+    180|     expect(res.body.dailyTarget).toBe(5);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.3 revise both fields in one request (TEST-06.3) > TEST-06.3 200, both updated, stored as one revision row
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:189:24
+    187|     const res = await patchGoal(p1Cookie, G1.id, { dailyTarget: 9, end…
+    188|
+    189|     expect(res.status).toBe(200);
+       |                        ^
+    190|     expect(res.body.dailyTarget).toBe(9);
+    191|     expect(res.body.endDate).toBe("2026-12-05");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.4 anonymous and Manager are rejected (TEST-06.4) > TEST-06.4a no cookie returns 401 and stores nothing
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:200:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.4 anonymous and Manager are rejected (TEST-06.4) > TEST-06.4b Manager returns 403 and stores nothing
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:207:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.5 body shape and id format (TEST-06.5) > TEST-06.5a empty object returns 400 Invalid goal revision fields.
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:216:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.5 body shape and id format (TEST-06.5) > TEST-06.5b an unknown key alongside a valid one returns 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:222:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.5 body shape and id format (TEST-06.5) > TEST-06.5c a numeric string dailyTarget returns 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:228:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.5 body shape and id format (TEST-06.5) > TEST-06.5d a malformed goal id returns 400 Invalid goal id.
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:234:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.6 ownership and existence (TEST-06.6) > TEST-06.6 a missing goal and another Participant's goal both return the same 404
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:243:28
+    241|
+    242|     const control = await patchGoal(p1Cookie, G1.id, { dailyTarget: 8 …
+    243|     expect(control.status).toBe(200);
+       |                            ^
+    244|
+    245|     const missing = await patchGoal(p1Cookie, 999999, { dailyTarget: 8…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.7 dailyTarget within the template's current range (TEST-06.7) > TEST-06.7a above the template maximum returns 400
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:259:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.7 dailyTarget within the template's current range (TEST-06.7) > TEST-06.7b the minimum and maximum are both accepted (inclusive)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:265:24
+    263|     await start();
+    264|     const min = await patchGoal(p1Cookie, G1.id, { dailyTarget: 0 });
+    265|     expect(min.status).toBe(200);
+       |                        ^
+    266|     const max = await patchGoal(p1Cookie, G1.id, { dailyTarget: 50 });
+    267|     expect(max.status).toBe(200);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.8 endDate floors (TEST-06.8) > TEST-06.8a before today returns 400 New end date must not be before today.
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:275:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.8 endDate floors (TEST-06.8) > TEST-06.8b before the goal's startDate returns 400 (start date floor, G3 fixture)
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:284:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.8 endDate floors (TEST-06.8) > TEST-06.8c before the goal's latest entry date returns 400 (entry-date floor)
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:292:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.8 endDate floors (TEST-06.8) > TEST-06.8d proves the §2.6 check order: today before start date
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:301:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.9 BR-04 overlap re-check (TEST-06.9) > TEST-06.9a revising endDate to overlap another goal on the same template returns 409
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:310:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.9 BR-04 overlap re-check (TEST-06.9) > TEST-06.9b touching but not overlapping is accepted
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:319:24
+    317|     await start();
+    318|     const res = await patchGoal(p1Cookie, G1.id, { endDate: "2026-12-1…
+    319|     expect(res.status).toBe(200);
+       |                        ^
+    320|   });
+    321| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.10 reads reflect the currently effective value (TEST-06.10) > TEST-06.10 GET /goals/:id and GET /goals show the new target; an unrevised goal is unaffected
+AssertionError: expected 5 to be 8 // Object.is equality
+
+- Expected
++ Received
+
+- 8
++ 5
+
+ ❯ tests/goalRevisions.test.ts:331:37
+    329|
+    330|     const single = await getGoal(p1Cookie, G1.id);
+    331|     expect(single.body.dailyTarget).toBe(8);
+       |                                     ^
+    332|
+    333|     const list = await getGoals(p1Cookie);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.12 two revisions on the same day (TEST-06.12) > TEST-06.12 the later revision (by id) is in effect for that day
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalRevisions.test.ts:361:27
+    359|     const second = await patchGoal(p1Cookie, G1.id, { dailyTarget: 12 …
+    360|
+    361|     expect(second.status).toBe(200);
+       |                           ^
+    362|     expect(second.body.dailyTarget).toBe(12);
+    363|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.13 combined check order (TEST-06.13) > TEST-06.13a no cookie with an empty body returns 401, not 400
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:374:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/23]⎯
+
+ FAIL  tests/goalRevisions.test.ts > AC-06.13 combined check order (TEST-06.13) > TEST-06.13b the BR-10 target check runs before the BR-04 overlap re-check
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalRevisions.test.ts:51:22
+     49|
+     50| function expectError(res: Response, status: number, code: string, mess…
+     51|   expect(res.status).toBe(status);
+       |                      ^
+     52|   expect(res.body.error?.code).toBe(code);
+     53|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalRevisions.test.ts:382:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/23]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  22 failed | 1 passed (23)
+   Start at  20:54:09
+   Duration  11.46s (tests 92%, setup 5%, import 2%, transform 1%)
+
