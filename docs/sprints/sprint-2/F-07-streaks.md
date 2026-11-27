@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.6: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. Awaiting review.** |
+| Status | **v1.7: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. Awaiting review.** |
 
 **Dependency note:** this feature must not be merged before F-06 is merged to `sprint-1-staging`; it
 may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch)
@@ -45,8 +45,7 @@ their own goals (the **current streak**) and the longest such run they have ever
    D-16 (settled, #77):** BR-12's wording anchors the current streak on
    "today," which only makes sense while the goal is still active; this contract generalises that
    anchor to `lastDay` so a streak can still be read after a goal has ended, rather than always
-   reporting 0 for a finished goal. If the review prefers "0 for an ended goal" instead, this is the
-   one line to change.
+   reporting 0 for a finished goal (TEST-07.13).
 4. **"Met" on a day `D`** (`D` from the goal's `startDate` to `lastDay`): the goal has an entry dated
    `D` whose value, rounded to two decimals, is at or above `effectiveOn(goal, D, "dailyTarget")`
    rounded to two decimals (F-06 §3.4; falls back to the goal's own stored `dailyTarget` for a goal
@@ -232,3 +231,4 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | 1.4 | 2026-11-28 02:50 +07 | §2 step 3's `lastDay` definition corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column; a note for the implementer only, since F-07 has no code yet. No AC/STS change (no code to test). | Review finding by warunwora on F-06 PR #76; no scope creep |
 | 1.5 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. D-16/D-17 marked settled (#77 approval). §3.3 UI filled in; AC-07.12/07.13 (end date in effect, ended goal) and UI AC-07.14 to AC-07.17 added with TEST-07.12, TEST-07.13 and TEST-07.14a to TEST-07.17; backend test file and dates named in §5. | Implementation start; F-06 end-date finding; same panel-error choice as F-09 (#86 review) |
 | 1.6 | 2026-11-28 | Status only: implemented (route, UI); DoD ticked. No behaviour change. | Implementation done, before review |
+| 1.7 | 2026-11-28 | §2 step 3: dropped the stale "If the review prefers ..." sentence now that D-16 is settled; SRS D-16 row says "end date in effect". No behaviour change. | asamapornch review on #96, suggestions 1 and 2 |
