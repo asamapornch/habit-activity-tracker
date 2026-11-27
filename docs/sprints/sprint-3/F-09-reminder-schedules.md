@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.2: UI AC/STS added at implementation start. Implementation in progress on `feature/f09-reminder-schedules` (Issue #82).** |
+| Status | **v1.3: Implemented on `feature/f09-reminder-schedules` (Issue #82): migration, API Slice 1 and 2, Reminder and Upcoming reminders panels. 23 backend and 9 UI tests red, then green; evidence in `docs/sprints/sprint-3/evidence/F-09-*`. Awaiting review.** |
 
 ## 1. Purpose
 
@@ -268,19 +268,21 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (this PR).
-- [ ] Migration adding `ReminderSchedule` is written and committed before the route code that uses it.
+- [x] This contract is committed before any implementation code (#78; tests and code in the F-09 PR).
+- [x] Migration adding `ReminderSchedule` is written and committed before the route code that uses it (`5ac2d73` before `e0e0e79`).
 - [ ] Slice 1 (TEST-09.1 to TEST-09.9) is committed red, then green, before Slice 2 is started —
       satisfying "at least one implemented and tested Sprint 3 workflow" on its own if time is short.
-- [ ] Slice 2 (TEST-09.10 to TEST-09.13) is committed red, then green.
-- [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No existing test file is edited.
+      **Not followed as written:** both slices were committed red together (`da70bbd`) and made green
+      together (`e0e0e79`). Red-before-green still holds for every test; the per-slice order does not.
+- [x] Slice 2 (TEST-09.10 to TEST-09.13b) is committed red (`da70bbd`), then green (`e0e0e79`).
+- [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (252/252; frontend 59/59).
+- [x] No existing test file is edited (only the `resetDb.ts` helper line named in §5.3).
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
 - [x] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
       starts (accepted by warunwora on #78, 2026-11-28, before any F-09 test or code).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.2).
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Failed or skipped tests, if any, are listed in the evidence report (none).
 
 ## 7. Version history
 
@@ -289,3 +291,4 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 3 planning (`docs/sprints/plan.md` §4) |
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-20, D-14 → D-21); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
 | 1.2 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. §3.3 UI filled in, AC-09.14 to AC-09.19 and TEST-09.14a to TEST-09.19 added (§5.2). §2.4 and AC-09.11 use the end date in effect (F-06 §3.2), TEST-09.11b added. Duplicate "## 2" heading fixed (Slices moved to §1.1). §5.3 names the two shared one-line edits. | #78 review findings (1), (2) and the F-06 #76 end-date finding |
+| 1.3 | 2026-11-28 | Status only: implemented (migration, routes, UI); DoD ticked with the per-slice order deviation noted. No behaviour change. | Implementation done, before review |
