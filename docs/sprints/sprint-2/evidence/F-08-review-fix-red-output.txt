@@ -1,0 +1,57 @@
+F-08 review-fix (end date in effect for lastDay) — RED output
+
+Review finding by warunwora on F-06 PR #76, extended to F-08 (same
+lastDay mistake). Commit SHA this was run against:
+bb0d664a89d57dd40be10130eeff31ce8793e015 (feature/f08-progress-summaries,
+after merging in F-06's review-fix code). The fix itself (summary
+route's lastDay) is NOT yet implemented at this commit - only the new
+test (TEST-08.16) was added.
+
+Command: cd backend && npx vitest run tests/goalSummaries.test.ts -t "TEST-08.16"
+Result: 1 test file failed (1), 14 tests: 1 failed, 13 passed (skipped
+in the filtered run, all pass when run unfiltered - see below).
+
+TEST-08.16 fails because GET /goals/:id/summary still computes lastDay
+from the stored Goal.endDate (2026-11-05) instead of the revised
+effective end (2026-11-10): `month.end` is "2026-11-05", expected
+"2026-11-10".
+
+Full file (no filter): 1 test file failed (1), 14 tests: 1 failed,
+13 passed (all pre-existing TEST-08.1 to TEST-08.9, unaffected).
+
+Full backend suite: 18 test files (1 failed, 17 passed), 243 tests:
+1 failed (the new one), 242 passed (unaffected - confirms no other
+regression).
+
+Full raw output (single-file run) follows.
+
+ RUN  v5.1.0 <repo>/backend
+
+ ❯ tests/goalSummaries.test.ts (14 tests | 1 failed) 8084ms
+   ❯ AC-08.16 summary window uses the effective end date (TEST-08.16) (1)
+     × TEST-08.16 the month window's end and daysRecorded reflect the revised effective end, not the stale stored end 740ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.16 summary window uses the effective end date (TEST-08.16) > TEST-08.16 the month window's end and daysRecorded reflect the revised effective end, not the stale stored end
+AssertionError: expected '2026-11-05' to be '2026-11-10' // Object.is equality
+
+Expected: "2026-11-10"
+Received: "2026-11-05"
+
+ ❯ tests/goalSummaries.test.ts:307:32
+    305|     const res = await getSummary(p1Cookie, G.id);
+    306|     expect(res.status).toBe(200);
+    307|     expect(res.body.month.end).toBe("2026-11-10");
+       |                                ^
+    308|     expect(res.body.month.daysRecorded).toBe(1);
+    309|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 13 passed (14)
+   Start at  02:54:55
+   Duration  8.40s (tests 97%, import 2%)
+
