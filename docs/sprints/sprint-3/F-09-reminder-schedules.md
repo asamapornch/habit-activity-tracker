@@ -4,12 +4,12 @@
 | --- | --- |
 | Feature ID | F-09 |
 | Sprint | 3 |
-| Linked requirements | FR-13, FR-14, BR-13; SRS D-20, D-21 (this contract, proposed) |
-| Depends on | F-01 (`requireRole`), F-03 (goals; `findOwnGoal`-equivalent ownership check) |
+| Linked requirements | FR-13, FR-14, BR-13; SRS D-20, D-21 (accepted by warunwora as #78 reviewer, 2026-11-28) |
+| Depends on | F-01 (`requireRole`), F-03 (goals; `findOwnGoal`-equivalent ownership check), F-06 (`effectiveOn` for the end date in effect, §2.4) |
 | Needed by | — |
-| Owner | — (not yet assigned) |
-| Reviewer | — (not yet assigned) |
-| Status | **Contract written (planned). No code, migration or test exists yet.** |
+| Owner | warunwora (Student 2) |
+| Reviewer | asamapornch (Student 1) |
+| Status | **v1.2: UI AC/STS added at implementation start. Implementation in progress on `feature/f09-reminder-schedules` (Issue #82).** |
 
 ## 1. Purpose
 
@@ -19,7 +19,7 @@ their goals. **Nothing is delivered** — no email, push notification or any oth
 is planned; this feature only stores and displays the schedule (SRS §2.3: "Real notification delivery
 ... is representation only").
 
-## 2. Smallest meaningful first slice
+### 1.1 Smallest meaningful first slice
 
 Deliverable 2 part C asks for "at least one implemented and tested Sprint 3 workflow," not every
 F-09 behaviour at once. This contract is written in full, but is split into two independently
@@ -79,9 +79,11 @@ reminder schedule, every (date, time) instance that:
 
 - falls on one of the schedule's weekdays,
 - falls within the next 7 days inclusive of today (today, today+1, ..., today+6, Asia/Bangkok), and
-- falls within that goal's `startDate` to `endDate` inclusive (BR-13: "produces no reminders outside
-  the goal's dates") — a goal that revises its `endDate` earlier (F-06) immediately produces fewer
-  upcoming reminders, with no extra bookkeeping needed, since this is computed fresh on each request.
+- falls within that goal's `startDate` to its **end date in effect today** inclusive (BR-13: "produces
+  no reminders outside the goal's dates"; v1.2: F-06 §3.2, `effectiveOn(goal, revisions, today,
+  "endDate")`, not the stored `Goal.endDate` column). A goal that revises its `endDate` earlier (F-06)
+  immediately produces fewer upcoming reminders, and one that extends it produces more, with no extra
+  bookkeeping, since this is computed fresh on each request.
 
 Sorted by date, then time, then `goalId` (for a stable order when two goals share a date and time).
 No pagination (bounded to at most 7 days × however many goals the one Participant owns).
@@ -152,10 +154,24 @@ or write a reminder schedule, and reminders never affect progress, streaks or su
 
 ### 3.3 UI
 
-Not built in this contract. Planned: a "Reminders" control on the goal screen (F-04 §3.3) to set,
-change or remove the schedule, and a separate "Upcoming" panel (Slice 2) listing the next 7 days'
-reminders across goals. Full UI AC and STS are written at the start of the implementation phase,
-following the same pattern F-03/F-04 used.
+Added in v1.2 at implementation start (same pattern as F-03/F-04/F-06).
+
+- **Goal screen, "Reminder" panel** (F-04 §3.3 goal screen, below the history): loads
+  `GET /goals/:id/reminder`. A 404 `No reminder schedule set for this goal.` shows "No reminder set."
+  A schedule shows its weekdays as short names in order Sun to Sat and its time, e.g.
+  "Mon, Wed, Fri at 08:00". A form with seven weekday checkboxes (Sun to Sat) and a time input
+  (`type="time"`) is pre-filled from the current schedule, or empty when none is set. **Save** sends
+  `PUT /goals/:id/reminder` with `weekdays` as the checked day numbers in ascending order (JSON
+  integers, D-20) and `time` as `HH:MM`. **Remove** (shown only when a schedule exists) sends
+  `DELETE /goals/:id/reminder` and the panel goes back to "No reminder set." The UI does not check
+  BR-13 itself: a 400 is shown with the server's message as returned and the form keeps what was
+  ticked and typed. Save and Remove are disabled while a request is in flight.
+- **Goals screen, "Upcoming reminders" panel** (Slice 2, above the goal list): loads
+  `GET /reminders/upcoming` and lists each instance as date, time and the goal's template name (taken
+  from the goals and templates the screen already loaded; `Goal <id>` when unknown). An empty list
+  shows "No reminders in the next 7 days." Nothing is sent or delivered (SRS §2.3).
+- A `401` from any reminder request returns to the login screen. A failed load shows a short message
+  inside the panel only, so the rest of the screen keeps working.
 
 ## 4. Acceptance criteria
 
@@ -181,6 +197,17 @@ following the same pattern F-03/F-04 used.
 | AC-09.11 | An instance that would fall before the goal's `startDate` or after its `endDate` is excluded, even though it matches a scheduled weekday within the 7-day window. | BR-13 |
 | AC-09.12 | A goal with no reminder schedule contributes nothing to the list; a Participant with no goals, or none with a schedule, gets an empty list. | FR-14 |
 | AC-09.13 | The list is sorted by date, then time, then `goalId`; a Manager receives 403; anonymous receives 401. | FR-14, NFR-02 |
+
+**UI (v1.2):**
+
+| ID | Criterion | Requirement |
+| --- | --- | --- |
+| AC-09.14 | The goal screen's Reminder panel shows "No reminder set." when `GET` returns the no-schedule 404, and shows the schedule as weekday names Sun to Sat and the time when one exists. | FR-13 |
+| AC-09.15 | Saving sends `PUT /goals/:id/reminder` with the checked weekdays as ascending JSON integers and `time` as `HH:MM`, and the panel shows the saved schedule; the form is pre-filled from an existing schedule. | FR-13, D-20 |
+| AC-09.16 | A 400 from `PUT` (e.g. no weekday ticked) is shown with the server's message as returned, and the form keeps what was ticked and typed. | BR-13, NFR-05 |
+| AC-09.17 | Remove sends `DELETE /goals/:id/reminder` and the panel then shows "No reminder set."; Remove is not shown when there is no schedule. | FR-13, D-21 |
+| AC-09.18 | The Goals screen's Upcoming reminders panel lists each instance from `GET /reminders/upcoming` as date, time and goal name in the server's order, and shows "No reminders in the next 7 days." for an empty list. | FR-14 |
+| AC-09.19 | A `401` from any reminder request returns the user to the login screen. | NFR-02 |
 
 ## 5. Software test specification (STS) — planned, not yet written as executable tests
 
@@ -208,17 +235,36 @@ following the same pattern F-03/F-04 used.
 | --- | --- | --- | --- | --- |
 | TEST-09.10 | API/DB integration | AC-09.10 | `P1` has `G1` (Mon/Wed/Fri 08:00) and `G2` (Sun 20:00), both spanning the next 7 days | the upcoming list has exactly the matching dates for each goal in that window |
 | TEST-09.11 | API/DB integration | AC-09.11 | `G1`'s schedule matches a weekday that falls the day after `G1.endDate` (inside the 7-day window) | that instance is excluded; later matching instances still inside the goal's dates are included |
+| TEST-09.11b | API/DB integration | AC-09.11 (v1.2) | `G1` stored `endDate` inside the window, extended by an F-06 revision to after the window; schedule matches a day after the stored end | that instance is included (end date in effect, not the stored column) |
 | TEST-09.12a | API/DB integration | AC-09.12 | `G2` has no schedule | contributes nothing |
 | TEST-09.12b | API/DB integration | AC-09.12 | `P2` owns no goals with a schedule | `GET /reminders/upcoming` returns `[]` |
 | TEST-09.13a | API/DB integration | AC-09.13 | `P1` has two goals whose schedules both fire on the same date and time | both appear, ordered by `goalId` |
 | TEST-09.13b | API integration | AC-09.13 | no cookie; then `M` | 401; then 403 |
 
-### 5.2 Frontend tests — planned, written when the UI (§3.3) is scoped at the start of implementation.
+### 5.2 Frontend tests (v1.2)
+
+Component tests (Vitest + React Testing Library) with `fetch` mocked per test, in
+`frontend/src/Reminders.test.tsx`. Goal `G1` (template Running), today 2026-11-10.
+
+| Test ID | Level | Covers | Input (summary) | Expected outcome |
+| --- | --- | --- | --- | --- |
+| TEST-09.14a | UI component | AC-09.14 | Reminder panel, `GET /goals/11/reminder` mocked to 404 no schedule | "No reminder set." shown; no Remove button |
+| TEST-09.14b | UI component | AC-09.14 | `GET` returns `{ goalId: 11, weekdays: [1,3,5], time: "08:00" }` | "Mon, Wed, Fri at 08:00" shown |
+| TEST-09.15 | UI component | AC-09.15 | no schedule; tick Wed and Mon, type 07:30, Save; `PUT` mocked 200 | `PUT` body is exactly `{ weekdays: [1,3], time: "07:30" }` with numbers; panel shows "Mon, Wed at 07:30" |
+| TEST-09.15b | UI component | AC-09.15 | `GET` returns Mon/Wed/Fri 08:00 | the Mon, Wed, Fri boxes are ticked and the time field holds 08:00 |
+| TEST-09.16 | UI component | AC-09.16 | no box ticked, time 09:00, Save; `PUT` mocked 400 `At least one weekday is required.` | that exact message shown; time field still 09:00 |
+| TEST-09.17 | UI component | AC-09.17 | schedule exists; Remove; `DELETE` mocked 204 | `DELETE` called; "No reminder set." shown; Remove gone |
+| TEST-09.18a | UI component | AC-09.18 | Upcoming panel, `GET /reminders/upcoming` returns two instances for goal 11 | two rows with date, time and "Running" in that order |
+| TEST-09.18b | UI component | AC-09.18 | `GET /reminders/upcoming` returns `[]` | "No reminders in the next 7 days." |
+| TEST-09.19 | UI component | AC-09.19 | Reminder panel `GET` mocked 401 | `onUnauthorized` called |
 
 ### 5.3 Regression — must stay unchanged
 
 - All existing `TEST-01.*` to `TEST-08.*` must keep passing unmodified; this feature adds new routes
   and a new table, and touches no existing route, response shape or migration.
+- Two shared files get one line each and no behaviour change: `backend/src/app.ts` mounts the new
+  router, and the test helper `backend/tests/helpers/resetDb.ts` deletes `ReminderSchedule` rows
+  before `Goal` rows (foreign key order), the same kind of edit F-06 made for `GoalRevision`.
 
 ## 6. Definition of done
 
@@ -231,9 +277,9 @@ following the same pattern F-03/F-04 used.
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
-      starts.
-- [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
+- [x] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
+      starts (accepted by warunwora on #78, 2026-11-28, before any F-09 test or code).
+- [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.2).
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
@@ -242,3 +288,4 @@ following the same pattern F-03/F-04 used.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 3 planning (`docs/sprints/plan.md` §4) |
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-20, D-14 → D-21); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
+| 1.2 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. §3.3 UI filled in, AC-09.14 to AC-09.19 and TEST-09.14a to TEST-09.19 added (§5.2). §2.4 and AC-09.11 use the end date in effect (F-06 §3.2), TEST-09.11b added. Duplicate "## 2" heading fixed (Slices moved to §1.1). §5.3 names the two shared one-line edits. | #78 review findings (1), (2) and the F-06 #76 end-date finding |
