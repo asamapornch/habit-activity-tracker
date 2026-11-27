@@ -182,14 +182,19 @@ BR-10's own floor check and F-03's read endpoints (§2.6).
 
 ### 3.3 UI
 
-Not built in this contract (Sprint 2 implementation phase adds it to the goal screen from F-04 §3.3).
-Planned: a "Revise goal" control on the goal screen opens a form pre-filled with the currently
-effective `dailyTarget` and `endDate`; submitting sends only the field(s) the Participant changed
-(the other key omitted, §2's field rules); the server's message is shown verbatim on 400/404/409, as
-in F-03/F-04 (AC-03.18, AC-04.21 pattern). This section intentionally stays thin: full UI
-specification (loading/error states, AC and STS) is written at the start of the implementation phase,
-in the same way F-03/F-04's UI sections (§3.3) and their AC-0X.15+ were added once the screens were
-scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
+Added in v1.3 (UI implementation start, as F-03 v1.2/F-04 v1.2 did). On the goal screen
+(`frontend/src/GoalDetail.tsx`, F-04 §3.3), a "Revise goal" control opens a form pre-filled with the
+currently effective `dailyTarget` and `endDate` (the values already on screen, from `GET /goals/:id`
+per §2.6). Submitting sends `PATCH /goals/:id` with only the field(s) the Participant actually
+changed from those prefilled values (§2's field rules — the other key is omitted, not sent
+unchanged). On success the form closes and the goal screen shows the response's new effective
+value(s) immediately (no extra `GET`, no page reload — the `PATCH` response body already is the
+currently effective goal, §3.1). A 400, 404 or 409 is shown with the server's message verbatim and
+the form stays open with what was typed (AC-03.18/AC-04.21 pattern); the submit control is disabled
+while the request is in flight; a 401 returns to the login screen (AC-04.22 pattern). The control is
+reachable only from the goal screen, which only a signed-in Participant viewing one of their own
+goals can open at all (AC-03.16, AC-04.22 already gate this) — F-06's own UI adds no separate
+role/ownership check.
 
 ## 4. Acceptance criteria
 
@@ -208,6 +213,12 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 | AC-06.11 | A revision never changes, deletes or revalidates an existing entry (F-04); the goal's history (`GET /goals/:id/entries`) is unaffected by a revision. | BR-11, D-06 pattern |
 | AC-06.12 | Two revisions on the same goal on the same calendar day: the later one (by creation order) is the one in effect for that day and afterward, until superseded by a later revision. | D-14 (proposed) |
 | AC-06.13 | The check order of §2 holds under combined faults: 401 before 400, 403 before 400, 404 before BR-10, BR-10 target/end-date checks before the BR-04 overlap re-check. | NFR-02, NFR-05, BR-08 |
+| AC-06.14 (UI) | The goal screen shows a "Revise goal" control; opening it shows a form pre-filled with the currently effective `dailyTarget` and `endDate`. | FR-10, §3.3 |
+| AC-06.15 (UI) | Submitting sends `PATCH /goals/:id` with only the field(s) actually changed from the prefilled values; on success the form closes and the screen shows the new effective value(s) from the response, with no extra request. | FR-10, §2 field rules |
+| AC-06.16 (UI) | A 400, 404 or 409 from the revision request is shown with the server's message verbatim; the form keeps what was typed and stays open. | NFR-05 |
+| AC-06.17 (UI) | The Revise submit control is disabled while the request is in flight. | NFR-05 |
+| AC-06.18 (UI) | A 401 from the revision request returns the user to the login screen. | NFR-02 |
+| AC-06.19 (UI) | The Revise control is only reachable from the goal screen, which only the owning Participant can open (AC-03.16, AC-04.22); this feature's UI adds no separate visibility check. | BR-08 |
 
 ## 5. Software test specification (STS) — planned, not yet written as executable tests
 
@@ -238,7 +249,20 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 | TEST-06.13b | API/DB integration | AC-06.13 | **control** `P1` revises with an out-of-range target (400); then the same request with an also-overlapping `endDate` | 400 `Daily target...` (BR-10 target check before the BR-04 overlap re-check) |
 | TEST-06.14 | Unit (pure function, no DB; **Decision D-15, proposed**, §2 note) | §2.5 resolution logic | `effectiveOn` called directly with a fabricated list of revisions (no revisions; one revision before `D`; one before and one after `D`; two revisions with the same `effectiveFrom`) | returns the goal's own value (none qualify); the qualifying revision's value; the later-`effectiveFrom` revision's value; the higher-`id` revision's value (D-14 tie-break) |
 
-### 5.2 Frontend tests — planned, written when the UI (§3.3) is scoped at the start of implementation, not in this contract (see §3.3 note).
+### 5.2 Frontend tests
+
+Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit test for `effectiveOn`,
+§5.1). File: `frontend/src/GoalDetail.test.tsx`.
+
+| Test ID | Covers | Input | Expected result |
+| --- | --- | --- | --- |
+| TEST-06.15 | AC-06.14 | Goal screen rendered for `G1` (`dailyTarget` 5, `endDate` "2026-11-30"); "Revise goal" clicked | a form appears with the Daily target field showing `5` and the End date field showing `2026-11-30` |
+| TEST-06.16a | AC-06.15 | Only the target field changed, to `8`; submitted; `PATCH /goals/11` returns 200 `{ ..., dailyTarget: 8, endDate: "2026-11-30" }` | `PATCH` called once with `{ dailyTarget: 8 }` only (no `endDate` key); the form closes; the goal screen shows target `8` |
+| TEST-06.16b | AC-06.15 | Only the end date field changed, to `2026-12-15`; submitted; `PATCH` returns 200 with the new `endDate` | `PATCH` called with `{ endDate: "2026-12-15" }` only (no `dailyTarget` key); the screen shows the new end date |
+| TEST-06.17 | AC-06.16 | Target changed to `999`; `PATCH /goals/11` mocked to 400 `Daily target must be within the template range.` | that exact message is shown; the form stays open with `999` still in the field |
+| TEST-06.18 | AC-06.17 | `PATCH /goals/11` left pending | the Revise form's submit button is disabled until the request resolves |
+| TEST-06.19 | AC-06.18 | Rendered through `App`; `PATCH /goals/11` mocked to 401 | the login form is shown |
+| TEST-06.20 | AC-06.19 | `Goals` rendered as a Participant with one own goal, then (fresh render) as a Manager | Participant: opening the goal shows the "Revise goal" control; Manager: no goal screen exists to open at all (AC-03.16 — Manager sees no Goals section), so the control is unreachable by construction |
 
 ### 5.3 Regression — must stay unchanged
 
@@ -272,8 +296,9 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 - [ ] The three proposed decisions (D-13, D-14, D-15) are resolved by the reviewer before
       implementation starts (accepted, amended, or replaced), and the SRS §7 row for each is updated
       from "(proposed, needs review)" to settled wording.
-- [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase, following
-      the same pattern F-03 v1.2 and F-04 v1.2 used.
+- [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase, following
+      the same pattern F-03 v1.2 and F-04 v1.2 used (v1.3).
+- [ ] TEST-06.15 to TEST-06.20 are committed red before the UI code, then green.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
@@ -282,3 +307,4 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
 | 1.2 | 2026-11-27 | STS fixture corrected, TEST-06.8d added; found while writing RED tests, before any implementation; no AC or behaviour change. TEST-06.8b now uses a new fixture `G3` (startDate = today + 5) so the start-date floor is reachable without also tripping the today floor, per §2.6's own check-order rule; TEST-06.8d is new and proves that same check order (today checked before start date) using `G1` alone. | Contract problem found while writing TEST-06.8b against the STS's own check-order rule, before any implementation code; reviewed and decided by the author before Step 3 resumed |
+| 1.3 | 2026-11-27 21:56 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-06.14 to AC-06.19 and TEST-06.15 to TEST-06.20 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
