@@ -4,7 +4,7 @@
 | --- | --- |
 | Feature ID | F-07 |
 | Sprint | 2 |
-| Linked requirements | FR-11, BR-11, BR-12; SRS D-13, D-14 (this contract, proposed) |
+| Linked requirements | FR-11, BR-11, BR-12; SRS D-16, D-17 (this contract, proposed) |
 | Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution — not yet merged) |
 | Needed by | — |
 | Owner | — (not yet assigned) |
@@ -37,7 +37,7 @@ their own goals (the **current streak**) and the longest such run they have ever
       does not exist and a goal of another Participant, BR-08, same as F-03/F-04/F-06).
 3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's `endDate` — the same boundary
    F-04's BR-09 already uses (`docs/sprints/sprint-1/F-04-entries.md` §2 Behaviour 9). **Decision
-   D-13 (proposed, needs review, this branch):** BR-12's wording anchors the current streak on
+   D-16 (proposed, needs review, this branch):** BR-12's wording anchors the current streak on
    "today," which only makes sense while the goal is still active; this contract generalises that
    anchor to `lastDay` so a streak can still be read after a goal has ended, rather than always
    reporting 0 for a finished goal. If the review prefers "0 for an ended goal" instead, this is the
@@ -49,7 +49,7 @@ their own goals (the **current streak**) and the longest such run they have ever
    for an unrevised goal). A day with no entry is not met (BR-12).
 5. **Current streak** (BR-12): let `anchor` = `lastDay` if the goal has an entry dated `lastDay`,
    otherwise `lastDay − 1` (BR-12: "ends today, or yesterday if today has no entry yet" — generalised
-   to `lastDay` per §2.3/D-13). Starting at `anchor` and walking backward one day at a time, count
+   to `lastDay` per §2.3/D-16). Starting at `anchor` and walking backward one day at a time, count
    consecutive **met** days (§2.4); stop at the first day that is not met (missing entry or value
    below target) or at the goal's `startDate`, whichever comes first. `currentStreak` is that count.
    If `anchor` itself is not met (there is an entry for `lastDay` but it is below target), the count
@@ -71,7 +71,7 @@ Other decisions:
 
 - Streaks are computed on each request; nothing is stored (same stance as F-04's progress, §3.2 of
   that contract — "computed on each request; nothing extra is stored").
-- **Decision D-14 (proposed, needs review, this branch):** F-07 adds its own
+- **Decision D-17 (proposed, needs review, this branch):** F-07 adds its own
   `GET /goals/:id/streaks` endpoint rather than adding `currentStreak`/`longestStreak` fields to
   F-04's already-released `GET /goals/:id/progress` response, so that F-04's contract and response
   shape (already implemented and released as `v1.1-lab7`) are not touched by this feature. If the
@@ -175,9 +175,8 @@ used (§3.3 note in the F-06 contract applies here too).
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-13, D-14 on this branch) are resolved by the reviewer before
-      implementation starts, and reconciled against any same-numbered decisions proposed in the F-06
-      PR and the F-08 contract below (see the PR body for the numbering collision note).
+- [ ] The two proposed decisions (D-16, D-17) are resolved by the reviewer before implementation
+      starts.
 - [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
@@ -186,3 +185,4 @@ used (§3.3 note in the F-06 contract applies here too).
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
+| 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-16, D-14 → D-17); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |

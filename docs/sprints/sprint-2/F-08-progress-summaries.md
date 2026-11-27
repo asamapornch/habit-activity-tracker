@@ -4,7 +4,7 @@
 | --- | --- |
 | Feature ID | F-08 |
 | Sprint | 2 |
-| Linked requirements | FR-12, BR-11; SRS D-13, D-14 (this contract, proposed) |
+| Linked requirements | FR-12, BR-11; SRS D-18, D-19 (this contract, proposed) |
 | Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution — not yet merged) |
 | Needed by | — |
 | Owner | — (not yet assigned) |
@@ -36,7 +36,7 @@ already shows.
       does not exist and a goal of another Participant, BR-08, same as F-03/F-04/F-06/F-07).
 3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's `endDate` (the same boundary
    F-04's BR-09 and F-07 use).
-4. **Decision D-13 (proposed, needs review, this branch):** the **week** window is the Monday-to-Sunday
+4. **Decision D-18 (proposed, needs review, this branch):** the **week** window is the Monday-to-Sunday
    ISO calendar week containing `lastDay`; the **month** window is the calendar month (first to last
    day) containing `lastDay`. Neither the SRS nor `docs/sprints/plan.md` specifies a week/month
    convention; ISO weeks and calendar months are the simplest, least ambiguous choice and need no
@@ -52,7 +52,7 @@ already shows.
      lookup F-07 uses, so an unrevised goal reproduces exactly what a single scalar comparison against
      its stored `dailyTarget` would give — no change in behaviour for a goal with zero revisions);
    - `total` = the sum of those entries' values (rounded to two decimals);
-   - `average` = `total ÷ daysRecorded`, rounded half up to two decimals (**Decision D-14 (proposed,
+   - `average` = `total ÷ daysRecorded`, rounded half up to two decimals (**Decision D-19 (proposed,
      needs review, this branch)**: generalises SRS D-10's "round half up to two decimals" convention,
      written there for the progress percentage, to this plain value average); `0` when `daysRecorded`
      is `0`.
@@ -119,9 +119,9 @@ implementation phase, following the same pattern F-03/F-04 used.
 | --- | --- | --- |
 | AC-08.1 | For a goal with entries inside the current ISO week, `week.daysRecorded`, `week.daysMet`, `week.total` and `week.average` are computed over exactly the entries dated within that week, clipped to the goal's `startDate` and `lastDay`; entries outside the week are excluded. | FR-12 |
 | AC-08.2 | For the same goal, `month.*` is computed the same way over the calendar month containing `lastDay`. | FR-12 |
-| AC-08.3 | A goal whose `startDate` falls inside the current week/month has that window clipped to start at `startDate`, not the calendar week/month's natural start. | FR-12, D-13 (proposed) |
+| AC-08.3 | A goal whose `startDate` falls inside the current week/month has that window clipped to start at `startDate`, not the calendar week/month's natural start. | FR-12, D-18 (proposed) |
 | AC-08.4 | A goal with no entries in a window returns `daysRecorded` 0, `daysMet` 0, `total` 0, `average` 0 for that window. | FR-12 |
-| AC-08.5 | `average` equals `total ÷ daysRecorded` rounded half up to two decimals (2 of 3 recorded days, total 10 → average 3.33; total 11 → average 3.67). | FR-12, D-14 (proposed) |
+| AC-08.5 | `average` equals `total ÷ daysRecorded` rounded half up to two decimals (2 of 3 recorded days, total 10 → average 3.33; total 11 → average 3.67). | FR-12, D-19 (proposed) |
 | AC-08.6 | After a revision (F-06) changes the target effective partway through the current week or month, `daysMet` for that window reflects the new target from the effective date onward and the old target before it; `daysRecorded`, `total` and `average` are unaffected by the revision. | BR-11 |
 | AC-08.7 | Anonymous requests receive 401; a Manager receives 403. | NFR-02 |
 | AC-08.8 | A goal that does not exist and another Participant's goal return the same 404; a malformed `:id` returns 400 `Invalid goal id.` | BR-08, NFR-05 |
@@ -167,9 +167,8 @@ implementation phase, following the same pattern F-03/F-04 used.
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-13, D-14 on this branch) are resolved by the reviewer before
-      implementation starts, and reconciled against any same-numbered decisions proposed in the F-06
-      PR and the F-07 contract above (see the PR body for the numbering collision note).
+- [ ] The two proposed decisions (D-18, D-19) are resolved by the reviewer before implementation
+      starts.
 - [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
@@ -178,3 +177,4 @@ implementation phase, following the same pattern F-03/F-04 used.
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
+| 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-18, D-14 → D-19); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
