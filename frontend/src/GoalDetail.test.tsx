@@ -426,3 +426,153 @@ describe("AC-06.19 revise control visibility (TEST-06.20)", () => {
     expect(goalsHandler).not.toHaveBeenCalled();
   });
 });
+
+function summaryWindow(start: string, end: string, daysRecorded: number, daysMet: number, total: number, average: number) {
+  return { start, end, daysRecorded, daysMet, total, average };
+}
+
+const SUMMARY = {
+  goalId: 11,
+  week: summaryWindow("2026-11-09", "2026-11-12", 3, 2, 15, 5),
+  month: summaryWindow("2026-11-01", "2026-11-12", 4, 3, 25, 6.25),
+};
+
+describe("AC-08.10 summary panel (TEST-08.10)", () => {
+  it("TEST-08.10a shows a loading message first, then both windows' figures", async () => {
+    const deferredSummary = deferred<Response>();
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () => deferredSummary.promise,
+    });
+    renderDetail();
+    expect(await screen.findByText(/loading summary/i)).toBeInTheDocument();
+    deferredSummary.resolve(jsonResponse(200, SUMMARY));
+
+    const panel = await screen.findByRole("region", { name: /summary/i });
+    expect(within(panel).getByText(/3 days recorded, 2 met, total 15, average 5/i)).toBeInTheDocument();
+    expect(within(panel).getByText(/4 days recorded, 3 met, total 25, average 6.25/i)).toBeInTheDocument();
+    expect(screen.queryByText(/loading summary/i)).not.toBeInTheDocument();
+  });
+
+  it("TEST-08.10b (also AC-08.13) an error fetching the summary shows an alert, not a stuck loading state", async () => {
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () => Promise.reject(new Error("network error")),
+    });
+    renderDetail();
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(screen.queryByText(/loading summary/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("AC-08.11 window date-range labels (TEST-08.11)", () => {
+  it("TEST-08.11 each window shows its start-to-end date range", async () => {
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () => jsonResponse(200, SUMMARY),
+    });
+    renderDetail();
+    const panel = await screen.findByRole("region", { name: /summary/i });
+    expect(within(panel).getByText("2026-11-09 to 2026-11-12")).toBeInTheDocument();
+    expect(within(panel).getByText("2026-11-01 to 2026-11-12")).toBeInTheDocument();
+  });
+});
+
+describe("AC-08.12 empty window (TEST-08.12)", () => {
+  it("TEST-08.12 a window with daysRecorded 0 shows an explicit empty message", async () => {
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () =>
+        jsonResponse(200, {
+          goalId: 11,
+          week: summaryWindow("2026-11-09", "2026-11-12", 0, 0, 0, 0),
+          month: SUMMARY.month,
+        }),
+    });
+    renderDetail();
+    const panel = await screen.findByRole("region", { name: /summary/i });
+    expect(within(panel).getByText("No entries recorded this week.")).toBeInTheDocument();
+    expect(within(panel).queryByText(/0 days recorded/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("AC-08.13 summary session expiry (TEST-08.13)", () => {
+  it("TEST-08.13 rendered through App, a 401 from GET summary returns to the login form", async () => {
+    mockFetch({
+      "GET /auth/me": () => jsonResponse(200, PARTICIPANT),
+      "GET /templates": () => jsonResponse(200, [T]),
+      "GET /goals": () => jsonResponse(200, [G1]),
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () => errorResponse(401, "UNAUTHENTICATED", "Authentication required."),
+    });
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(await screen.findByRole("button", { name: /open running goal/i }));
+
+    expect(await screen.findByLabelText(/^email/i)).toBeInTheDocument();
+  });
+});
+
+describe("AC-08.14 summary panel visibility (TEST-08.14)", () => {
+  it("TEST-08.14 a Participant opening a goal sees the summary panel; a Manager has no path to it", async () => {
+    mockFetch({
+      "GET /auth/me": () => jsonResponse(200, PARTICIPANT),
+      "GET /templates": () => jsonResponse(200, [T]),
+      "GET /goals": () => jsonResponse(200, [G1]),
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": () => jsonResponse(200, SUMMARY),
+    });
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(await screen.findByRole("button", { name: /open running goal/i }));
+    expect(await screen.findByRole("region", { name: /summary/i })).toBeInTheDocument();
+    cleanup();
+
+    const goalsHandler = vi.fn(() => jsonResponse(200, []));
+    mockFetch({
+      "GET /auth/me": () => jsonResponse(200, MANAGER),
+      "GET /templates": () => jsonResponse(200, [T]),
+      "GET /goals": goalsHandler,
+    });
+    render(<App />);
+    await screen.findByRole("heading", { name: /templates/i });
+    expect(screen.queryByRole("region", { name: /summary/i })).not.toBeInTheDocument();
+    expect(goalsHandler).not.toHaveBeenCalled();
+  });
+});
+
+describe("AC-08.15 summary refetch after a revision (TEST-08.15)", () => {
+  it("TEST-08.15 a successful revision triggers a second GET summary", async () => {
+    const summaryHandler = vi
+      .fn()
+      .mockImplementationOnce(() => jsonResponse(200, SUMMARY))
+      .mockImplementationOnce(() =>
+        jsonResponse(200, { ...SUMMARY, week: summaryWindow("2026-11-09", "2026-11-12", 3, 3, 24, 8) }),
+      );
+    mockFetch({
+      "GET /goals/11/entries": () => jsonResponse(200, []),
+      "GET /goals/11/progress": () => jsonResponse(200, progress(5, 0, 0)),
+      "GET /goals/11/summary": summaryHandler,
+      "PATCH /goals/11": () =>
+        jsonResponse(200, { id: 11, userId: 5, templateId: 1, dailyTarget: 8, startDate: "2026-11-01", endDate: "2026-11-30" }),
+    });
+    const user = userEvent.setup();
+    renderDetail();
+    await screen.findByRole("region", { name: /summary/i });
+
+    const form = await openRevise(user);
+    await user.clear(within(form).getByLabelText(/daily target/i));
+    await user.type(within(form).getByLabelText(/daily target/i), "8");
+    await user.click(within(form).getByRole("button", { name: /save/i }));
+
+    await waitFor(() => expect(summaryHandler).toHaveBeenCalledTimes(2));
+    const panel = await screen.findByRole("region", { name: /summary/i });
+    expect(within(panel).getByText(/3 days recorded, 3 met, total 24, average 8/i)).toBeInTheDocument();
+  });
+});

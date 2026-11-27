@@ -1,0 +1,2518 @@
+F-08 UI — RED output (before any UI implementation)
+
+No draft UI implementation predated this run: frontend/src/GoalDetail.tsx
+and frontend/src/api.ts have no summary-related code yet at this commit;
+only the new tests were written.
+
+Commit SHA this was run against: 99518a2d61e84b996562c7735c6e35d67b318233
+(feature/f08-progress-summaries, after merging in the F-08 v1.4 contract
+and the F-06 UI commits; see
+F-08-progress-summaries.md TEST-08.10 to TEST-08.15)
+
+Command (single file): cd frontend && npx vitest run src/GoalDetail.test.tsx
+Result: 1 test file failed (1), 24 tests: 7 failed (all new TEST-08.10 to
+TEST-08.15), 17 passed (10 pre-existing F-04 UI + 7 F-06 UI, unaffected).
+
+Command (full frontend suite): cd frontend && npm test
+Result: 4 test files (1 failed, 3 passed), 57 tests: 7 failed (the new
+ones), 50 passed (unchanged - confirms no regression to F-04/F-06 UI).
+
+Every new failure is because the summary panel (role="region", name
+"Summary") does not exist yet, not a compile or configuration error -
+correct RED reason.
+
+Full raw output (single-file run) follows.
+
+ RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+
+ ❯ src/GoalDetail.test.tsx (24 tests | 7 failed) 7810ms
+   ❯ AC-08.10 summary panel (TEST-08.10) (2)
+     × TEST-08.10a shows a loading message first, then both windows' figures 1010ms
+     × TEST-08.10b (also AC-08.13) an error fetching the summary shows an alert, not a stuck loading state 1007ms
+   ❯ AC-08.11 window date-range labels (TEST-08.11) (1)
+     × TEST-08.11 each window shows its start-to-end date range 1009ms
+   ❯ AC-08.12 empty window (TEST-08.12) (1)
+     × TEST-08.12 a window with daysRecorded 0 shows an explicit empty message 1008ms
+   ❯ AC-08.13 summary session expiry (TEST-08.13) (1)
+     × TEST-08.13 rendered through App, a 401 from GET summary returns to the login form 1033ms
+   ❯ AC-08.14 summary panel visibility (TEST-08.14) (1)
+     × TEST-08.14 a Participant opening a goal sees the summary panel; a Manager has no path to it 1034ms
+   ❯ AC-08.15 summary refetch after a revision (TEST-08.15) (1)
+     × TEST-08.15 a successful revision triggers a second GET summary 1010ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.10 summary panel (TEST-08.10) > TEST-08.10a shows a loading message first, then both windows' figures
+TestingLibraryElementError: Unable to find an element with the text: /loading summary/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:449:25
+    447|     });
+    448|     renderDetail();
+    449|     expect(await screen.findByText(/loading summary/i)).toBeInTheDocum…
+       |                         ^
+    450|     deferredSummary.resolve(jsonResponse(200, SUMMARY));
+    451|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.10 summary panel (TEST-08.10) > TEST-08.10b (also AC-08.13) an error fetching the summary shows an alert, not a stuck loading state
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:465:25
+    463|     });
+    464|     renderDetail();
+    465|     expect(await screen.findByRole("alert")).toBeInTheDocument();
+       |                         ^
+    466|     expect(screen.queryByText(/loading summary/i)).not.toBeInTheDocume…
+    467|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.11 window date-range labels (TEST-08.11) > TEST-08.11 each window shows its start-to-end date range
+TestingLibraryElementError: Unable to find role="region" and name `/summary/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:478:32
+    476|     });
+    477|     renderDetail();
+    478|     const panel = await screen.findByRole("region", { name: /summary/i…
+       |                                ^
+    479|     expect(within(panel).getByText("2026-11-09 to 2026-11-12")).toBeIn…
+    480|     expect(within(panel).getByText("2026-11-01 to 2026-11-12")).toBeIn…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.12 empty window (TEST-08.12) > TEST-08.12 a window with daysRecorded 0 shows an explicit empty message
+TestingLibraryElementError: Unable to find role="region" and name `/summary/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:497:32
+    495|     });
+    496|     renderDetail();
+    497|     const panel = await screen.findByRole("region", { name: /summary/i…
+       |                                ^
+    498|     expect(within(panel).getByText("No entries recorded this week.")).…
+    499|     expect(within(panel).queryByText(/0 days recorded/i)).not.toBeInTh…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.13 summary session expiry (TEST-08.13) > TEST-08.13 rendered through App, a 401 from GET summary returns to the login form
+TestingLibraryElementError: Unable to find a label with the text of: /^email/i
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates goals"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mGoals[0m
+          [36m</h2>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"goal-detail"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"goal-detail__header"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mBack to goals[0m
+              [36m</button>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRunning[0m
+              [36m</h3>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"goal-list__meta"[39m
+              [36m>[39m
+                [0m5[0m
+                [0m [0m
+                [0mkm[0m
+                [0m a day · [0m
+                [0m2026-11-01[0m
+                [0m → [0m
+                [0m2026-11-30[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRevise goal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Progress"[39m
+              [33mclass[39m=[32m"card progress-card"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__pct"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__days"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m of [0m
+                [0m5[0m
+                [0m days met[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"progress-bar"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"progress-bar__fill"[39m
+                  [33mstyle[39m=[32m"width: 0%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__today"[39m
+              [36m>[39m
+                [0mToday (Asia/Bangkok): [0m
+                [0m2026-11-05[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<form[39m
+              [33maria-label[39m=[32m"Record entry"[39m
+              [33mclass[39m=[32m"card template-form"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRecord entry[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field-grid"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-date"[39m
+                  [36m>[39m
+                    [0mDate[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-date"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mtype[39m=[32m"date"[39m
+                    [33mvalue[39m=[32m"2026-11-05"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-value"[39m
+                  [36m>[39m
+                    [0mValue ([0m
+                    [0mkm[0m
+                    [0m)[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-value"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mstep[39m=[32m"0.01"[39m
+                    [33mtype[39m=[32m"number"[39m
+                    [33mvalue[39m=[32m""[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-form__actions"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn btn--primary"[39m
+                  [33mtype[39m=[32m"submit"[39m
+                [36m>[39m
+                  [0mRecord[0m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"section-subtitle"[39m
+            [36m>[39m
+              [0mHistory[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"status-message"[39m
+            [36m>[39m
+              [0mNo entries yet.[0m
+            [36m</p>[39m
+          [36m</section>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates goals"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mGoals[0m
+          [36m</h2>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"goal-detail"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"goal-detail__header"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mBack to goals[0m
+              [36m</button>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRunning[0m
+              [36m</h3>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"goal-list__meta"[39m
+              [36m>[39m
+                [0m5[0m
+                [0m [0m
+                [0mkm[0m
+                [0m a day · [0m
+                [0m2026-11-01[0m
+                [0m → [0m
+                [0m2026-11-30[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRevise goal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Progress"[39m
+              [33mclass[39m=[32m"card progress-card"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__pct"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__days"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m of [0m
+                [0m5[0m
+                [0m days met[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"progress-bar"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"progress-bar__fill"[39m
+                  [33mstyle[39m=[32m"width: 0%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__today"[39m
+              [36m>[39m
+                [0mToday (Asia/Bangkok): [0m
+                [0m2026-11-05[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<form[39m
+              [33maria-label[39m=[32m"Record entry"[39m
+              [33mclass[39m=[32m"card template-form"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRecord entry[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field-grid"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-date"[39m
+                  [36m>[39m
+                    [0mDate[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-date"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mtype[39m=[32m"date"[39m
+                    [33mvalue[39m=[32m"2026-11-05"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-value"[39m
+                  [36m>[39m
+                    [0mValue ([0m
+                    [0mkm[0m
+                    [0m)[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-value"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mstep[39m=[32m"0.01"[39m
+                    [33mtype[39m=[32m"number"[39m
+                    [33mvalue[39m=[32m""[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-form__actions"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn btn--primary"[39m
+                  [33mtype[39m=[32m"submit"[39m
+                [36m>[39m
+                  [0mRecord[0m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"section-subtitle"[39m
+            [36m>[39m
+              [0mHistory[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"status-message"[39m
+            [36m>[39m
+              [0mNo entries yet.[0m
+            [36m</p>[39m
+          [36m</section>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:517:25
+    515|     await user.click(await screen.findByRole("button", { name: /open r…
+    516|
+    517|     expect(await screen.findByLabelText(/^email/i)).toBeInTheDocument(…
+       |                         ^
+    518|   });
+    519| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.14 summary panel visibility (TEST-08.14) > TEST-08.14 a Participant opening a goal sees the summary panel; a Manager has no path to it
+TestingLibraryElementError: Unable to find role="region" and name `/summary/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates goals"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mGoals[0m
+          [36m</h2>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"goal-detail"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"goal-detail__header"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mBack to goals[0m
+              [36m</button>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRunning[0m
+              [36m</h3>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"goal-list__meta"[39m
+              [36m>[39m
+                [0m5[0m
+                [0m [0m
+                [0mkm[0m
+                [0m a day · [0m
+                [0m2026-11-01[0m
+                [0m → [0m
+                [0m2026-11-30[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRevise goal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Progress"[39m
+              [33mclass[39m=[32m"card progress-card"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__pct"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__days"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m of [0m
+                [0m5[0m
+                [0m days met[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"progress-bar"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"progress-bar__fill"[39m
+                  [33mstyle[39m=[32m"width: 0%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__today"[39m
+              [36m>[39m
+                [0mToday (Asia/Bangkok): [0m
+                [0m2026-11-05[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<form[39m
+              [33maria-label[39m=[32m"Record entry"[39m
+              [33mclass[39m=[32m"card template-form"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRecord entry[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field-grid"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-date"[39m
+                  [36m>[39m
+                    [0mDate[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-date"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mtype[39m=[32m"date"[39m
+                    [33mvalue[39m=[32m"2026-11-05"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-value"[39m
+                  [36m>[39m
+                    [0mValue ([0m
+                    [0mkm[0m
+                    [0m)[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-value"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mstep[39m=[32m"0.01"[39m
+                    [33mtype[39m=[32m"number"[39m
+                    [33mvalue[39m=[32m""[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-form__actions"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn btn--primary"[39m
+                  [33mtype[39m=[32m"submit"[39m
+                [36m>[39m
+                  [0mRecord[0m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"section-subtitle"[39m
+            [36m>[39m
+              [0mHistory[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"status-message"[39m
+            [36m>[39m
+              [0mNo entries yet.[0m
+            [36m</p>[39m
+          [36m</section>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"app"[39m
+    [36m>[39m
+      [36m<header[39m
+        [33mclass[39m=[32m"app-header"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"app-header__inner"[39m
+        [36m>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"app-name"[39m
+          [36m>[39m
+            [0mHabit & Activity Tracker[0m
+          [36m</h1>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"app-header__user"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"app-header__email"[39m
+            [36m>[39m
+              [0mp1@example.com[0m
+            [36m</span>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"role-badge"[39m
+            [36m>[39m
+              [0mParticipant[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mLogout[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</header>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"app-main"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mTemplates[0m
+          [36m</h2>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"template-list"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"template-list__item"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-list__info"[39m
+              [36m>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__name"[39m
+                [36m>[39m
+                  [0mRunning[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"template-list__meta"[39m
+                [36m>[39m
+                  [0mkm[0m
+                  [0m · [0m
+                  [0m0[0m
+                  [0m–[0m
+                  [0m50[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</li>[39m
+          [36m</ul>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"templates goals"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"section-title"[39m
+          [36m>[39m
+            [0mGoals[0m
+          [36m</h2>[39m
+          [36m<section[39m
+            [33mclass[39m=[32m"goal-detail"[39m
+          [36m>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"goal-detail__header"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mBack to goals[0m
+              [36m</button>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRunning[0m
+              [36m</h3>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"goal-list__meta"[39m
+              [36m>[39m
+                [0m5[0m
+                [0m [0m
+                [0mkm[0m
+                [0m a day · [0m
+                [0m2026-11-01[0m
+                [0m → [0m
+                [0m2026-11-30[0m
+              [36m</span>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRevise goal[0m
+              [36m</button>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33maria-label[39m=[32m"Progress"[39m
+              [33mclass[39m=[32m"card progress-card"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__pct"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m%[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__days"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m of [0m
+                [0m5[0m
+                [0m days met[0m
+              [36m</p>[39m
+              [36m<div[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"progress-bar"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"progress-bar__fill"[39m
+                  [33mstyle[39m=[32m"width: 0%;"[39m
+                [36m/>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"progress-card__today"[39m
+              [36m>[39m
+                [0mToday (Asia/Bangkok): [0m
+                [0m2026-11-05[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<form[39m
+              [33maria-label[39m=[32m"Record entry"[39m
+              [33mclass[39m=[32m"card template-form"[39m
+            [36m>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"card-title"[39m
+              [36m>[39m
+                [0mRecord entry[0m
+              [36m</h3>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"field-grid"[39m
+              [36m>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-date"[39m
+                  [36m>[39m
+                    [0mDate[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-date"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mtype[39m=[32m"date"[39m
+                    [33mvalue[39m=[32m"2026-11-05"[39m
+                  [36m/>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"field"[39m
+                [36m>[39m
+                  [36m<label[39m
+                    [33mfor[39m=[32m"entry-value"[39m
+                  [36m>[39m
+                    [0mValue ([0m
+                    [0mkm[0m
+                    [0m)[0m
+                  [36m</label>[39m
+                  [36m<input[39m
+                    [33mclass[39m=[32m"input"[39m
+                    [33mid[39m=[32m"entry-value"[39m
+                    [33mrequired[39m=[32m""[39m
+                    [33mstep[39m=[32m"0.01"[39m
+                    [33mtype[39m=[32m"number"[39m
+                    [33mvalue[39m=[32m""[39m
+                  [36m/>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"template-form__actions"[39m
+              [36m>[39m
+                [36m<button[39m
+                  [33mclass[39m=[32m"btn btn--primary"[39m
+                  [33mtype[39m=[32m"submit"[39m
+                [36m>[39m
+                  [0mRecord[0m
+                [36m</button>[39m
+              [36m</div>[39m
+            [36m</form>[39m
+            [36m<h3[39m
+              [33mclass[39m=[32m"section-subtitle"[39m
+            [36m>[39m
+              [0mHistory[0m
+            [36m</h3>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"status-message"[39m
+            [36m>[39m
+              [0mNo entries yet.[0m
+            [36m</p>[39m
+          [36m</section>[39m
+        [36m</section>[39m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:534:25
+    532|     render(<App />);
+    533|     await user.click(await screen.findByRole("button", { name: /open r…
+    534|     expect(await screen.findByRole("region", { name: /summary/i })).to…
+       |                         ^
+    535|     cleanup();
+    536|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/GoalDetail.test.tsx > AC-08.15 summary refetch after a revision (TEST-08.15) > TEST-08.15 a successful revision triggers a second GET summary
+TestingLibraryElementError: Unable to find role="region" and name `/summary/i`
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"goal-detail"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"goal-detail__header"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mBack to goals[0m
+        [36m</button>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRunning[0m
+        [36m</h3>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"goal-list__meta"[39m
+        [36m>[39m
+          [0m5[0m
+          [0m [0m
+          [0mkm[0m
+          [0m a day · [0m
+          [0m2026-11-01[0m
+          [0m → [0m
+          [0m2026-11-30[0m
+        [36m</span>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"btn btn--secondary btn--small"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mRevise goal[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33maria-label[39m=[32m"Progress"[39m
+        [33mclass[39m=[32m"card progress-card"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__pct"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m%[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__days"[39m
+        [36m>[39m
+          [0m0[0m
+          [0m of [0m
+          [0m5[0m
+          [0m days met[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"progress-bar"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"progress-bar__fill"[39m
+            [33mstyle[39m=[32m"width: 0%;"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"progress-card__today"[39m
+        [36m>[39m
+          [0mToday (Asia/Bangkok): [0m
+          [0m2026-11-05[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<form[39m
+        [33maria-label[39m=[32m"Record entry"[39m
+        [33mclass[39m=[32m"card template-form"[39m
+      [36m>[39m
+        [36m<h3[39m
+          [33mclass[39m=[32m"card-title"[39m
+        [36m>[39m
+          [0mRecord entry[0m
+        [36m</h3>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"field-grid"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-date"[39m
+            [36m>[39m
+              [0mDate[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-date"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"date"[39m
+              [33mvalue[39m=[32m"2026-11-05"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"field"[39m
+          [36m>[39m
+            [36m<label[39m
+              [33mfor[39m=[32m"entry-value"[39m
+            [36m>[39m
+              [0mValue ([0m
+              [0mkm[0m
+              [0m)[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mclass[39m=[32m"input"[39m
+              [33mid[39m=[32m"entry-value"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mstep[39m=[32m"0.01"[39m
+              [33mtype[39m=[32m"number"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"template-form__actions"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn btn--primary"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mRecord[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</form>[39m
+      [36m<h3[39m
+        [33mclass[39m=[32m"section-subtitle"[39m
+      [36m>[39m
+        [0mHistory[0m
+      [36m</h3>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"status-message"[39m
+      [36m>[39m
+        [0mNo entries yet.[0m
+      [36m</p>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/GoalDetail.test.tsx:567:18
+    565|     const user = userEvent.setup();
+    566|     renderDetail();
+    567|     await screen.findByRole("region", { name: /summary/i });
+       |                  ^
+    568|
+    569|     const form = await openRevise(user);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 17 passed (24)
+   Start at  00:42:12
+   Duration  8.52s (tests 93%, environment 5%, setup 1%, import 1%)
+
