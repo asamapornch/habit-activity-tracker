@@ -41,7 +41,7 @@ Command and real output:
 ```
 $ cd backend && npx vitest run tests/goalSummaries.test.ts -t "TEST-08.6"
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
  Test Files  1 passed (1)
       Tests  1 passed | 12 skipped (13)
@@ -81,7 +81,7 @@ Command and real output:
 ```
 $ cd backend && npx vitest run tests/goalRevisions.test.ts -t "TEST-06.6"
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
  Test Files  1 passed (1)
       Tests  1 passed | 22 skipped (23)

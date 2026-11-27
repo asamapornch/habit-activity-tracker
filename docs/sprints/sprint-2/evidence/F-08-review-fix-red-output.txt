@@ -25,7 +25,7 @@ regression).
 
 Full raw output (single-file run) follows.
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
  ❯ tests/goalSummaries.test.ts (14 tests | 1 failed) 8084ms
    ❯ AC-08.16 summary window uses the effective end date (TEST-08.16) (1)

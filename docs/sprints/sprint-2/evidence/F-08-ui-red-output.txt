@@ -23,7 +23,7 @@ correct RED reason.
 
 Full raw output (single-file run) follows.
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+ RUN  v5.1.0 <repo>/frontend
 
  ❯ src/GoalDetail.test.tsx (24 tests | 7 failed) 7810ms
    ❯ AC-08.10 summary panel (TEST-08.10) (2)
