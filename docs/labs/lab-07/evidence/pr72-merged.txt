@@ -1,0 +1,26 @@
+CLI output captured 2026-11-27 04:09 Asia/Bangkok, not a screenshot.
+Reason: no browser-control tool was connected to this session, so the PR page could not be
+captured visually. Read-only `gh pr view` output below instead (our repo only).
+
+Command:
+  gh pr view 72 --repo asamapornch/habit-activity-tracker \
+    --json number,title,state,mergedAt,mergeCommit,baseRefName,headRefName,author,url,createdAt
+
+Output (author reduced to GitHub username only, no email):
+
+{
+  "number": 72,
+  "title": "Release Lab 7: per-template back-dating limit (#65)",
+  "state": "MERGED",
+  "mergedAt": "2026-11-26T11:35:49Z",
+  "mergeCommit": { "oid": "b53e7bcb7b23e6287e829b8bb150cfd0669dedb1" },
+  "baseRefName": "main",
+  "headRefName": "sprint-1-staging",
+  "author": { "login": "asamapornch" },
+  "url": "https://github.com/asamapornch/habit-activity-tracker/pull/72",
+  "createdAt": "2026-11-26T11:32:34Z"
+}
+
+Confirms: PR #72 ("Release Lab 7: per-template back-dating limit (#65)") is in state MERGED, into
+`main` from `sprint-1-staging`, merge commit `b53e7bcb7b23e6287e829b8bb150cfd0669dedb1` (= `b53e7bc`),
+merged 2026-11-26T11:35:49Z (2026-11-26 18:35:49 Asia/Bangkok).
