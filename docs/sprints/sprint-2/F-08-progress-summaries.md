@@ -159,8 +159,8 @@ implementation phase, following the same pattern F-03/F-04 used.
 ## 6. Definition of done
 
 - [ ] This contract is committed before any implementation code (this PR).
-- [ ] Not implementable until F-06 is merged (§ dependency note above); the Issue for this feature is
-      not opened for implementation until then.
+- [ ] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
+      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging`.
 - [ ] Tests TEST-08.* are committed and fail first (red) because the route is missing, with the
       failing output saved under `docs/sprints/sprint-2/evidence/`.
 - [ ] Implementation makes all TEST-08.* pass (green), with the passing output saved.
@@ -180,3 +180,4 @@ implementation phase, following the same pattern F-03/F-04 used.
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-18, D-14 → D-19); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
 | 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
+| 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Flagged in PR #85's body, fixed here; author decision |
