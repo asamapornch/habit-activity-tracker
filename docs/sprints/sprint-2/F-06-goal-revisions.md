@@ -226,8 +226,9 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 | TEST-06.7a | API/DB integration | AC-06.7 | `G1` on template 0–50; `P1` `PATCH` with `dailyTarget` 51 | 400 `VALIDATION_ERROR` `Daily target must be within the template range.` |
 | TEST-06.7b | API/DB integration | AC-06.7 | same; `dailyTarget` 0 and 50 | 200 for each (inclusive bounds) |
 | TEST-06.8a | API/DB integration | AC-06.8 | `G1` ends in 30 days; `P1` `PATCH` with `endDate` = yesterday | 400 `New end date must not be before today.` |
-| TEST-06.8b | API/DB integration | AC-06.8 | `P1` `PATCH` with `endDate` = the day before `G1.startDate` | 400 `New end date must not be before the goal's start date.` |
+| TEST-06.8b | API/DB integration | AC-06.8 | `G3`, a goal starting `today + 5` days (so the today floor is not also tripped); `P1` `PATCH` with `endDate` = the day before `G3.startDate` | 400 `New end date must not be before the goal's start date.` |
 | TEST-06.8c | API/DB integration | AC-06.8 | `G1` has an entry dated `D`; `P1` `PATCH` with `endDate` = the day before `D` | 400 `New end date must not be before the goal's latest entry date.` |
+| TEST-06.8d | API/DB integration | AC-06.8 | `G1` (starts in the past); `P1` `PATCH` with `endDate` = the day before `G1.startDate` (so both the today floor and the start-date floor are violated at once) | 400 `New end date must not be before today.` (proves the §2.6 check order: today checked before start date) |
 | TEST-06.9a | API/DB integration | AC-06.9 | `P1` has two goals on the same template, non-overlapping; `P1` revises the first goal's `endDate` to overlap the second | 409 `CONFLICT`; nothing stored |
 | TEST-06.9b | API/DB integration | AC-06.9 | same setup; `P1` revises the first goal's `endDate` to end the day before the second starts | 200 (touching, not overlapping, is allowed — same BR-04 rule as F-03) |
 | TEST-06.10 | API/DB integration | AC-06.10 | `P1` revises `G1`'s target; `GET /goals/:G1` and `GET /goals` | both show the new target; an unrevised goal in the same `GET /goals` response still shows its original value |
@@ -280,3 +281,4 @@ scoped (F-03 v1.2, F-04 v1.2), not invented ahead of need.
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
+| 1.2 | 2026-11-27 | STS fixture corrected, TEST-06.8d added; found while writing RED tests, before any implementation; no AC or behaviour change. TEST-06.8b now uses a new fixture `G3` (startDate = today + 5) so the start-date floor is reachable without also tripping the today floor, per §2.6's own check-order rule; TEST-06.8d is new and proves that same check order (today checked before start date) using `G1` alone. | Contract problem found while writing TEST-06.8b against the STS's own check-order rule, before any implementation code; reviewed and decided by the author before Step 3 resumed |
