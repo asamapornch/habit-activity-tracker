@@ -15,7 +15,8 @@ Change request: Issue #65. Written before any test or code change (contract PR).
 
 | Item | Version |
 | --- | --- |
-| Accepted Sprint 1 baseline (old behaviour) | tag `v1.0-sprint1`, `0619c07` |
+| Accepted Sprint 1 baseline (old behaviour) | tag `v1.0-sprint1` = `444dd05` (PR #34 merge, 2026-11-07) |
+| Build used for Lab 6 UAT | `main` at `0619c07` (2026-11-21) — a different, later commit, not the tag itself. 71 files changed since `444dd05` (Lab 5 cloud-readiness/deploy infrastructure: trust proxy, `/ready`, static frontend serving, a Postgres session store via `connect-pg-simple`, config, db pool, an `@@ignore`'d `Session` model), none touching `backend/src/routes/{auth,templates,goals,entries}.ts` or any service file; verified by `git diff --stat 444dd05 0619c07` |
 | Pre-change implementation | `main` at `5d0e4ba` (release PR #67, Lab 6), deployed 2026-11-26 |
 | Intervening development since the baseline | Lab 5 cloud-readiness and deploy files; Lab 6 fixes PR #63 (B2-01, `errorHandler.ts`) and PR #64 (#60, `Templates.tsx` wheel blur). None changes BR-03. No Sprint 2 code is on `main`. |
 | Contract (this document, SRS v1.2, F-02 v1.7, F-04 v1.5, system SDS v1.1) | PR #69, merged before any test or code |
@@ -56,3 +57,38 @@ Change request: Issue #65. Written before any test or code change (contract PR).
 No existing expected result changes: existing tests create templates without `backdateDays`, which
 stores `null` (no limit). If any existing test fails after a change, the change is wrong, not the
 test.
+
+## 6. Addendum (added after release, 2026-11-26 23:25 +07): change size
+
+Files touched by PRs #69 to #72, from `gh pr diff --name-only` on each PR. PR #72 is the release
+merge of #69, #70 and #71 into `main`; its file list is the union of theirs, with no files beyond
+that union.
+
+| File | PR(s) |
+| --- | --- |
+| `docs/features.md` | #69, #71 |
+| `docs/srs.md` | #69 |
+| `docs/system-sds.md` | #69 |
+| `docs/sprints/sprint-1/F-02-templates.md` | #69, #70 |
+| `docs/sprints/sprint-1/F-04-entries.md` | #69, #71 |
+| `docs/traceability.md` | #69, #70, #71 |
+| `docs/labs/lab-07/change-impact.md` | #69, #71 |
+| `backend/prisma/schema.prisma` | #70 |
+| `backend/prisma/migrations/20261126110641_add_template_backdate_days/migration.sql` | #70 |
+| `backend/src/routes/templates.ts` | #70 |
+| `backend/src/routes/entries.ts` | #71 |
+| `backend/tests/templates.test.ts` | #70 |
+| `backend/tests/entries.test.ts` | #71 |
+| `frontend/src/Templates.tsx` | #70 |
+| `frontend/src/api.ts` | #70 |
+| `frontend/src/Templates.test.tsx` | #70 |
+| `docs/labs/lab-07/evidence/F-02-backdate-red-backend.txt` | #70 |
+| `docs/labs/lab-07/evidence/F-02-backdate-red-frontend.txt` | #70 |
+| `docs/labs/lab-07/evidence/F-02-backdate-green-backend.txt` | #70 |
+| `docs/labs/lab-07/evidence/F-02-backdate-green-frontend.txt` | #70 |
+| `docs/labs/lab-07/evidence/F-04-backdate-red-backend.txt` | #71 |
+| `docs/labs/lab-07/evidence/F-04-backdate-green-backend.txt` | #71 |
+| `docs/labs/lab-07/evidence/F-04-backdate-green-frontend.txt` | #71 |
+
+Totals: 22 files. 1 migration file plus 1 schema file. 2 backend route files. 2 backend test files.
+3 frontend files. 7 evidence files. 7 contract/doc files.

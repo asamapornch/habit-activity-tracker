@@ -22,7 +22,7 @@ F-05 `backend/tests/access.test.ts`.
 | FR-07 Record an entry | F-04 | 1 | AC-04.1, 04.20 / TEST-04.1, 04.20a to 04.20c | Verified |
 | FR-08 Progress | F-04 | 1 | AC-04.14, 04.18, 04.20 / TEST-04.14, 04.18, 04.20a | Verified |
 | FR-09 Own history | F-04 | 1 | AC-04.13, 04.18, 04.19 / TEST-04.13, 04.18, 04.19 | Verified |
-| FR-10 Goal revision | F-06 | 2 | AC-06.1 to AC-06.25 / TEST-06.1 to TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 | AC-06.1 to AC-06.19: implemented, green on PR #84 (not yet merged). AC-06.20 to AC-06.25 (review fix): contract written, implementation in progress |
+| FR-10 Goal revision | F-06 | 2 | AC-06.1 to AC-06.25 / TEST-06.1 to TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 | AC-06.1 to AC-06.25: implemented, green on PR #84 (not yet merged) |
 | FR-11 Streaks | F-07 | 2 | AC and tests in the Sprint 2 F-07 contract | Allocated |
 | FR-12 Summaries | F-08 | 2 | AC and tests in the Sprint 2 F-08 contract | Allocated |
 | FR-13 Reminder schedule | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
@@ -41,8 +41,8 @@ F-05 `backend/tests/access.test.ts`.
 | BR-07 Template min < max | F-02 | 1 | AC-02.4 / TEST-02.4 | Verified |
 | BR-08 Private goals and entries (404 / 403) | F-03, F-04, F-05 | 1 | AC-03.3, 03.11, 03.12, 04.3, 04.5, 04.13, 05.3 to 05.9 / same TEST IDs | Verified |
 | BR-09 Progress calculation | F-04 | 1 | AC-04.14 to 04.16 / TEST-04.14a to 04.14e, 04.15, 04.16 | Verified |
-| BR-10 Revision limits | F-06 | 2 | AC-06.7 to AC-06.9, AC-06.25 (D-24) / TEST-06.7 to TEST-06.9, TEST-06.25, TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 | AC-06.7 to AC-06.9: implemented, green on PR #84. AC-06.25 (D-24, proposed): contract written, implementation in progress |
-| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: AC-06.5, AC-06.10 to AC-06.12, AC-06.20 to AC-06.24 / TEST-06.5, TEST-06.10 to TEST-06.14, TEST-06.21 to TEST-06.24, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.4 §2.5/§3.2/§3.4; F-07/F-08 parts: their own Sprint 2 contracts | F-06 part: AC-06.5/06.10-06.12 implemented and green on PR #84; AC-06.20-06.24 (review fix) implementation in progress. F-07/F-08 parts: Allocated |
+| BR-10 Revision limits | F-06 | 2 | AC-06.7 to AC-06.9, AC-06.25 (D-24) / TEST-06.7 to TEST-06.9, TEST-06.25, TEST-06.26, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 | AC-06.7 to AC-06.9: implemented, green on PR #84. AC-06.25 (D-24, settled on PR #76): implemented, green on PR #84 (not yet merged) |
+| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: AC-06.5, AC-06.10 to AC-06.12, AC-06.20 to AC-06.24 / TEST-06.5, TEST-06.10 to TEST-06.14, TEST-06.21 to TEST-06.24, `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5 §2.5/§3.2/§3.4; F-07/F-08 parts: their own Sprint 2 contracts | F-06 part: AC-06.5/06.10-06.12 implemented and green on PR #84; AC-06.20-06.24 (review fix) implemented and green on PR #84. F-07/F-08 parts: Allocated |
 | BR-12 Streak definition | F-07 | 2 | Sprint 2 F-07 contract | Allocated |
 | BR-13 Reminder schedule limits | F-09 | 3 | Sprint 3 F-09 contract | Allocated |
 
@@ -54,7 +54,7 @@ F-05 `backend/tests/access.test.ts`.
 | NFR-02 Server-side authorization | Authorization responsibility (F-01, F-05) | 1 / 1, extended each sprint | AC-01.4, 01.5, 01.9, 01.10, 02.3, 02.19, 03.2, 03.14, 03.19, 04.2, 04.17, 04.22, 05.1, 05.3 / same TEST IDs | Verified for Sprint 1 endpoints |
 | NFR-03 No secrets in Git | Configuration responsibility | 1 / 1 | Manual: repository inspection; `.env` git-ignored, `.env.example` placeholders, seed reads passwords from env | Verified (manual) |
 | NFR-04 One-command test suite | README | 1 / 1 | Manual: clean-checkout `npm test` in `backend/` and `frontend/` recorded in the evidence README | Verified (manual) |
-| NFR-05 Clear 4xx errors, no crash | Error-handling responsibility | 1 / 1, extended each sprint | AC-01.2, 01.7, 01.11, 01.13, 01.17, 01.18, 02.5, 02.8, 02.11, 02.12, 02.17, 02.20, 03.4, 03.6, 03.14, 03.18, 03.20, 04.4, 04.17, 04.21, 04.23 / same TEST IDs | Verified for Sprint 1 endpoints |
+| NFR-05 Clear 4xx errors, no crash | Error-handling responsibility | 1 / 1, extended each sprint | AC-01.2, 01.7, 01.11, 01.13, 01.17, 01.18, 02.5, 02.8, 02.11, 02.12, 02.17, 02.20, 03.4, 03.6, 03.14, 03.18, 03.20, 04.4, 04.17, 04.21, 04.23 / same TEST IDs; Lab 7: AC-02.22 / TEST-02.22a, 02.22b (added after release `b53e7bc` on 2026-11-26 23:25 +07: correction of an omission; the AC and tests existed and were implemented in PRs #69/#70) | Verified for Sprint 1 endpoints |
 | NFR-06 Docker, durable DB, GCP | F-10 | 3 (Lab 5) | Container build and deployed health check | Allocated |
 | NFR-07 Response time 500 ms | F-10 | 3 | Automated timing test | Allocated |
 | NFR-08 CI on every PR | F-10 | 3 (Lab 5) | CI run on each PR | Allocated |

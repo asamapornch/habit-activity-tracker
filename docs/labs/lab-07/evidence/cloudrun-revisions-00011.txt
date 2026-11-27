@@ -1,0 +1,32 @@
+CLI output captured 2026-11-27 04:09 Asia/Bangkok, not a screenshot.
+Reason: no browser-control tool (Claude in Chrome / built-in browser) was connected to this
+session, so the Cloud Run console page could not be captured visually. Read-only `gcloud` output
+below instead, from the same project/service/region the console page would have shown.
+
+Command:
+  gcloud run revisions list --service s65da36e2 --region asia-southeast1 \
+    --project cpe-se-course-2026 \
+    --format="table(metadata.name,metadata.creationTimestamp,status.conditions[0].status)" \
+    --sort-by="~metadata.creationTimestamp" --limit=6
+
+Output (last 6 revisions, newest first; STATUS True = Ready):
+
+NAME                 CREATION_TIMESTAMP           STATUS
+s65da36e2-00011-269  2026-11-26T11:39:27.618552Z  True
+s65da36e2-00010-2mh  2026-11-26T09:49:44.838204Z  True
+s65da36e2-00009-b4s  2026-11-21T09:41:38.056488Z  True
+s65da36e2-00008-wwx  2026-11-21T09:06:48.456701Z  True
+s65da36e2-00007-6pf  2026-11-21T08:56:54.971110Z  True
+s65da36e2-00006-xl5  2026-11-21T08:56:10.759379Z  True
+
+Command:
+  gcloud run services describe s65da36e2 --region asia-southeast1 \
+    --project cpe-se-course-2026 --format="value(status.traffic)"
+
+Output (traffic split):
+
+  latestRevision=True, percent=100, revisionName=s65da36e2-00011-269
+
+Confirms: s65da36e2-00011-269 is serving 100% of traffic, with 00009-b4s and 00010-2mh present as
+earlier revisions in the service's revision history. No Variables & Secrets data was queried or
+included; no account email was printed by any of these commands.
