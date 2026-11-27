@@ -256,14 +256,17 @@ entriesRouter.get("/goals/:id/summary", requireRole("PARTICIPANT"), async (req, 
     const goal = await findOwnGoal(req, res, parseIdParam(req.params.id));
     if (!goal) return;
 
+    // Review fix (warunwora, F-06 PR #76, extended to F-08 in v1.5): "end"
+    // is the end date in effect today (F-06 §3.2), not the stored endDate
+    // column.
     const today = todayInBangkok();
     const goalStart = formatDateOnly(goal.startDate);
-    const goalEnd = formatDateOnly(goal.endDate);
+    const revisions = await fetchRevisionList(goal.id);
+    const goalLike = { dailyTarget: goal.dailyTarget, endDate: formatDateOnly(goal.endDate) };
+    const goalEnd = effectiveOn(goalLike, revisions, today, "endDate") as string;
     const lastDay = today < goalEnd ? today : goalEnd;
 
     const entries = await prisma.entry.findMany({ where: { goalId: goal.id } });
-    const revisions = await fetchRevisionList(goal.id);
-    const goalLike = { dailyTarget: goal.dailyTarget, endDate: goalEnd };
 
     const week = isoWeekRange(lastDay);
     const month = monthRange(lastDay);
