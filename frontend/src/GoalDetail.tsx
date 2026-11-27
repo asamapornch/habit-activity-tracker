@@ -14,6 +14,7 @@ import {
   type Summary,
   type Template,
 } from "./api";
+import { ReminderPanel } from "./Reminders";
 
 interface GoalDetailProps {
   goal: Goal;
@@ -340,6 +341,8 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
           </tbody>
         </table>
       )}
+
+      <ReminderPanel goalId={goal.id} onUnauthorized={onUnauthorized} />
     </section>
   );
 }
