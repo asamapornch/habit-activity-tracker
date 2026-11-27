@@ -10,6 +10,7 @@ import {
   type Template,
 } from "./api";
 import { GoalDetail } from "./GoalDetail";
+import { UpcomingReminders } from "./Reminders";
 
 interface GoalFormProps {
   templates: Template[];
@@ -177,6 +178,7 @@ export function Goals({ onUnauthorized }: { onUnauthorized: () => void }) {
           onCreated={(goal) => setGoals((current) => [...(current ?? []), goal])}
           onUnauthorized={onUnauthorized}
         />
+        <UpcomingReminders goals={goals} templates={templates} onUnauthorized={onUnauthorized} />
         {goals.length === 0 ? (
           <p className="status-message">No goals yet.</p>
         ) : (
