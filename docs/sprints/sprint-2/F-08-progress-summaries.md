@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | — (not yet assigned) |
 | Reviewer | — (not yet assigned) |
-| Status | **Contract written (planned). No code, migration or test exists yet.** |
+| Status | **Implemented on PR #85 (stacked on F-06 PR #84, not yet merged): AC-08.1 to AC-08.16 with TEST-08.* green, including the AC-08.16 end-date-in-effect fix (`7d6caf0`). Must not merge before F-06.** |
 
 **Dependency note:** like F-07, this feature must not be merged before F-06 is merged to
 `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch
@@ -47,7 +47,7 @@ already shows.
    extra configuration (no "which day starts the week" setting). Each window is clipped at the low
    end to the goal's `startDate` (a day before the goal started is never counted, even if the
    calendar week or month contains it) and at the high end to `lastDay` (a day after `lastDay`,
-   including a day after the goal's `endDate`, is never counted). A goal whose `startDate` is after
+   including a day after the end date in effect today, step 3, is never counted). A goal whose `startDate` is after
    the window's natural end has an empty window for that period (every figure `0`).
 5. For each window (week, month), over the clipped date range `[windowStart, windowEnd]`:
    - `daysRecorded` = the number of the goal's entries dated inside the window;
@@ -219,3 +219,4 @@ File: `frontend/src/GoalDetail.test.tsx`.
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Flagged in PR #85's body, fixed here; author decision |
 | 1.4 | 2026-11-27 21:58 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-08.10 to AC-08.15 and TEST-08.10 to TEST-08.15 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
 | 1.5 | 2026-11-28 03:05 +07 | §2 step 3's `lastDay` corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column. AC-08.16 and TEST-08.16 added. | Review finding by warunwora on F-06 PR #76; no scope creep |
+| 1.6 | 2026-11-28 | Status line updated: F-08 is implemented on PR #85 (was "no code yet"). §2 step 4 says "the end date in effect today" instead of "the goal's `endDate`", so it does not read as the stored column. No behaviour, AC or test change. | Review by warunwora on #77 |

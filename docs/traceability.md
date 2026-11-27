@@ -24,7 +24,7 @@ F-05 `backend/tests/access.test.ts`.
 | FR-09 Own history | F-04 | 1 | AC-04.13, 04.18, 04.19 / TEST-04.13, 04.18, 04.19 | Verified |
 | FR-10 Goal revision | F-06 | 2 | AC and tests in the Sprint 2 F-06 contract | Allocated |
 | FR-11 Streaks | F-07 | 2 | AC-07.1 to AC-07.11 / TEST-07.1a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.3 | Contract written (planned) |
-| FR-12 Summaries | F-08 | 2 | AC-08.1 to AC-08.9 / TEST-08.1a to TEST-08.9, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.3 | Contract written (planned) |
+| FR-12 Summaries | F-08 | 2 | AC-08.1 to AC-08.16 / TEST-08.1a to TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.6 | Implemented, green on PR #85 (not yet merged) |
 | FR-13 Reminder schedule | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
 | FR-14 Upcoming reminders | F-09 | 3 | AC and tests in the Sprint 3 F-09 contract | Allocated |
 
@@ -42,7 +42,7 @@ F-05 `backend/tests/access.test.ts`.
 | BR-08 Private goals and entries (404 / 403) | F-03, F-04, F-05 | 1 | AC-03.3, 03.11, 03.12, 04.3, 04.5, 04.13, 05.3 to 05.9 / same TEST IDs | Verified |
 | BR-09 Progress calculation | F-04 | 1 | AC-04.14 to 04.16 / TEST-04.14a to 04.14e, 04.15, 04.16 | Verified |
 | BR-10 Revision limits | F-06 | 2 | Sprint 2 F-06 contract | Allocated |
-| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: F-06 contract (separate PR); F-07 part: AC-07.7, AC-07.8 / TEST-07.7, TEST-07.8, `docs/sprints/sprint-2/F-07-streaks.md` v1.3; F-08 part: AC-08.6 / TEST-08.6, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.3 | F-07 and F-08 parts: Contract written (planned); F-06 part depends on that PR |
+| BR-11 Target in effect per day | F-06, F-07, F-08 | 2 | F-06 part: F-06 contract (separate PR); F-07 part: AC-07.7, AC-07.8 / TEST-07.7, TEST-07.8, `docs/sprints/sprint-2/F-07-streaks.md` v1.3; F-08 part: AC-08.6, AC-08.16 / TEST-08.6, TEST-08.16, `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.6 | F-07 part: Contract written (planned); F-08 part: implemented, green on PR #85 (not yet merged); F-06 part depends on that PR |
 | BR-12 Streak definition | F-07 | 2 | AC-07.1 to AC-07.6, AC-07.9 to AC-07.11 / TEST-07.1a to TEST-07.6, TEST-07.9a to TEST-07.11, `docs/sprints/sprint-2/F-07-streaks.md` v1.3 | Contract written (planned) |
 | BR-13 Reminder schedule limits | F-09 | 3 | Sprint 3 F-09 contract | Allocated |
 
