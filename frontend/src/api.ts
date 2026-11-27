@@ -182,6 +182,16 @@ export interface Summary {
 export const getSummary = (goalId: number) =>
   apiRequest(`/goals/${goalId}/summary`) as Promise<Summary>;
 
+/** F-07 §3.1. */
+export interface Streaks {
+  goalId: number;
+  currentStreak: number;
+  longestStreak: number;
+}
+
+export const getStreaks = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/streaks`) as Promise<Streaks>;
+
 /** F-09 §3.1: weekdays 0 = Sunday to 6 = Saturday (D-20), time "HH:MM". */
 export interface ReminderSchedule {
   goalId: number;

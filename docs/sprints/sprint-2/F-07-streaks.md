@@ -4,12 +4,12 @@
 | --- | --- |
 | Feature ID | F-07 |
 | Sprint | 2 |
-| Linked requirements | FR-11, BR-11, BR-12; SRS D-16, D-17 (this contract, proposed) |
-| Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution — not yet merged) |
+| Linked requirements | FR-11, BR-11, BR-12; SRS D-16, D-17 (this contract; accepted as written by warunwora in the #77 approval, 2026-11-28) |
+| Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" and end date in effect; merged in #84) |
 | Needed by | — |
-| Owner | — (not yet assigned) |
-| Reviewer | — (not yet assigned) |
-| Status | **Contract written (planned). No code, migration or test exists yet.** |
+| Owner | warunwora (Student 2) |
+| Reviewer | asamapornch (Student 1) |
+| Status | **v1.7: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. Awaiting review.** |
 
 **Dependency note:** this feature must not be merged before F-06 is merged to `sprint-1-staging`; it
 may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch)
@@ -42,11 +42,10 @@ their own goals (the **current streak**) and the longest such run they have ever
    wrongly claimed several callers needed no change for `endDate`, F-07 included by implication
    through this same `lastDay` definition — use the effective end date here once F-07 has code, the
    same boundary F-04's BR-09 and F-06's own progress/entry/overlap fixes already use). **Decision
-   D-16 (proposed, needs review, this branch):** BR-12's wording anchors the current streak on
+   D-16 (settled, #77):** BR-12's wording anchors the current streak on
    "today," which only makes sense while the goal is still active; this contract generalises that
    anchor to `lastDay` so a streak can still be read after a goal has ended, rather than always
-   reporting 0 for a finished goal. If the review prefers "0 for an ended goal" instead, this is the
-   one line to change.
+   reporting 0 for a finished goal (TEST-07.13).
 4. **"Met" on a day `D`** (`D` from the goal's `startDate` to `lastDay`): the goal has an entry dated
    `D` whose value, rounded to two decimals, is at or above `effectiveOn(goal, D, "dailyTarget")`
    rounded to two decimals (F-06 §3.4; falls back to the goal's own stored `dailyTarget` for a goal
@@ -76,7 +75,7 @@ Other decisions:
 
 - Streaks are computed on each request; nothing is stored (same stance as F-04's progress, §3.2 of
   that contract — "computed on each request; nothing extra is stored").
-- **Decision D-17 (proposed, needs review, this branch):** F-07 adds its own
+- **Decision D-17 (settled, #77):** F-07 adds its own
   `GET /goals/:id/streaks` endpoint rather than adding `currentStreak`/`longestStreak` fields to
   F-04's already-released `GET /goals/:id/progress` response, so that F-04's contract and response
   shape (already implemented and released as `v1.1-lab7`) are not touched by this feature. If the
@@ -116,10 +115,16 @@ require any change to them.
 
 ### 3.3 UI
 
-Not built in this contract. Planned: a small "Current streak: N days · Longest: M days" panel next to
-the progress panel on the goal screen (F-04 §3.3), fetched from `GET /goals/:id/streaks`. Full UI AC
-and STS are written at the start of the implementation phase, following the same pattern F-03/F-04
-used (§3.3 note in the F-06 contract applies here too).
+Added in v1.5 at implementation start (same pattern as F-03/F-04/F-06/F-09).
+
+- **Goal screen, "Streaks" panel** (F-04 §3.3 goal screen, right after the progress card): loads
+  `GET /goals/:id/streaks` and shows "Current streak: N days" and "Longest streak: M days" ("1 day"
+  when the number is 1, "days" otherwise, including 0).
+- After an entry is recorded successfully, the panel loads `GET /goals/:id/streaks` again, so a new
+  met day shows without leaving the screen.
+- A `401` returns to the login screen. A failed load shows "Could not load streaks." inside the panel
+  only (no `role="alert"`), so the rest of the goal screen keeps working (same choice as F-09 §3.3,
+  AC-09.20).
 
 ## 4. Acceptance criteria
 
@@ -136,8 +141,19 @@ used (§3.3 note in the F-06 contract applies here too).
 | AC-07.9 | Anonymous requests receive 401; a Manager receives 403. | NFR-02 |
 | AC-07.10 | A goal that does not exist and another Participant's goal return the same 404; a malformed `:id` returns 400 `Invalid goal id.` | BR-08, NFR-05 |
 | AC-07.11 | The check order of §2.2 holds: 401 before 400, 403 before 400, 404 before any streak computation. | NFR-02, NFR-05, BR-08 |
+| AC-07.12 (v1.5) | `lastDay` uses the end date in effect today (§2.3): a goal whose stored `endDate` is before today but whose revision extends it past today counts met days up to today, not only up to the stored end. | BR-11, BR-12, F-06 §3.2 |
+| AC-07.13 (v1.5) | A goal that has already ended (end date in effect before today) still reports the run that ends at its end date as `currentStreak` (D-16), not `0`. | BR-12, D-16 |
 
-## 5. Software test specification (STS) — planned, not yet written as executable tests
+**UI (v1.5):**
+
+| ID | Criterion | Requirement |
+| --- | --- | --- |
+| AC-07.14 | The goal screen's Streaks panel shows the current and longest streak from `GET /goals/:id/streaks`, with "day" for 1 and "days" otherwise. | FR-11 |
+| AC-07.15 | After an entry is recorded, the panel loads the streaks again and shows the new numbers. | FR-11 |
+| AC-07.16 | A failed load (e.g. 500) shows "Could not load streaks." inside the panel with no `role="alert"`, and the rest of the goal screen still works. | FR-11 |
+| AC-07.17 | A `401` from the streaks request returns the user to the login screen. | NFR-02 |
+
+## 5. Software test specification (STS)
 
 | Test ID | Level | Covers | Input (summary) | Expected outcome |
 | --- | --- | --- | --- | --- |
@@ -156,8 +172,27 @@ used (§3.3 note in the F-06 contract applies here too).
 | TEST-07.10a | API/DB integration | AC-07.10 | **control** `P1` `GET /goals/:G1/streaks` (200); `P2` `GET` the same id and a non-existent id | both 404 `NOT_FOUND`, identical |
 | TEST-07.10b | API integration | AC-07.10 | `P1` `GET /goals/abc/streaks` | 400 `VALIDATION_ERROR` `Invalid goal id.` |
 | TEST-07.11 | API/DB integration | AC-07.11 | **control** `M` `GET /goals/:G1/streaks` (403, owned by `P1`); then `P2` `GET /goals/:G1/streaks` | `M` 403 before any 404 lookup; `P2` 404 (role check happens before ownership for a Manager, ownership before computation for a Participant) |
+| TEST-07.12 | API/DB integration | AC-07.12 (v1.5) | stored `endDate` 2026-11-08, revision (`effectiveFrom` 11-05) extends it to 11-30; met entries 11-08 to 11-10, none on 11-07; today 11-10 | `currentStreak` 3, `longestStreak` 3 (with the stored end it would be 1) |
+| TEST-07.13 | API/DB integration | AC-07.13 (v1.5) | goal 11-01 to 11-05 (no revision), met entries 11-03 to 11-05, none on 11-02; today 11-10 | `currentStreak` 3, `longestStreak` 3 (D-16) |
 
-### 5.2 Frontend tests — planned, written when the UI (§3.3) is scoped at the start of implementation.
+All backend tests are in `backend/tests/streaks.test.ts`. Today is 2026-11-10 (Asia/Bangkok); the
+default goal runs 2026-11-01 to 2026-11-30 with target 5, so `lastDay` is 2026-11-10. "Day 1 to 5" in
+TEST-07.7/07.8 means 2026-11-06 to 2026-11-10 (goal starting 11-06), and the revision rows there and
+in TEST-07.12 are inserted directly with the needed `effectiveFrom`, because `PATCH /goals/:id` always
+uses today (D-13).
+
+### 5.2 Frontend tests (v1.5)
+
+Component tests (Vitest + React Testing Library) with `fetch` mocked per test, in
+`frontend/src/Streaks.test.tsx`. Goal `G1` (template Running), today 2026-11-10.
+
+| Test ID | Level | Covers | Input (summary) | Expected outcome |
+| --- | --- | --- | --- | --- |
+| TEST-07.14a | UI component | AC-07.14 | `GET /goals/11/streaks` returns `{ goalId: 11, currentStreak: 3, longestStreak: 5 }` | "Current streak: 3 days" and "Longest streak: 5 days" in the Streaks panel |
+| TEST-07.14b | UI component | AC-07.14 | returns current 1, longest 1 | "Current streak: 1 day" and "Longest streak: 1 day" |
+| TEST-07.15 | UI component | AC-07.15 | first `GET` current 0; record an entry (`POST` 201); second `GET` current 1 | streaks `GET` called twice; "Current streak: 1 day" shown |
+| TEST-07.16 | UI component | AC-07.16 | streaks `GET` mocked 500 | "Could not load streaks." inside the panel; no `alert`; progress and the Record entry form still shown |
+| TEST-07.17 | UI component | AC-07.17 | streaks `GET` mocked 401 | `onUnauthorized` called |
 
 ### 5.3 Regression — must stay unchanged
 
@@ -170,20 +205,20 @@ used (§3.3 note in the F-06 contract applies here too).
 
 ## 6. Definition of done
 
-- [ ] This contract is committed before any implementation code (this PR).
-- [ ] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
-      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging`.
-- [ ] Tests TEST-07.* are committed and fail first (red) because the route is missing, with the
-      failing output saved under `docs/sprints/sprint-2/evidence/`.
-- [ ] Implementation makes all TEST-07.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No existing test file is edited.
+- [x] This contract is committed before any implementation code (#77; tests and code in the F-07 PR).
+- [x] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
+      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging` (F-06 merged in #84 before this PR opened).
+- [x] Tests TEST-07.* are committed and fail first (red) because the route is missing, with the
+      failing output saved under `docs/sprints/sprint-2/evidence/` (`bd4beb0`, `1377816`).
+- [x] Implementation makes all TEST-07.* pass (green), with the passing output saved.
+- [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (246/246; frontend 55/55).
+- [x] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-16, D-17) are resolved by the reviewer before implementation
-      starts.
-- [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] The two proposed decisions (D-16, D-17) are resolved by the reviewer before implementation
+      starts (accepted as written by warunwora in the #77 approval, 2026-11-28, before any F-07 test or code).
+- [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.5).
+- [x] Failed or skipped tests, if any, are listed in the evidence report (none).
 
 ## 7. Version history
 
@@ -194,3 +229,6 @@ used (§3.3 note in the F-06 contract applies here too).
 | 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Found while checking F-08's PR #85 for the same stale wording; author decision |
 | 1.4 | 2026-11-28 02:50 +07 | §2 step 3's `lastDay` definition corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column; a note for the implementer only, since F-07 has no code yet. No AC/STS change (no code to test). | Review finding by warunwora on F-06 PR #76; no scope creep |
+| 1.5 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. D-16/D-17 marked settled (#77 approval). §3.3 UI filled in; AC-07.12/07.13 (end date in effect, ended goal) and UI AC-07.14 to AC-07.17 added with TEST-07.12, TEST-07.13 and TEST-07.14a to TEST-07.17; backend test file and dates named in §5. | Implementation start; F-06 end-date finding; same panel-error choice as F-09 (#86 review) |
+| 1.6 | 2026-11-28 | Status only: implemented (route, UI); DoD ticked. No behaviour change. | Implementation done, before review |
+| 1.7 | 2026-11-28 | §2 step 3: dropped the stale "If the review prefers ..." sentence now that D-16 is settled; SRS D-16 row says "end date in effect". No behaviour change. | asamapornch review on #96, suggestions 1 and 2 |
