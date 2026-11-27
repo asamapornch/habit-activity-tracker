@@ -11,11 +11,12 @@
 | Reviewer | — (not yet assigned) |
 | Status | **Contract written (planned). No code, migration or test exists yet.** |
 
-**Dependency note:** like F-07, this feature cannot be implemented or tested until F-06
-(`docs/sprints/sprint-2/F-06-goal-revisions.md`) is merged, because "days met" within a period needs
-the target in effect on each of that period's days (F-06 §3.4). `docs/sprints/plan.md` §3 states this
-dependency explicitly. This contract can be written and reviewed independently of F-06's PR, but its
-Definition of Done (§6) cannot be checked off until F-06 ships.
+**Dependency note:** like F-07, this feature must not be merged before F-06 is merged to
+`sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch
+(PR base = that branch) because `effectiveOn()` is available there, since "days met" within a period
+needs the target in effect on each of that period's days (F-06 §3.4). `docs/sprints/plan.md` §3 states
+this dependency explicitly. This contract can be written and reviewed independently of F-06's PR, but
+its Definition of Done (§6) cannot be checked off until F-06 ships.
 
 ## 1. Purpose
 
@@ -178,3 +179,4 @@ implementation phase, following the same pattern F-03/F-04 used.
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 2 planning (`docs/sprints/plan.md` §3) |
 | 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-18, D-14 → D-19); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
+| 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
