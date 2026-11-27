@@ -4,12 +4,12 @@
 | --- | --- |
 | Feature ID | F-08 |
 | Sprint | 2 |
-| Linked requirements | FR-12, BR-11; SRS D-18, D-19 (this contract, proposed) |
-| Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution — not yet merged) |
+| Linked requirements | FR-12, BR-11; SRS D-18, D-19 (this contract; accepted as written by warunwora in the #77 approval, 2026-11-28) |
+| Depends on | F-01 (`requireRole`), F-04 (entries; `findOwnGoal`, BR-09's `lastDay` boundary), **F-06** (goal revisions; §3.4 "target in effect per day" resolution; merged in #84) |
 | Needed by | — |
 | Owner | — (not yet assigned) |
 | Reviewer | — (not yet assigned) |
-| Status | **Implemented on PR #85 (stacked on F-06 PR #84, not yet merged): AC-08.1 to AC-08.16 with TEST-08.* green, including the AC-08.16 end-date-in-effect fix (`7d6caf0`). Must not merge before F-06.** |
+| Status | **Implemented and merged: AC-08.1 to AC-08.16 with TEST-08.* green, including the AC-08.16 end-date-in-effect fix (`7d6caf0`). PR #85 merged to `sprint-1-staging` after F-06 (`7ade62c`, 2026-11-28).** |
 
 **Dependency note:** like F-07, this feature must not be merged before F-06 is merged to
 `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch
@@ -40,7 +40,7 @@ already shows.
    column; **review finding by warunwora on F-06 PR #76, fixed here in v1.5**: this step previously
    read the stored column directly, same mistake as the one corrected in F-06 v1.4's `GET
    /goals/:id/progress`). The same boundary F-04's BR-09 and F-07 use.
-4. **Decision D-18 (proposed, needs review, this branch):** the **week** window is the Monday-to-Sunday
+4. **Decision D-18 (settled, #77):** the **week** window is the Monday-to-Sunday
    ISO calendar week containing `lastDay`; the **month** window is the calendar month (first to last
    day) containing `lastDay`. Neither the SRS nor `docs/sprints/plan.md` specifies a week/month
    convention; ISO weeks and calendar months are the simplest, least ambiguous choice and need no
@@ -56,8 +56,8 @@ already shows.
      lookup F-07 uses, so an unrevised goal reproduces exactly what a single scalar comparison against
      its stored `dailyTarget` would give — no change in behaviour for a goal with zero revisions);
    - `total` = the sum of those entries' values (rounded to two decimals);
-   - `average` = `total ÷ daysRecorded`, rounded half up to two decimals (**Decision D-19 (proposed,
-     needs review, this branch)**: generalises SRS D-10's "round half up to two decimals" convention,
+   - `average` = `total ÷ daysRecorded`, rounded half up to two decimals (**Decision D-19 (settled,
+     #77)**: generalises SRS D-10's "round half up to two decimals" convention,
      written there for the progress percentage, to this plain value average); `0` when `daysRecorded`
      is `0`.
 6. A revision (F-06) changes which days count as "met" within a window from its `effectiveFrom`
@@ -133,7 +133,7 @@ AC-04.22) — this feature's UI adds no separate visibility check.
 | AC-08.2 | For the same goal, `month.*` is computed the same way over the calendar month containing `lastDay`. | FR-12 |
 | AC-08.3 | A goal whose `startDate` falls inside the current week/month has that window clipped to start at `startDate`, not the calendar week/month's natural start. | FR-12, D-18 (proposed) |
 | AC-08.4 | A goal with no entries in a window returns `daysRecorded` 0, `daysMet` 0, `total` 0, `average` 0 for that window. | FR-12 |
-| AC-08.5 | `average` equals `total ÷ daysRecorded` rounded half up to two decimals (2 of 3 recorded days, total 10 → average 3.33; total 11 → average 3.67). | FR-12, D-19 (proposed) |
+| AC-08.5 | `average` equals `total ÷ daysRecorded` rounded half up to two decimals (2 of 3 recorded days, total 10 → average 3.33; total 11 → average 3.67). | FR-12, D-19 |
 | AC-08.6 | After a revision (F-06) changes the target effective partway through the current week or month, `daysMet` for that window reflects the new target from the effective date onward and the old target before it; `daysRecorded`, `total` and `average` are unaffected by the revision. | BR-11 |
 | AC-08.7 | Anonymous requests receive 401; a Manager receives 403. | NFR-02 |
 | AC-08.8 | A goal that does not exist and another Participant's goal return the same 404; a malformed `:id` returns 400 `Invalid goal id.` | BR-08, NFR-05 |
@@ -220,3 +220,4 @@ File: `frontend/src/GoalDetail.test.tsx`.
 | 1.4 | 2026-11-27 21:58 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-08.10 to AC-08.15 and TEST-08.10 to TEST-08.15 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
 | 1.5 | 2026-11-28 03:05 +07 | §2 step 3's `lastDay` corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column. AC-08.16 and TEST-08.16 added. | Review finding by warunwora on F-06 PR #76; no scope creep |
 | 1.6 | 2026-11-28 | Status line updated: F-08 is implemented on PR #85 (was "no code yet"). §2 step 4 says "the end date in effect today" instead of "the goal's `endDate`", so it does not read as the stored column. No behaviour, AC or test change. | Review by warunwora on #77 |
+| 1.7 | 2026-11-28 | Status: PR #85 merged. D-18/D-19 marked settled (accepted as written by warunwora in the #77 approval; note: after F-08 was implemented, not before). Owner/Reviewer and the DoD are left to the owner. | Combined Sprint 2/3 docs update after the merges |

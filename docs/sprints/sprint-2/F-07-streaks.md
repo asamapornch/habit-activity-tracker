@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.7: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. Awaiting review.** |
+| Status | **v1.8: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. PR #96 approved by asamapornch and merged to `sprint-1-staging` (`d1eddad`, 2026-11-28).** |
 
 **Dependency note:** this feature must not be merged before F-06 is merged to `sprint-1-staging`; it
 may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch)
@@ -213,8 +213,8 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 - [x] Implementation makes all TEST-07.* pass (green), with the passing output saved.
 - [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (246/246; frontend 55/55).
 - [x] No existing test file is edited.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
-      approved by the other student with comments describing what was checked.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+      approved by the other student with comments describing what was checked (PR #96, Refs #80).
 - [x] The two proposed decisions (D-16, D-17) are resolved by the reviewer before implementation
       starts (accepted as written by warunwora in the #77 approval, 2026-11-28, before any F-07 test or code).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.5).
@@ -232,3 +232,4 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | 1.5 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. D-16/D-17 marked settled (#77 approval). §3.3 UI filled in; AC-07.12/07.13 (end date in effect, ended goal) and UI AC-07.14 to AC-07.17 added with TEST-07.12, TEST-07.13 and TEST-07.14a to TEST-07.17; backend test file and dates named in §5. | Implementation start; F-06 end-date finding; same panel-error choice as F-09 (#86 review) |
 | 1.6 | 2026-11-28 | Status only: implemented (route, UI); DoD ticked. No behaviour change. | Implementation done, before review |
 | 1.7 | 2026-11-28 | §2 step 3: dropped the stale "If the review prefers ..." sentence now that D-16 is settled; SRS D-16 row says "end date in effect". No behaviour change. | asamapornch review on #96, suggestions 1 and 2 |
+| 1.8 | 2026-11-28 | Status only: PR #96 approved and merged. No behaviour, AC or test change. | Combined Sprint 2/3 docs update after the merges |

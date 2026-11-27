@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.4: Implemented on `feature/f09-reminder-schedules` (Issue #82): migration, API Slice 1 and 2, Reminder and Upcoming reminders panels. 23 backend and 9 UI tests red, then green, plus 2 UI controls (TEST-09.20a/b); evidence in `docs/sprints/sprint-3/evidence/F-09-*`. Awaiting review.** |
+| Status | **v1.5: Implemented on `feature/f09-reminder-schedules` (Issue #82): migration, API Slice 1 and 2, Reminder and Upcoming reminders panels. 23 backend and 9 UI tests red, then green, plus 2 UI controls (TEST-09.20a/b); evidence in `docs/sprints/sprint-3/evidence/F-09-*`. PR #86 approved by asamapornch and merged to `sprint-1-staging` (`3653773`, 2026-11-28).** |
 
 ## 1. Purpose
 
@@ -283,8 +283,8 @@ choice so a later change to it fails a test.
 - [x] Slice 2 (TEST-09.10 to TEST-09.13b) is committed red (`da70bbd`), then green (`e0e0e79`).
 - [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (252/252; frontend 59/59).
 - [x] No existing test file is edited (only the `resetDb.ts` helper line named in §5.3).
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
-      approved by the other student with comments describing what was checked.
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+      approved by the other student with comments describing what was checked (PR #86, Refs #82).
 - [x] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
       starts: warunwora accepted both as written on PR #78 (2026-11-28, https://github.com/asamapornch/habit-activity-tracker/pull/78#issuecomment-7229418473).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.2).
@@ -300,3 +300,4 @@ choice so a later change to it fails a test.
 | 1.2 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. §3.3 UI filled in, AC-09.14 to AC-09.19 and TEST-09.14a to TEST-09.19 added (§5.2). §2.4 and AC-09.11 use the end date in effect (F-06 §3.2), TEST-09.11b added. Duplicate "## 2" heading fixed (Slices moved to §1.1). §5.3 names the two shared one-line edits. | #78 review findings (1), (2) and the F-06 #76 end-date finding |
 | 1.3 | 2026-11-28 | Status only: implemented (migration, routes, UI); DoD ticked with the per-slice order deviation noted. No behaviour change. | Implementation done, before review |
 | 1.4 | 2026-11-28 | AC-09.20 and TEST-09.20a/b (controls) added for the panel-only load error of §3.3; §3.3 names the two messages; §5 heading no longer says "planned". | asamapornch review on #86, finding 1 and suggestion 1 |
+| 1.5 | 2026-11-28 | Status only: PR #86 approved and merged. No behaviour, AC or test change. | Combined Sprint 2/3 docs update after the merges |

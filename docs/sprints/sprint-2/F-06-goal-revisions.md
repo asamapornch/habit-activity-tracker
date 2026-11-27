@@ -9,7 +9,7 @@
 | Needed by | F-07 (streaks), F-08 (progress summaries) — both read "the target in effect per day" defined here |
 | Owner | asamapornch (implementation, PR #84) |
 | Reviewer | warunwora (contract PR #76 and implementation PR #84) |
-| Status | **AC-06.1 to AC-06.19 implemented, tested and green on PR #84 (not yet merged). v1.4 adds AC-06.20 to AC-06.25 (end-date-in-effect fix + D-24 ended-goal rule, review finding) — implemented on PR #84 (not yet merged). v1.5: D-13, D-14, D-15 and D-24 settled.** |
+| Status | **Implemented and merged: AC-06.1 to AC-06.25 green, PR #84 merged to `sprint-1-staging` (`418e2af`, 2026-11-28). D-13, D-14, D-15 and D-24 settled (v1.5).** |
 
 ## 1. Purpose
 
@@ -393,3 +393,4 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
 | 1.3 | 2026-11-27 21:56 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-06.14 to AC-06.19 and TEST-06.15 to TEST-06.20 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
 | 1.4 | 2026-11-28 02:34 +07 | Review finding by warunwora on #76; no scope creep. §3.2 corrected: `POST /goals/:id/entries`, both BR-04 overlap call sites and `GET /goals/:id/progress` were wrongly claimed to need no change for `endDate` — they read the stored column directly and must instead use the end date in effect (`effectiveOn(..., "endDate")`). AC-06.20 to AC-06.24 added for this. New Decision D-24 (proposed): revising an already-ended goal returns 409 `CONFLICT` "This goal has already ended and cannot be revised."; AC-06.25 added. TEST-06.21 to TEST-06.26 added (§5.1). Header Status, Owner and Reviewer corrected to match actual PR state (was stale at "no code yet" since v1.3). | Review finding by warunwora on #76; no scope creep |
 | 1.5 | 2026-11-28 | D-13, D-14, D-15 and D-24 settled: warunwora accepted all four as written on #76; "(proposed, needs review)" removed from the header, §2 steps 5 and 7, §2.5, §3.1, AC-06.12, AC-06.25 and TEST-06.14; §6 item checked. §3.4 last sentence corrected: since v1.4 the `endDate` side of `effectiveOn` is also read by D-24, the entry date range, both BR-04 overlap call sites and the progress and F-07/F-08 `lastDay`. No behaviour, AC or test change. | Re-review by warunwora on #76 (2026-11-28) |
+| 1.6 | 2026-11-28 | Status only: PR #84 merged to `sprint-1-staging`. No behaviour, AC or test change. | Combined Sprint 2/3 docs update after the merges |
