@@ -4,7 +4,7 @@
 | --- | --- |
 | Feature ID | F-09 |
 | Sprint | 3 |
-| Linked requirements | FR-13, FR-14, BR-13; SRS D-13, D-14 (this contract, proposed) |
+| Linked requirements | FR-13, FR-14, BR-13; SRS D-20, D-21 (this contract, proposed) |
 | Depends on | F-01 (`requireRole`), F-03 (goals; `findOwnGoal`-equivalent ownership check) |
 | Needed by | — |
 | Owner | — (not yet assigned) |
@@ -37,7 +37,7 @@ shippable slices so the smaller one can be picked up first:
 ### 2.1 Set a goal's reminder schedule
 
 `PUT /goals/:id/reminder` (Participant, goal owner) creates or replaces the one reminder schedule for
-that goal (FR-13 reads "a reminder schedule" for a goal, singular — **Decision D-13 (proposed, needs
+that goal (FR-13 reads "a reminder schedule" for a goal, singular — **Decision D-20 (proposed, needs
 review):** at most one schedule per goal, and `PUT` always replaces it wholesale, the same semantics
 F-02's `PUT /templates/:id` already uses for "replaces all fields, as today" — not a list of several
 schedules per goal, which nothing in the SRS asks for).
@@ -65,7 +65,7 @@ an error about the goal itself.
 
 ### 2.3 Remove a goal's reminder schedule
 
-`DELETE /goals/:id/reminder` (Participant, goal owner) removes the goal's schedule. **Decision D-14
+`DELETE /goals/:id/reminder` (Participant, goal owner) removes the goal's schedule. **Decision D-21
 (proposed, needs review):** idempotent — returns **204** whether or not a schedule existed, rather
 than 404 when there was nothing to delete, following the common REST convention that a delete's
 success means "this resource is now absent," which was already true if it never existed. The goal
@@ -90,7 +90,7 @@ Field rules (request body of `PUT /goals/:id/reminder`), checked in step 3 unles
 
 - The body must be a JSON object (not an array or `null`) with exactly the keys `weekdays`, `time`.
   Missing or unknown keys return 400.
-- `weekdays`: a JSON array of integers, each `0` to `6` (**Decision D-13 continued:** `0` = Sunday,
+- `weekdays`: a JSON array of integers, each `0` to `6` (**Decision D-20 continued:** `0` = Sunday,
   `6` = Saturday, matching JavaScript's `Date.getDay()` so no day-number translation is needed
   anywhere in the implementation), with no duplicate values; an empty array is a shape error only if
   it also contains something invalid — a syntactically valid but empty array is accepted at this step
@@ -138,7 +138,7 @@ New table `ReminderSchedule`:
 | Column | Type | Notes |
 | --- | --- | --- |
 | `id` | serial PK | |
-| `goalId` | int, unique, FK → `Goal.id` | unique so "at most one schedule per goal" (D-13) is a database constraint, not only an API check |
+| `goalId` | int, unique, FK → `Goal.id` | unique so "at most one schedule per goal" (D-20) is a database constraint, not only an API check |
 | `weekdays` | int array (Postgres `integer[]`) | each `0` to `6`, validated in the API |
 | `time` | string (`char(5)`) | `HH:MM`, validated in the API |
 
@@ -164,13 +164,13 @@ following the same pattern F-03/F-04 used.
 | ID | Criterion | Requirement |
 | --- | --- | --- |
 | AC-09.1 | The owner setting a schedule with valid `weekdays` and `time` on a goal with no existing schedule receives 200 with the stored schedule. | FR-13 |
-| AC-09.2 | The owner setting a schedule on a goal that already has one receives 200 with the new schedule replacing the old one entirely (not merged). | FR-13, D-13 |
+| AC-09.2 | The owner setting a schedule on a goal that already has one receives 200 with the new schedule replacing the old one entirely (not merged). | FR-13, D-20 |
 | AC-09.3 | Anonymous requests to all three Slice 1 endpoints receive 401; a Manager receives 403; nothing is stored or removed. | NFR-02, BR-08 |
 | AC-09.4 | A body that is not an object, missing or unknown fields, a `weekdays` that is not an array of integers 0 to 6, a `weekdays` with a duplicate value, or a `time` not matching `HH:MM` return 400 `Invalid reminder fields.`; a malformed `:id` returns 400 `Invalid goal id.` | NFR-05 |
 | AC-09.5 | A goal that does not exist and another Participant's goal return the same 404 on all three Slice 1 endpoints. | BR-08 |
 | AC-09.6 | An empty `weekdays` array returns 400 `At least one weekday is required.` and nothing is stored or changed. | BR-13 |
 | AC-09.7 | `GET /goals/:id/reminder` on a goal with no schedule returns 404 `No reminder schedule set for this goal.`, distinct from a goal-not-found 404. | FR-13 |
-| AC-09.8 | `DELETE /goals/:id/reminder` returns 204 whether or not a schedule existed; a subsequent `GET` on the same goal returns the "no schedule" 404. | FR-13, D-14 |
+| AC-09.8 | `DELETE /goals/:id/reminder` returns 204 whether or not a schedule existed; a subsequent `GET` on the same goal returns the "no schedule" 404. | FR-13, D-21 |
 | AC-09.9 | The check order of §2.1 holds: 401 before 400, 403 before 400, 404 (goal) before BR-13's weekday check. | NFR-02, NFR-05, BR-08 |
 
 **Slice 2 (FR-14):**
@@ -231,9 +231,8 @@ following the same pattern F-03/F-04 used.
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-13, D-14 on this branch) are resolved by the reviewer before
-      implementation starts, and reconciled against any same-numbered decisions proposed in the
-      Sprint 2 PRs (see the PR body for the numbering collision note).
+- [ ] The two proposed decisions (D-20, D-21) are resolved by the reviewer before implementation
+      starts.
 - [ ] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
@@ -242,3 +241,4 @@ following the same pattern F-03/F-04 used.
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract, written before any implementation | Sprint 3 planning (`docs/sprints/plan.md` §4) |
+| 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-20, D-14 → D-21); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |

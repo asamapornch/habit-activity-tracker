@@ -60,7 +60,7 @@ F-10's own AC/STS (§4, §5) instead of only at Lab 5's docs.
    (F-04), and, once they exist, `GET /goals/:id/streaks` (F-07) and `GET /goals/:id/summary` (F-08),
    each respond within **500 ms** on the local stack (the same machine/CI runner the rest of the
    suite runs on — NFR-07 says "on the local stack," not production latency).
-2. **Decision D-13 (proposed, needs review, this branch):** the test is written against whichever of
+2. **Decision D-22 (proposed, needs review, this branch):** the test is written against whichever of
    F-04/F-07/F-08 are implemented at the time this contract's code is picked up; if F-07/F-08 are not
    yet merged, the test covers `GET /goals/:id/progress` alone and is extended (new test IDs, not a
    changed one) once they exist, rather than this contract blocking on both of them first. This
@@ -69,7 +69,7 @@ F-10's own AC/STS (§4, §5) instead of only at Lab 5's docs.
    lower-level timer), so the number includes real middleware, database round trips and JSON
    serialization — the same path a real client experiences.
 4. A failing timing test is informative, not necessarily a 500 ms **hard** gate in CI at first:
-   **Decision D-14 (proposed, needs review, this branch):** the test is added as a normal `npm test`
+   **Decision D-23 (proposed, needs review, this branch):** the test is added as a normal `npm test`
    assertion (so it already blocks a merge like every other test, satisfying NFR-08's "cannot be
    merged while they fail"), but no separate CI step or threshold-tuning mechanism is added beyond
    that. If the reviewer wants a softer "warn, don't fail" mode (e.g. because CI runner performance
@@ -166,9 +166,8 @@ frontend suite is the ongoing regression check (§5.3 pattern from F-06/F-07/F-0
 - [ ] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
-- [ ] The two proposed decisions (D-13, D-14 on this branch) are resolved by the reviewer before
-      implementation starts, and reconciled against any same-numbered decisions proposed in the
-      Sprint 2 and F-09 PRs (see the PR body for the numbering collision note).
+- [ ] The two proposed decisions (D-22, D-23) are resolved by the reviewer before implementation
+      starts.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
@@ -176,3 +175,4 @@ frontend suite is the ongoing regression check (§5.3 pattern from F-06/F-07/F-0
 | Version | Date | Change | Reason |
 | --- | --- | --- | --- |
 | 1.0 | 2026-11-27 | Initial contract: NFR-06/NFR-08 documented against existing Lab 5 evidence; NFR-07 timing test specified as planned, not yet implemented | Sprint 3 planning (`docs/sprints/plan.md` §4) |
+| 1.1 | 2026-11-27 | Decision IDs renumbered to avoid collision across PRs (D-13 → D-22, D-14 → D-23); no semantic change | Reviewer-facing cleanup before Deliverable 2 review |
