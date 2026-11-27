@@ -104,7 +104,7 @@ Constraints:
 - Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
 - `GoalRevision` (planned, Sprint 2, F-06 contract `docs/sprints/sprint-2/F-06-goal-revisions.md`): one
   row per revision of a goal's `dailyTarget` and/or `endDate`, with the date it takes effect
-  (`effectiveFrom`, always today when created, SRS D-13 proposed). The `Goal` table itself is not
+  (`effectiveFrom`, always today when created, SRS D-13). The `Goal` table itself is not
   altered; a goal's own `dailyTarget`/`endDate` columns keep their Sprint-1 meaning (the value in
   effect from `startDate` until the first revision, if any), so a goal with zero revisions is
   unaffected. Not yet implemented — no migration exists yet.
@@ -219,7 +219,7 @@ if `DATABASE_URL_TEST` is missing or equal to `DATABASE_URL`, so a test reset ca
 - Access tests call the API directly with no session, the wrong role, and another user's id.
 - A small number of UI end-to-end journeys cover the main flow (add when the UI exists).
 - One command runs the whole suite (NFR-04): `npm test` in `backend/`.
-- Planned (Sprint 2, F-06, SRS D-15 proposed): one small unit-test layer for the pure "value in
+- Planned (Sprint 2, F-06, SRS D-15): one small unit-test layer for the pure "value in
   effect on day D" revision-resolution function, in addition to the API-level tests above. This is a
   departure from the "no separate unit-test layer" Sprint-1 policy, scoped to that one reusable
   function; it does not replace any required API-level BR-10/BR-11 test.
