@@ -35,8 +35,11 @@ already shows.
    3. id format only: **400** `Invalid goal id.` (malformed `:id`; there is no request body);
    4. goal existence and ownership: **404** `Goal not found.` (identical response for a goal that
       does not exist and a goal of another Participant, BR-08, same as F-03/F-04/F-06/F-07).
-3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's `endDate` (the same boundary
-   F-04's BR-09 and F-07 use).
+3. Let `lastDay` be the earlier of today (Asia/Bangkok) and the goal's **end date in effect today**
+   (F-06 §3.2, `effectiveOn(goal, revisions, today, "endDate")` — not the stored `Goal.endDate`
+   column; **review finding by warunwora on F-06 PR #76, fixed here in v1.5**: this step previously
+   read the stored column directly, same mistake as the one corrected in F-06 v1.4's `GET
+   /goals/:id/progress`). The same boundary F-04's BR-09 and F-07 use.
 4. **Decision D-18 (proposed, needs review, this branch):** the **week** window is the Monday-to-Sunday
    ISO calendar week containing `lastDay`; the **month** window is the calendar month (first to last
    day) containing `lastDay`. Neither the SRS nor `docs/sprints/plan.md` specifies a week/month
@@ -141,6 +144,7 @@ AC-04.22) — this feature's UI adds no separate visibility check.
 | AC-08.13 (UI) | An error fetching the summary shows an error message (`role="alert"`), not a stuck loading state; a 401 returns to the login screen. | NFR-02, NFR-05 |
 | AC-08.14 (UI) | The panel is only reachable from the goal screen, which only the owning Participant can open (AC-03.16, AC-04.22); this feature's UI adds no separate visibility check. | BR-08 |
 | AC-08.15 (UI) | After a goal revision (F-06 §3.3) succeeds, the panel refetches and `daysMet` reflects the new target without a page reload. | BR-11 |
+| AC-08.16 | After an `endDate` revision extends a goal's end, the week/month windows' natural end (and hence `windowEnd`, `daysRecorded`, `daysMet`, `total`, `average`) are computed against the end date in effect today, not the stale stored end — a day added by the extension is counted once an entry exists for it, exactly as F-06's own progress fix (AC-06.23) does for `GET /goals/:id/progress`. | BR-11, §2 step 3 |
 
 ## 5. Software test specification (STS) — planned, not yet written as executable tests
 
@@ -159,6 +163,7 @@ AC-04.22) — this feature's UI adds no separate visibility check.
 | TEST-08.8a | API/DB integration | AC-08.8 | **control** `P1` `GET /goals/:G1/summary` (200); `P2` `GET` the same id and a non-existent id | both 404 `NOT_FOUND`, identical |
 | TEST-08.8b | API integration | AC-08.8 | `P1` `GET /goals/abc/summary` | 400 `VALIDATION_ERROR` `Invalid goal id.` |
 | TEST-08.9 | API/DB integration | AC-08.9 | **control** `M` `GET /goals/:G1/summary` (403, owned by `P1`); then `P2` `GET /goals/:G1/summary` | `M` 403; `P2` 404 |
+| TEST-08.16 | API/DB integration | AC-08.16 | `G` stored end day 10, revised/extended to day 20; an entry dated day 15 (inserted directly, within the extended window); `GET /goals/:id/summary` with "today" after day 20 | the window containing day 15 reports `daysRecorded` 1 for that entry; `window.end` reflects day 20, not the stale stored day 10 |
 
 ### 5.2 Frontend tests
 
@@ -198,6 +203,10 @@ File: `frontend/src/GoalDetail.test.tsx`.
       starts.
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.4).
 - [ ] TEST-08.10 to TEST-08.15 are committed red before the UI code, then green.
+- [ ] **New in v1.5 (review finding, warunwora on F-06 PR #76):** TEST-08.16 is committed red before
+      its implementation and green after, with output saved to
+      `docs/sprints/sprint-2/evidence/F-08-review-fix-red-output.txt` /
+      `F-08-review-fix-green-output.txt`.
 - [ ] Failed or skipped tests, if any, are listed in the evidence report.
 
 ## 7. Version history
@@ -209,3 +218,4 @@ File: `frontend/src/GoalDetail.test.tsx`.
 | 1.2 | 2026-11-27 20:52 +07 | Dependency note reworded: "cannot be implemented or tested until F-06 is merged" replaced with "must not be merged before F-06 is merged to `sprint-1-staging`; it may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch) because `effectiveOn()` is available there." Clarifies that the constraint is on merge order, not on when implementation/testing may start, once F-06's code exists on a stacked branch. | Author decision, to unblock F-07/F-08 implementation stacked on F-06's feature branch while F-06's own PR is still under review |
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Flagged in PR #85's body, fixed here; author decision |
 | 1.4 | 2026-11-27 21:58 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-08.10 to AC-08.15 and TEST-08.10 to TEST-08.15 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
+| 1.5 | 2026-11-28 03:05 +07 | §2 step 3's `lastDay` corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column. AC-08.16 and TEST-08.16 added. | Review finding by warunwora on F-06 PR #76; no scope creep |
