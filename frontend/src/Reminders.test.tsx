@@ -12,6 +12,13 @@ const T = { id: 1, name: "Running", unit: "km", minValue: 0, maxValue: 50, creat
 const G1 = { id: 11, userId: 5, templateId: 1, dailyTarget: 5, startDate: "2026-11-01", endDate: "2026-11-30" };
 const PROGRESS = { goalId: 11, today: "2026-11-10", daysElapsed: 10, daysMet: 0, progress: 0 };
 const MWF = { goalId: 11, weekdays: [1, 3, 5], time: "08:00" };
+// F-08's Summary panel (merged in #85) loads on the same goal screen; mocked so it renders normally.
+const EMPTY_WINDOW = { daysRecorded: 0, daysMet: 0, total: 0, average: 0 };
+const SUMMARY = {
+  goalId: 11,
+  week: { start: "2026-11-09", end: "2026-11-10", ...EMPTY_WINDOW },
+  month: { start: "2026-11-01", end: "2026-11-10", ...EMPTY_WINDOW },
+};
 const NO_SCHEDULE: Handler = () => errorResponse(404, "NOT_FOUND", "No reminder schedule set for this goal.");
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -25,6 +32,7 @@ function mockGoalScreen(reminderRoutes: Record<string, Handler>) {
   return mockFetch({
     "GET /goals/11/entries": () => jsonResponse(200, []),
     "GET /goals/11/progress": () => jsonResponse(200, PROGRESS),
+    "GET /goals/11/summary": () => jsonResponse(200, SUMMARY),
     ...reminderRoutes,
   });
 }
