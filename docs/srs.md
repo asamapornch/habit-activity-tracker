@@ -1,6 +1,6 @@
 # Software Requirements Specification — Habit & Activity Tracking
 
-Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.2 (whole-product baseline; Lab 7 change, Issue #65)
+Course: CPE334 · Theme 8 (Habit and Activity Tracking) · Version 1.3 (whole-product baseline; Lab 7 change, Issue #65; v1.3 adds D-13 to D-15 and D-24 for the Sprint 2 F-06 contract, settled on PR #76)
 
 ## 1. Purpose and context
 
@@ -122,6 +122,10 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | D-10 | Progress (BR-09) is returned as a percentage, `daysMet ÷ daysElapsed × 100`, rounded half up to two decimals (e.g. 2 of 3 days = 66.67); it is 0 when no day has elapsed. | Easier to read than a ratio in the UI and in the evidence; two decimals match the precision of values (A-05). |
 | D-11 | Requirements for Sprints 2 and 3 (FR-10 to FR-14, BR-10 to BR-13, NFR-06 to NFR-08) are added to the baseline now, with feature and sprint allocation, from the whole-product scope in §2.1; their detailed AC and tests are written in each sprint's contracts. | The brief requires every baseline requirement to have a feature and sprint now (Part B). |
 | D-12 | A template has an optional back-dating limit `backdateDays`, an integer from 0 to 30 set only by a Manager (BR-06); `null` (or the key left out) means no limit, the Sprint 1 behaviour, and every template that existed before the change has `null`. With a limit N, an entry dated before today − N (Asia/Bangkok, A-02) is rejected (BR-03); 0 allows today only. The template's current limit is used, like the range (D-06): changing it never changes or removes existing entries, and progress (BR-09) still counts them. | Old values recorded weeks later are less reliable and can raise progress in bulk; different activities need different windows, so the limit belongs to the template (Lab 7 change request, Issue #65). |
+| D-13 | A goal revision (F-06) always takes effect from today (Asia/Bangkok) at the moment it is created; a caller cannot set a past or future `effectiveFrom`. | Simplest reading consistent with BR-10's "new end date must not be before today," which only makes sense for an immediate revision; neither the SRS nor `docs/sprints/plan.md` §3 asks for a scheduled or back-dated revision. |
+| D-14 | When two revisions of the same goal (F-06) share the same `effectiveFrom` date, the one with the higher `id` (created later) is the one in effect for that day and afterward, until superseded. | FR-10/BR-11 require "the target in effect per day" to be well defined even if a Participant revises a goal twice in one day; ordering by `id` is the simplest tie-break available without adding a second timestamp column. |
+| D-15 | F-06 adds one unit-level test (TEST-06.14) for the pure "value in effect on day D" resolution function, in addition to the API/DB integration tests. | System SDS §9 states Sprint 1 has "no separate unit-test layer" because rule logic is otherwise simple enough to verify through API tests alone; the revision-resolution lookup (latest-`effectiveFrom`-then-highest-`id`) is reusable by F-07 and F-08 and benefits from being checked in isolation from the database. This does not replace any required BR-10/BR-11 API-level test. |
+| D-24 | Revising an already-ended goal (its end date in effect is before today) is rejected with 409 `CONFLICT` "This goal has already ended and cannot be revised."; a goal ending exactly today is not yet ended. | Review finding by warunwora on PR #76: without this, a revision on an ended goal was previously undefined — it would be stored but have no visible effect, since its `effectiveFrom` (today, D-13) is always after the ended goal's own window. |
 
 ## 8. Version history
 
@@ -131,3 +135,6 @@ Another Participant's record returns 404 (not 403) so the response does not reve
 | 1.0 (+D-09, D-10) | 2026-11-07 | Decisions D-09 and D-10 added with the F-03 and F-04 contracts | PR #25, PR #29 review |
 | 1.1 | 2026-11-07 | FR-10 to FR-14, BR-10 to BR-13, NFR-06 to NFR-08 and D-11 added for Sprints 2 and 3; D-09 narrowed to goal creation | Whole-product traceability (Part B); PR #33 review |
 | 1.2 | 2026-11-26 | Per-template back-dating limit: FR-03, FR-04, BR-03 and D-02 changed, D-12 added | Lab 7 change request, Issue #65 |
+| 1.3 (proposed) | 2026-11-27 | D-13, D-14, D-15 added, all marked "(proposed, needs review)" | Sprint 2 F-06 contract (`docs/sprints/sprint-2/F-06-goal-revisions.md`), written before any F-06 implementation |
+| 1.3 (proposed, cont.) | 2026-11-28 | D-24 added, marked "(proposed, needs review)"; BR-10 text unchanged (D-24 is a new rule, not a BR-10 edit) | Review finding by warunwora on PR #76 (F-06 v1.4) |
+| 1.3 | 2026-11-28 | D-13, D-14, D-15 and D-24 settled: warunwora accepted all four as written in the re-review of PR #76; "(proposed, needs review)" removed from the four rows and the version line | Re-review by warunwora on PR #76 |
