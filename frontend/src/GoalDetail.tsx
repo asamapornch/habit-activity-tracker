@@ -6,6 +6,7 @@ import {
   isUnauthorized,
   listEntries,
   recordEntry,
+  reviseGoal,
   type Entry,
   type Goal,
   type Progress,
@@ -30,6 +31,16 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [refreshError, setRefreshError] = useState<string | null>(null);
+
+  // F-06 §2.6/§3.1: the currently effective values (the PATCH response),
+  // not necessarily goal.dailyTarget/goal.endDate once a revision exists.
+  const [effectiveTarget, setEffectiveTarget] = useState(goal.dailyTarget);
+  const [effectiveEndDate, setEffectiveEndDate] = useState(goal.endDate);
+  const [revising, setRevising] = useState(false);
+  const [reviseTarget, setReviseTarget] = useState("");
+  const [reviseEndDate, setReviseEndDate] = useState("");
+  const [reviseError, setReviseError] = useState<string | null>(null);
+  const [reviseSubmitting, setReviseSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -76,6 +87,35 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
     }
   }
 
+  function openRevise() {
+    setReviseTarget(String(effectiveTarget));
+    setReviseEndDate(effectiveEndDate);
+    setReviseError(null);
+    setRevising(true);
+  }
+
+  async function handleRevise(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setReviseError(null);
+
+    const body: { dailyTarget?: number; endDate?: string } = {};
+    if (Number(reviseTarget) !== effectiveTarget) body.dailyTarget = Number(reviseTarget);
+    if (reviseEndDate !== effectiveEndDate) body.endDate = reviseEndDate;
+
+    setReviseSubmitting(true);
+    try {
+      const revised = await reviseGoal(goal.id, body);
+      setEffectiveTarget(revised.dailyTarget);
+      setEffectiveEndDate(revised.endDate);
+      setRevising(false);
+    } catch (err) {
+      if (isUnauthorized(err)) onUnauthorized();
+      else setReviseError(errorMessage(err));
+    } finally {
+      setReviseSubmitting(false);
+    }
+  }
+
   const header = (
     <div className="goal-detail__header">
       <button type="button" className="btn btn--secondary btn--small" onClick={onBack}>
@@ -83,8 +123,53 @@ export function GoalDetail({ goal, template, onBack, onUnauthorized }: GoalDetai
       </button>
       <h3 className="card-title">{template.name}</h3>
       <span className="goal-list__meta">
-        {goal.dailyTarget} {template.unit} a day · {goal.startDate} → {goal.endDate}
+        {effectiveTarget} {template.unit} a day · {goal.startDate} → {effectiveEndDate}
       </span>
+      {!revising && (
+        <button type="button" className="btn btn--secondary btn--small" onClick={openRevise}>
+          Revise goal
+        </button>
+      )}
+      {revising && (
+        <form onSubmit={handleRevise} aria-label="Revise goal" className="card template-form">
+          <h3 className="card-title">Revise goal</h3>
+          <div className="field-grid">
+            <div className="field">
+              <label htmlFor="revise-target">Daily target</label>
+              <input
+                id="revise-target"
+                type="number"
+                step="0.01"
+                className="input"
+                value={reviseTarget}
+                onChange={(event) => setReviseTarget(event.target.value)}
+                required
+              />
+            </div>
+            <div className="field">
+              <label htmlFor="revise-end-date">End date</label>
+              <input
+                id="revise-end-date"
+                type="date"
+                className="input"
+                value={reviseEndDate}
+                onChange={(event) => setReviseEndDate(event.target.value)}
+                required
+              />
+            </div>
+          </div>
+          <div className="template-form__actions">
+            <button type="submit" className="btn btn--primary" disabled={reviseSubmitting}>
+              Save
+            </button>
+          </div>
+          {reviseError && (
+            <p role="alert" className="error-box">
+              {reviseError}
+            </p>
+          )}
+        </form>
+      )}
     </div>
   );
 
