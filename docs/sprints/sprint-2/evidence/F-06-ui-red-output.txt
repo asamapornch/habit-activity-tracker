@@ -26,7 +26,7 @@ RED reason.
 
 Full raw output (single-file run) follows.
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+ RUN  v5.1.0 <repo>/frontend
 
  ❯ src/GoalDetail.test.tsx (17 tests | 7 failed) 7555ms
    ❯ AC-06.14 revise form prefilled (TEST-06.15) (1)

@@ -37,7 +37,7 @@ Result: 2 test files failed (2), 23 tests: 22 failed, 1 passed, 0 skipped.
 
 Full raw output follows.
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
  ❯ tests/goalRevisions.test.ts (23 tests | 22 failed) 10442ms
    ❯ AC-06.1 revise dailyTarget only (TEST-06.1) (1)
@@ -79,7 +79,7 @@ Full raw output follows.
 ⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
 
  FAIL  tests/effectiveOn.test.ts [ tests/effectiveOn.test.ts ]
-Error: Cannot find module '../src/lib/goalRevisions.js' imported from /Users/asamagus/s2-wt/backend/tests/effectiveOn.test.ts
+Error: Cannot find module '../src/lib/goalRevisions.js' imported from <repo>/backend/tests/effectiveOn.test.ts
  ❯ tests/effectiveOn.test.ts:2:1
       1| import { describe, expect, it } from "vitest";
       2| import { effectiveOn } from "../src/lib/goalRevisions.js";

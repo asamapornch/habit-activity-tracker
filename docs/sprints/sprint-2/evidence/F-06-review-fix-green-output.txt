@@ -39,7 +39,7 @@ Full raw output follows: single-file run, then full backend, then frontend.
 
 === SINGLE FILE ===
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
 
  Test Files  1 passed (1)
@@ -54,7 +54,7 @@ Full raw output follows: single-file run, then full backend, then frontend.
 > vitest run
 
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
 
  Test Files  17 passed (17)
@@ -69,7 +69,7 @@ Full raw output follows: single-file run, then full backend, then frontend.
 > vitest run
 
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/frontend
+ RUN  v5.1.0 <repo>/frontend
 
 
  Test Files  4 passed (4)

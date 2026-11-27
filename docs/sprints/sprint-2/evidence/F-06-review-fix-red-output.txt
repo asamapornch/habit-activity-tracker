@@ -30,7 +30,7 @@ pre-existing + TEST-06.26). Confirms no other collateral breakage.
 
 Full raw output (single-file run) follows.
 
- RUN  v5.1.0 /Users/asamagus/s2-wt/backend
+ RUN  v5.1.0 <repo>/backend
 
  ❯ tests/goalRevisions.test.ts (30 tests | 6 failed) 13727ms
    ❯ AC-06.20 an extended end date accepts an entry in the new window (TEST-06.21) (1)
