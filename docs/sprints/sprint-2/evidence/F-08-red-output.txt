@@ -1,0 +1,298 @@
+F-08 Progress Summaries — RED output (before any implementation)
+
+No draft implementation existed for F-08 before this run (unlike F-06 - see
+F-06-red-output.txt's disclosure). backend/src/lib/dateWindows.ts (a pure
+helper for the ISO-week/calendar-month date math) was written alongside
+this test file but is not yet wired into any route; GET /goals/:id/summary
+does not exist yet, so this RED run reflects a genuine "nothing
+implemented yet" state for the route itself.
+
+Commit SHA this was run against: d461bb7f8d34f3bddb0b976e44be3d86939d6a84
+(feature/f08-progress-summaries, after merging in the F-07/F-08 contracts
+v1.2; no F-08 implementation commit yet)
+
+Command:
+  cd backend && npx vitest run tests/goalSummaries.test.ts
+
+Result: 1 test file failed (1), 13 tests: 13 failed, 0 passed, 0 skipped.
+Every failure is a 404 from Express's own catch-all (GET /goals/:id/summary
+is not a registered route yet) instead of the expected 200/400/401/403 -
+correct RED reason (route missing, not a compile/configuration error:
+`npm run typecheck` was not run against this file in isolation, but the
+test file itself only imports already-existing modules - supertest, the
+app, prisma, errorHandler - so nothing here depends on code that doesn't
+exist yet besides the route itself).
+
+Full raw output follows.
+
+ RUN  v5.1.0 <repo>/backend
+
+ ❯ tests/goalSummaries.test.ts (13 tests | 13 failed) 6238ms
+   ❯ AC-08.1 week window (TEST-08.1) (2)
+     × TEST-08.1a week figures over entries inside the ISO week only 570ms
+     × TEST-08.1b week.end equals lastDay when the goal ends before the week's Sunday 448ms
+   ❯ AC-08.2 month window (TEST-08.2) (1)
+     × TEST-08.2 month figures match a hand-computed total over the clipped month 452ms
+   ❯ AC-08.3 window clipped to a goal starting mid-week (TEST-08.3) (1)
+     × TEST-08.3 week.start equals the goal's startDate, not the week's Monday 449ms
+   ❯ AC-08.4 a goal with no entries (TEST-08.4) (1)
+     × TEST-08.4 both windows are all zero 451ms
+   ❯ AC-08.5 average rounding (TEST-08.5) (2)
+     × TEST-08.5a total 10 over 3 days rounds to 3.33 448ms
+     × TEST-08.5b total 11 over 3 days rounds up to 3.67 455ms
+   ❯ AC-08.6 a revision changes daysMet mid-window (TEST-08.6) (1)
+     × TEST-08.6 daysMet uses the target in effect on each entry's own date 689ms
+   ❯ AC-08.7 anonymous and Manager are rejected (TEST-08.7) (2)
+     × TEST-08.7a no cookie returns 401 444ms
+     × TEST-08.7b Manager returns 403 448ms
+   ❯ AC-08.8 ownership and existence (TEST-08.8) (2)
+     × TEST-08.8a a missing goal and another Participant's goal both return the same 404 447ms
+     × TEST-08.8b a malformed goal id returns 400 Invalid goal id. 444ms
+   ❯ AC-08.9 combined check order (TEST-08.9) (1)
+     × TEST-08.9 a Manager is refused before existence is disclosed to another Participant 489ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 13 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.1 week window (TEST-08.1) > TEST-08.1a week figures over entries inside the ISO week only
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:137:24
+    135|
+    136|     const res = await getSummary(p1Cookie, G.id);
+    137|     expect(res.status).toBe(200);
+       |                        ^
+    138|     expect(res.body.week).toMatchObject({ daysRecorded: 3, daysMet: 2,…
+    139|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.1 week window (TEST-08.1) > TEST-08.1b week.end equals lastDay when the goal ends before the week's Sunday
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:146:24
+    144|
+    145|     const res = await getSummary(p1Cookie, G.id);
+    146|     expect(res.status).toBe(200);
+       |                        ^
+    147|     expect(res.body.week.end).toBe("2026-11-10");
+    148|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.2 month window (TEST-08.2) > TEST-08.2 month figures match a hand-computed total over the clipped month
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:161:24
+    159|
+    160|     const res = await getSummary(p1Cookie, G.id);
+    161|     expect(res.status).toBe(200);
+       |                        ^
+    162|     expect(res.body.month).toMatchObject({
+    163|       start: "2026-11-01",
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.3 window clipped to a goal starting mid-week (TEST-08.3) > TEST-08.3 week.start equals the goal's startDate, not the week's Monday
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:179:24
+    177|
+    178|     const res = await getSummary(p1Cookie, G.id);
+    179|     expect(res.status).toBe(200);
+       |                        ^
+    180|     expect(res.body.week.start).toBe("2026-11-11");
+    181|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.4 a goal with no entries (TEST-08.4) > TEST-08.4 both windows are all zero
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:190:24
+    188|
+    189|     const res = await getSummary(p2Cookie, G2.id);
+    190|     expect(res.status).toBe(200);
+       |                        ^
+    191|     expect(res.body.week).toMatchObject({ daysRecorded: 0, daysMet: 0,…
+    192|     expect(res.body.month).toMatchObject({ daysRecorded: 0, daysMet: 0…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.5 average rounding (TEST-08.5) > TEST-08.5a total 10 over 3 days rounds to 3.33
+TypeError: Cannot read properties of undefined (reading 'average')
+ ❯ tests/goalSummaries.test.ts:205:26
+    203|
+    204|     const res = await getSummary(p1Cookie, G.id);
+    205|     expect(res.body.week.average).toBe(3.33);
+       |                          ^
+    206|   });
+    207|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.5 average rounding (TEST-08.5) > TEST-08.5b total 11 over 3 days rounds up to 3.67
+TypeError: Cannot read properties of undefined (reading 'average')
+ ❯ tests/goalSummaries.test.ts:216:26
+    214|
+    215|     const res = await getSummary(p1Cookie, G.id);
+    216|     expect(res.body.week.average).toBe(3.67);
+       |                          ^
+    217|   });
+    218| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.6 a revision changes daysMet mid-window (TEST-08.6) > TEST-08.6 daysMet uses the target in effect on each entry's own date
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:237:24
+    235|     await start();
+    236|     const res = await getSummary(p1Cookie, G.id);
+    237|     expect(res.status).toBe(200);
+       |                        ^
+    238|     expect(res.body.month).toMatchObject({ daysRecorded: 5, daysMet: 2…
+    239|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.7 anonymous and Manager are rejected (TEST-08.7) > TEST-08.7a no cookie returns 401
+AssertionError: expected 404 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 404
+
+ ❯ expectError tests/goalSummaries.test.ts:45:22
+     43|
+     44| function expectError(res: Response, status: number, code: string, mess…
+     45|   expect(res.status).toBe(status);
+       |                      ^
+     46|   expect(res.body.error?.code).toBe(code);
+     47|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalSummaries.test.ts:247:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.7 anonymous and Manager are rejected (TEST-08.7) > TEST-08.7b Manager returns 403
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goalSummaries.test.ts:45:22
+     43|
+     44| function expectError(res: Response, status: number, code: string, mess…
+     45|   expect(res.status).toBe(status);
+       |                      ^
+     46|   expect(res.body.error?.code).toBe(code);
+     47|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalSummaries.test.ts:254:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.8 ownership and existence (TEST-08.8) > TEST-08.8a a missing goal and another Participant's goal both return the same 404
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/goalSummaries.test.ts:264:28
+    262|
+    263|     const control = await getSummary(p1Cookie, G1.id);
+    264|     expect(control.status).toBe(200);
+       |                            ^
+    265|
+    266|     const missing = await getSummary(p1Cookie, 999999);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.8 ownership and existence (TEST-08.8) > TEST-08.8b a malformed goal id returns 400 Invalid goal id.
+AssertionError: expected 404 to be 400 // Object.is equality
+
+- Expected
++ Received
+
+- 400
++ 404
+
+ ❯ expectError tests/goalSummaries.test.ts:45:22
+     43|
+     44| function expectError(res: Response, status: number, code: string, mess…
+     45|   expect(res.status).toBe(status);
+       |                      ^
+     46|   expect(res.body.error?.code).toBe(code);
+     47|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalSummaries.test.ts:276:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/13]⎯
+
+ FAIL  tests/goalSummaries.test.ts > AC-08.9 combined check order (TEST-08.9) > TEST-08.9 a Manager is refused before existence is disclosed to another Participant
+AssertionError: expected 404 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 404
+
+ ❯ expectError tests/goalSummaries.test.ts:45:22
+     43|
+     44| function expectError(res: Response, status: number, code: string, mess…
+     45|   expect(res.status).toBe(status);
+       |                      ^
+     46|   expect(res.body.error?.code).toBe(code);
+     47|   expect(res.body.error?.message).toBe(message);
+ ❯ tests/goalSummaries.test.ts:286:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/13]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  13 failed (13)
+   Start at  21:04:36
+   Duration  6.62s (tests 95%, import 3%, transform 1%, setup 1%)
+

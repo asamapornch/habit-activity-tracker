@@ -164,6 +164,24 @@ export const reviseGoal = (goalId: number, input: GoalRevisionInput) =>
     body: JSON.stringify(input),
   }) as Promise<Goal>;
 
+export interface SummaryWindow {
+  start: string;
+  end: string;
+  daysRecorded: number;
+  daysMet: number;
+  total: number;
+  average: number;
+}
+
+export interface Summary {
+  goalId: number;
+  week: SummaryWindow;
+  month: SummaryWindow;
+}
+
+export const getSummary = (goalId: number) =>
+  apiRequest(`/goals/${goalId}/summary`) as Promise<Summary>;
+
 /** F-09 §3.1: weekdays 0 = Sunday to 6 = Saturday (D-20), time "HH:MM". */
 export interface ReminderSchedule {
   goalId: number;
