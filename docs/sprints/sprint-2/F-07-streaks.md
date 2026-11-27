@@ -9,7 +9,7 @@
 | Needed by | — |
 | Owner | warunwora (Student 2) |
 | Reviewer | asamapornch (Student 1) |
-| Status | **v1.5: UI AC/STS added at implementation start. Implementation in progress on `feature/f07-streaks` (Issue #80).** |
+| Status | **v1.6: Implemented on `feature/f07-streaks` (Issue #80): `GET /goals/:id/streaks` and the Streaks panel. 17 backend and 5 UI tests red, then green; evidence in `docs/sprints/sprint-2/evidence/F-07-*`. Awaiting review.** |
 
 **Dependency note:** this feature must not be merged before F-06 is merged to `sprint-1-staging`; it
 may be implemented and tested on a branch stacked on F-06's feature branch (PR base = that branch)
@@ -207,19 +207,19 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 ## 6. Definition of done
 
 - [x] This contract is committed before any implementation code (#77; tests and code in the F-07 PR).
-- [ ] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
-      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging`.
-- [ ] Tests TEST-07.* are committed and fail first (red) because the route is missing, with the
-      failing output saved under `docs/sprints/sprint-2/evidence/`.
-- [ ] Implementation makes all TEST-07.* pass (green), with the passing output saved.
-- [ ] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests.
-- [ ] No existing test file is edited.
+- [x] May be implemented and tested on a branch stacked on F-06's feature branch (§ dependency note
+      above), but this PR must not merge before F-06's own PR merges to `sprint-1-staging` (F-06 merged in #84 before this PR opened).
+- [x] Tests TEST-07.* are committed and fail first (red) because the route is missing, with the
+      failing output saved under `docs/sprints/sprint-2/evidence/` (`bd4beb0`, `1377816`).
+- [x] Implementation makes all TEST-07.* pass (green), with the passing output saved.
+- [x] `npm test` in `backend/` passes from a clean checkout with no failing or skipped tests (246/246; frontend 55/55).
+- [x] No existing test file is edited.
 - [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
       approved by the other student with comments describing what was checked.
 - [x] The two proposed decisions (D-16, D-17) are resolved by the reviewer before implementation
       starts (accepted as written by warunwora in the #77 approval, 2026-11-28, before any F-07 test or code).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase (v1.5).
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Failed or skipped tests, if any, are listed in the evidence report (none).
 
 ## 7. Version history
 
@@ -231,3 +231,4 @@ Component tests (Vitest + React Testing Library) with `fetch` mocked per test, i
 | 1.3 | 2026-11-27 21:23 +07 | DoD wording aligned with v1.2 dependency rule; no behaviour change. §6 item 2 ("Not implementable until F-06 is merged; the Issue ... not opened for implementation until then") was left stale after the v1.2 reword; replaced with "May be implemented and tested on a branch stacked on F-06's feature branch ..., but this PR must not merge before F-06's own PR merges to sprint-1-staging." | Found while checking F-08's PR #85 for the same stale wording; author decision |
 | 1.4 | 2026-11-28 02:50 +07 | §2 step 3's `lastDay` definition corrected to read the end date *in effect* (F-06 §3.2), not the stored `Goal.endDate` column; a note for the implementer only, since F-07 has no code yet. No AC/STS change (no code to test). | Review finding by warunwora on F-06 PR #76; no scope creep |
 | 1.5 | 2026-11-28 | Implementation start, no test or code yet. Owner and reviewer set. D-16/D-17 marked settled (#77 approval). §3.3 UI filled in; AC-07.12/07.13 (end date in effect, ended goal) and UI AC-07.14 to AC-07.17 added with TEST-07.12, TEST-07.13 and TEST-07.14a to TEST-07.17; backend test file and dates named in §5. | Implementation start; F-06 end-date finding; same panel-error choice as F-09 (#86 review) |
+| 1.6 | 2026-11-28 | Status only: implemented (route, UI); DoD ticked. No behaviour change. | Implementation done, before review |
