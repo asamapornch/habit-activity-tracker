@@ -169,3 +169,33 @@ describe("AC-09.19 a 401 from a reminder request", () => {
     await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1));
   });
 });
+
+describe("AC-09.20 a failed load stays inside its panel (controls, added in v1.4)", () => {
+  it("TEST-09.20a Reminder GET 500: the panel shows its message, no alert, the goal screen still works", async () => {
+    mockGoalScreen({
+      "GET /goals/11/reminder": () => errorResponse(500, "INTERNAL", "Something went wrong."),
+    });
+    renderDetail();
+
+    const panel = await reminderPanel();
+    expect(await within(panel).findByText("Could not load the reminder.")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByText("0 of 10 days met")).toBeInTheDocument();
+    expect(screen.getByRole("form", { name: /record entry/i })).toBeInTheDocument();
+  });
+
+  it("TEST-09.20b Upcoming GET 500: the panel shows its message, no alert, the goal list still works", async () => {
+    mockFetch({
+      "GET /templates": () => jsonResponse(200, [T]),
+      "GET /goals": () => jsonResponse(200, [G1]),
+      "GET /reminders/upcoming": () => errorResponse(500, "INTERNAL", "Something went wrong."),
+    });
+    render(<Goals onUnauthorized={vi.fn()} />);
+
+    const panel = await screen.findByRole("region", { name: /upcoming reminders/i });
+    expect(await within(panel).findByText("Could not load upcoming reminders.")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /open running goal/i })).toBeInTheDocument();
+    expect(screen.getByRole("form", { name: /create goal/i })).toBeInTheDocument();
+  });
+});
