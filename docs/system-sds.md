@@ -1,6 +1,6 @@
 # System-Level Software Design Specification — Habit & Activity Tracking
 
-Version 1.2 (proposed) (Sprint 1 baseline; v1.1 adds the Lab 7 template back-dating limit, Issue #65; v1.2 (proposed) adds the planned `GoalRevision` table for the Sprint 2 F-06 contract — not yet implemented). Requirement IDs refer to `docs/srs.md`.
+Version 1.3 (Sprint 1 baseline; v1.1 adds the Lab 7 template back-dating limit, Issue #65; v1.2 adds the `GoalRevision` table for F-06; v1.3 adds the `ReminderSchedule` table for F-09 and the Sprint 2/3 endpoints, all merged to `sprint-1-staging` on 2026-11-28). Requirement IDs refer to `docs/srs.md`.
 
 ## 1. Architecture overview
 
@@ -71,13 +71,20 @@ erDiagram
     }
     GoalRevision {
       int id PK
-      int goalId FK "planned, F-06 contract, not yet implemented"
+      int goalId FK "F-06"
       float dailyTarget
       date endDate
       date effectiveFrom
       datetime createdAt
     }
-    Goal ||--o{ GoalRevision : "revised into (planned, F-06)"
+    Goal ||--o{ GoalRevision : "revised into (F-06)"
+    ReminderSchedule {
+      int id PK
+      int goalId FK,UK "F-09, one per goal (D-20)"
+      int[] weekdays "0 = Sunday to 6 = Saturday"
+      char5 time "HH:MM"
+    }
+    Goal ||--o| ReminderSchedule : "has (F-09)"
 ```
 
 Constraints:
@@ -101,13 +108,22 @@ Constraints:
   entry is recorded, BR-03 reads the template's current value and rejects a date before today − N
   (Asia/Bangkok). Changing it, like the range, affects only new entries.
 - Overlap (BR-04) is computed from stored start and end dates; nothing extra is stored.
-- Deleting is not part of Sprint 1, so no cascade behaviour is relied on.
-- `GoalRevision` (planned, Sprint 2, F-06 contract `docs/sprints/sprint-2/F-06-goal-revisions.md`): one
+- Deleting a goal is not supported, so no cascade behaviour is relied on. `DELETE /goals/:id/reminder`
+  (F-09) removes only the reminder row.
+- `GoalRevision` (Sprint 2, F-06, `docs/sprints/sprint-2/F-06-goal-revisions.md`, migration
+  `20261127134131_add_goal_revision`): one
   row per revision of a goal's `dailyTarget` and/or `endDate`, with the date it takes effect
   (`effectiveFrom`, always today when created, SRS D-13). The `Goal` table itself is not
   altered; a goal's own `dailyTarget`/`endDate` columns keep their Sprint-1 meaning (the value in
   effect from `startDate` until the first revision, if any), so a goal with zero revisions is
-  unaffected. Not yet implemented — no migration exists yet.
+  unaffected. The value in effect on a day is resolved by `effectiveOn` (`backend/src/lib/goalRevisions.ts`):
+  the revision with the greatest `effectiveFrom` on or before that day, ties to the highest `id` (D-14),
+  else the goal's own column. Every reader of the end date uses the end date in effect today (entries
+  range, BR-04 overlap, progress, streaks, summaries, upcoming reminders).
+- `ReminderSchedule` (Sprint 3, F-09, `docs/sprints/sprint-3/F-09-reminder-schedules.md`, migration
+  `20261128063000_add_reminder_schedule`): at most one row per goal (unique `goalId`, D-20), `weekdays`
+  as an integer array, `time` as `HH:MM`. Nothing is delivered; the schedule is only stored and listed.
+- Streaks (F-07) and summaries (F-08) are computed on each request; nothing extra is stored.
 
 ## 4. Roles and permissions
 
@@ -166,7 +182,7 @@ BR-02, then BR-01; inside BR-03: future, then the template's back-dating limit, 
 | 404 | Not found or not yours | another participant's goal |
 | 409 | Conflicts with existing data | second entry on same date, goal overlapping an existing goal on the same template |
 
-### 6.1 Endpoint inventory (Sprint 1)
+### 6.1 Endpoint inventory (Sprint 1 to 3)
 
 | Endpoint | Role | Feature | Requirements |
 | --- | --- | --- | --- |
@@ -182,10 +198,18 @@ BR-02, then BR-01; inside BR-03: future, then the template's back-dating limit, 
 | `POST /goals/:id/entries` | Participant (owner) | F-04 | FR-07, BR-01, BR-02, BR-03, D-12 |
 | `GET /goals/:id/entries` | Participant (owner) | F-04 | FR-09, BR-08 |
 | `GET /goals/:id/progress` | Participant (owner) | F-04 | FR-08, BR-09 |
+| `PATCH /goals/:id` | Participant (owner) | F-06 | FR-10, BR-10, BR-11, D-13, D-24 |
+| `GET /goals/:id/streaks` | Participant (owner) | F-07 | FR-11, BR-11, BR-12, D-16, D-17 |
+| `GET /goals/:id/summary` | Participant (owner) | F-08 | FR-12, BR-11, D-18, D-19 |
+| `PUT /goals/:id/reminder` | Participant (owner) | F-09 | FR-13, BR-13, D-20 |
+| `GET /goals/:id/reminder` | Participant (owner) | F-09 | FR-13 |
+| `DELETE /goals/:id/reminder` | Participant (owner) | F-09 | FR-13, D-21 |
+| `GET /reminders/upcoming` | Participant | F-09 | FR-14, BR-13 |
 | `GET /health` | any | — | operations |
+| `GET /ready` | any | — | operations (Lab 5, database check) |
 
 Detailed request/response shapes, acceptance criteria and tests are in the feature contracts under
-`docs/sprints/sprint-1/`.
+`docs/sprints/sprint-1/`, `docs/sprints/sprint-2/` and `docs/sprints/sprint-3/`.
 
 ## 7. User interface conventions
 
@@ -219,8 +243,9 @@ if `DATABASE_URL_TEST` is missing or equal to `DATABASE_URL`, so a test reset ca
 - Access tests call the API directly with no session, the wrong role, and another user's id.
 - A small number of UI end-to-end journeys cover the main flow (add when the UI exists).
 - One command runs the whole suite (NFR-04): `npm test` in `backend/`.
-- Planned (Sprint 2, F-06, SRS D-15): one small unit-test layer for the pure "value in
-  effect on day D" revision-resolution function, in addition to the API-level tests above. This is a
+- Since Sprint 2 (F-06, SRS D-15): one small unit-test layer for the pure "value in
+  effect on day D" revision-resolution function (`backend/tests/effectiveOn.test.ts`, TEST-06.14), in
+  addition to the API-level tests above. This is a
   departure from the "no separate unit-test layer" Sprint-1 policy, scoped to that one reusable
   function; it does not replace any required API-level BR-10/BR-11 test.
 
@@ -248,7 +273,7 @@ Sprint 1 runs locally. The design keeps later deployment simple:
 backend/            Express app, Prisma schema and migrations, seed script, tests
 frontend/           React app
 docs/               srs.md, system-sds.md, features.md, traceability.md,
-                    sprints/plan.md, sprints/sprint-1/, labs/
+                    sprints/plan.md, sprints/sprint-1/ to sprint-3/, labs/
 docker-compose.yml  Development PostgreSQL only
 ```
 

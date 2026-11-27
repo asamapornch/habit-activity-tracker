@@ -9,7 +9,7 @@
 | Needed by | F-07 (streaks), F-08 (progress summaries) — both read "the target in effect per day" defined here |
 | Owner | asamapornch (implementation, PR #84) |
 | Reviewer | warunwora (contract PR #76 and implementation PR #84) |
-| Status | **AC-06.1 to AC-06.19 implemented, tested and green on PR #84 (not yet merged). v1.4 adds AC-06.20 to AC-06.25 (end-date-in-effect fix + D-24 ended-goal rule, review finding) — implemented on PR #84 (not yet merged). v1.5: D-13, D-14, D-15 and D-24 settled.** |
+| Status | **Implemented and merged: AC-06.1 to AC-06.25 green, PR #84 merged to `sprint-1-staging` (`418e2af`, 2026-11-28). D-13, D-14, D-15 and D-24 settled (v1.5).** |
 
 ## 1. Purpose
 
@@ -361,10 +361,10 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
       (`F-06-green-output.txt`, `F-06-ui-green-output.txt`).
 - [x] The BR-09 `dailyTarget` per-day change (§3.2) to `GET /goals/:id/progress` is implemented and
       the regression tests in §5.3 still pass with identical numbers for unrevised goals.
-- [ ] **New in v1.4 (review finding, warunwora):** TEST-06.21 to TEST-06.26 are committed red before
+- [x] **New in v1.4 (review finding, warunwora):** TEST-06.21 to TEST-06.26 are committed red before
       their implementation, with the failing output saved to
       `docs/sprints/sprint-2/evidence/F-06-review-fix-red-output.txt`.
-- [ ] **New in v1.4:** the end-date-in-effect fix (§3.2: `POST /goals/:id/entries`, both BR-04 overlap
+- [x] **New in v1.4:** the end-date-in-effect fix (§3.2: `POST /goals/:id/entries`, both BR-04 overlap
       call sites, `GET /goals/:id/progress`) and the D-24 ended-goal 409 are implemented; TEST-06.21
       to TEST-06.26 pass (green), saved to `F-06-review-fix-green-output.txt`; the §5.3 regression
       tests (now including `TEST-03.8*`-`03.10*` and `TEST-04.6*`-`04.8*`) still pass unchanged.
@@ -372,17 +372,17 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
       and re-confirmed after the v1.4 fix, not just at v1.0/v1.3).
 - [x] No existing test file is edited except where §5.3 requires re-running (not changing expected
       results of) existing BR-09/BR-03/BR-04 tests.
-- [ ] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
-      approved by the other student with comments describing what was checked. (PR #76 itself:
-      reviewed by warunwora, changes requested 2026-11-28, addressed in v1.4 above; PR #84
-      implementation: reviewer requested, not yet approved.)
+- [x] Pull request into `sprint-1-staging` is linked to this contract and its Issue, reviewed and
+      approved by the other student with comments describing what was checked: contract PR #76 and
+      implementation PR #84, both approved by warunwora after review rounds and merged (`1306901`,
+      `418e2af`).
 - [x] The three proposed decisions (D-13, D-14, D-15) **and the new D-24** are resolved by the
       reviewer: warunwora accepted all four as written on PR #76 (2026-11-28, https://github.com/asamapornch/habit-activity-tracker/pull/76#issuecomment-7229307813),
       and the SRS §7 rows are updated to settled wording (v1.5).
 - [x] UI section (§3.3) is filled in with AC/STS at the start of the implementation phase, following
       the same pattern F-03 v1.2 and F-04 v1.2 used (v1.3).
 - [x] TEST-06.15 to TEST-06.20 are committed red before the UI code, then green.
-- [ ] Failed or skipped tests, if any, are listed in the evidence report.
+- [x] Failed or skipped tests, if any, are listed in the evidence report: none failed or skipped in the green runs.
 
 ## 7. Version history
 
@@ -393,3 +393,5 @@ Test IDs start at TEST-06.15 (TEST-06.14 is already used by the backend unit tes
 | 1.3 | 2026-11-27 21:56 +07 | UI AC/STS added at implementation start, as F-03/F-04 did; no backend behaviour change. §3.3 filled in; AC-06.14 to AC-06.19 and TEST-06.15 to TEST-06.20 added (§5.2). | UI implementation start, following F-03 v1.2/F-04 v1.2 |
 | 1.4 | 2026-11-28 02:34 +07 | Review finding by warunwora on #76; no scope creep. §3.2 corrected: `POST /goals/:id/entries`, both BR-04 overlap call sites and `GET /goals/:id/progress` were wrongly claimed to need no change for `endDate` — they read the stored column directly and must instead use the end date in effect (`effectiveOn(..., "endDate")`). AC-06.20 to AC-06.24 added for this. New Decision D-24 (proposed): revising an already-ended goal returns 409 `CONFLICT` "This goal has already ended and cannot be revised."; AC-06.25 added. TEST-06.21 to TEST-06.26 added (§5.1). Header Status, Owner and Reviewer corrected to match actual PR state (was stale at "no code yet" since v1.3). | Review finding by warunwora on #76; no scope creep |
 | 1.5 | 2026-11-28 | D-13, D-14, D-15 and D-24 settled: warunwora accepted all four as written on #76; "(proposed, needs review)" removed from the header, §2 steps 5 and 7, §2.5, §3.1, AC-06.12, AC-06.25 and TEST-06.14; §6 item checked. §3.4 last sentence corrected: since v1.4 the `endDate` side of `effectiveOn` is also read by D-24, the entry date range, both BR-04 overlap call sites and the progress and F-07/F-08 `lastDay`. No behaviour, AC or test change. | Re-review by warunwora on #76 (2026-11-28) |
+| 1.6 | 2026-11-28 | Status only: PR #84 merged to `sprint-1-staging`. No behaviour, AC or test change. | Combined Sprint 2/3 docs update after the merges |
+| 1.7 | 2026-11-28 | Definition of done: the v1.4 red/green items, the PR item (#76 and #84 approved and merged) and the failed/skipped item are ticked with their evidence. No behaviour, AC or test change. | Owner check on #97 |

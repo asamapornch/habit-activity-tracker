@@ -1,6 +1,6 @@
 # Features — Habit & Activity Tracking
 
-Feature inventory for the whole product (Part B). Requirement IDs are from `docs/srs.md` v1.2.
+Feature inventory for the whole product (Part B). Requirement IDs are from `docs/srs.md` v1.3.
 Sprint 1 features have an engineering contract under `docs/sprints/sprint-1/`; Sprint 2 and 3 features
 get their contracts at the start of their sprint.
 
@@ -11,10 +11,10 @@ get their contracts at the start of their sprint.
 | F-03 | Goals | Participant creates a goal from a template (daily target, start and end date) and lists and reads own goals; goal screens | FR-06, BR-04, BR-05, BR-08, NFR-02, NFR-05 | F-01, F-02 | 1 | Done (PR #27, #31) |
 | F-04 | Entries, progress and history | Participant records one value per day on an own goal, within the template's back-dating limit (Lab 7), sees history in date order and computed progress; goal screen | FR-07, FR-08, FR-09, BR-01, BR-02, BR-03, BR-08, BR-09, NFR-02, NFR-05, D-12 | F-01, F-02, F-03 | 1 | Done (PR #30, #31); Lab 7 change (Issue #65) done in PR #71 |
 | F-05 | Access control (cross-cutting) | API tests that every protected endpoint rejects no session (401), wrong role (403) and another Participant's records (404), independent of the UI | NFR-02, BR-06, BR-08 | F-01 to F-04 | 1 | Done (PR #17, Stage B with #30) |
-| F-06 | Goal revisions | Participant revises the daily target and/or end date of an own goal; revisions kept with an effective date; past days keep their old target | FR-10, BR-10, BR-11, BR-04, BR-08 | F-03, F-04 | 2 | AC-06.1 to AC-06.19 implemented and green on PR #84 (not yet merged); contract `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.5; AC-06.20 to AC-06.25 (review fix) implemented and green on PR #84 (not yet merged) |
-| F-07 | Streaks | Current and longest streak per goal from entries and the target in effect on each day | FR-11, BR-11, BR-12, BR-08 | F-04, F-06 | 2 | Implemented, in review — `docs/sprints/sprint-2/F-07-streaks.md` v1.7; `GET /goals/:id/streaks` plus Streaks panel, Issue #80 |
-| F-08 | Progress summaries | Weekly and monthly summary per goal: days recorded, days met, total and average value | FR-12, BR-11, BR-08 | F-04, F-06 | 2 | Implemented on PR #85 (stacked on F-06 PR #84, not yet merged) — `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.6; must not be merged before F-06 |
-| F-09 | Reminder schedules | Participant sets weekdays and a time per goal; upcoming reminders for the next 7 days are listed; nothing is delivered | FR-13, FR-14, BR-13, BR-08 | F-03 | 3 | Implemented, in review — `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.4; Slice 1 and 2 API plus UI panels, Issue #82 |
+| F-06 | Goal revisions | Participant revises the daily target and/or end date of an own goal; revisions kept with an effective date; past days keep their old target | FR-10, BR-10, BR-11, BR-04, BR-08 | F-03, F-04 | 2 | Done (contract PR #76, code PR #84) — `docs/sprints/sprint-2/F-06-goal-revisions.md` v1.6 |
+| F-07 | Streaks | Current and longest streak per goal from entries and the target in effect on each day | FR-11, BR-11, BR-12, BR-08 | F-04, F-06 | 2 | Done (contract PR #77, code PR #96) — `docs/sprints/sprint-2/F-07-streaks.md` v1.8 |
+| F-08 | Progress summaries | Weekly and monthly summary per goal: days recorded, days met, total and average value | FR-12, BR-11, BR-08 | F-04, F-06 | 2 | Done (contract PR #77, code PR #85) — `docs/sprints/sprint-2/F-08-progress-summaries.md` v1.7 |
+| F-09 | Reminder schedules | Participant sets weekdays and a time per goal; upcoming reminders for the next 7 days are listed; nothing is delivered | FR-13, FR-14, BR-13, BR-08 | F-03 | 3 | Done (contract PR #78, code PR #86) — `docs/sprints/sprint-3/F-09-reminder-schedules.md` v1.5 |
 | F-10 | Deployment and hardening | Docker images, PostgreSQL on durable storage, GCP deployment, CI on every PR, performance check | NFR-06, NFR-07, NFR-08 | F-01 to F-09 | 3 (Lab 5 for Docker/CI/GCP) | NFR-06/NFR-08 done (Lab 5, already on main); NFR-07 contract written (planned) — `docs/sprints/sprint-3/F-10-deployment-hardening.md` v1.0; no timing test yet |
 
 ## System responsibilities (cross-cutting)
