@@ -1,0 +1,2720 @@
+# F-07 RED (frontend)
+# Tested commit: 1377816 (feature/f07-streaks, UI tests only; no Streaks panel yet)
+# Run at: 2026-11-28 06:16 +07; Node v26.13.1
+# Command: cd frontend && npx vitest run src/Streaks.test.tsx --reporter=verbose
+# Expected (F-07 v1.5 §5.2): all 5 new tests red on assertions (panel not found / onUnauthorized not called).
+# Full frontend suite on the same commit: Tests  5 failed | 50 passed (55). Only these 5 fail.
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ × src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14a shows the current and longest streak from the server 1022ms
+   → Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ × src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14b uses 'day' for 1 1007ms
+   → Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ × src/Streaks.test.tsx > AC-07.15 refresh after an entry > TEST-07.15 recording an entry loads the streaks again and shows the new numbers 1011ms
+   → Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ × src/Streaks.test.tsx > AC-07.16 a failed load stays inside the panel > TEST-07.16 streaks GET 500: panel message, no alert, the goal screen still works 1010ms
+   → Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ × src/Streaks.test.tsx > AC-07.17 a 401 from the streaks request > TEST-07.17 calls onUnauthorized 1010ms
+   → expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+<html>
+  <head />
+  <body>
+    <div>
+      <section
+        class="goal-detail"
+      >
+        <div
+          class="goal-detail__header"
+        >
+          <button
+            class="btn btn--secondary btn--small"
+            type="button"
+          >
+            Back to goals
+          </button>
+          <h3
+            class="card-title"
+          >
+            Running
+          </h3>
+          <span
+            class="goal-list__meta"
+          >
+            5
+             
+            km
+             a day · 
+            2026-11-01
+             → 
+            2026-11-30
+          </span>
+          <button
+            class="btn btn--secondary btn--small"
+            type="button"
+          >
+            Revise goal
+          </button>
+        </div>
+        <div
+          aria-label="Progress"
+          class="card progress-card"
+        >
+          <p
+            class="progress-card__pct"
+          >
+            0
+            %
+          </p>
+          <p
+            class="progress-card__days"
+          >
+            0
+             of 
+            10
+             days met
+          </p>
+          <div
+            aria-hidden="true"
+            class="progress-bar"
+          >
+            <div
+              class="progress-bar__fill"
+              style="width: 0%;"
+            />
+          </div>
+          <p
+            class="progress-card__today"
+          >
+            Today (Asia/Bangkok): 
+            2026-11-10
+          </p>
+        </div>
+        <form
+          aria-label="Record entry"
+          class="card template-form"
+        >
+          <h3
+            class="card-title"
+          >
+            Record entry
+          </h3>
+          <div
+            class="field-grid"
+          >
+            <div
+              class="field"
+            >
+              <label
+                for="entry-date"
+              >
+                Date
+              </label>
+              <input
+                class="input"
+                id="entry-date"
+                required=""
+                type="date"
+                value="2026-11-10"
+              />
+            </div>
+            <div
+              class="field"
+            >
+              <label
+                for="entry-value"
+              >
+                Value (
+                km
+                )
+              </label>
+              <input
+                class="input"
+                id="entry-value"
+                required=""
+                step="0.01"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="template-form__actions"
+          >
+            <button
+              class="btn btn--primary"
+              type="submit"
+            >
+              Record
+            </button>
+          </div>
+        </form>
+        <h3
+          class="section-subtitle"
+        >
+          History
+        </h3>
+        <p
+          class="status-message"
+        >
+          No entries yet.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14a shows the current and longest streak from the server
+TestingLibraryElementError: Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ streaksPanel src/Streaks.test.tsx:34:35
+     32| }
+     33|
+     34| const streaksPanel = () => screen.findByRole("region", { name: "Streak…
+       |                                   ^
+     35|
+     36| describe("AC-07.14 Streaks panel", () => {
+ ❯ src/Streaks.test.tsx:41:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/Streaks.test.tsx > AC-07.14 Streaks panel > TEST-07.14b uses 'day' for 1
+TestingLibraryElementError: Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ streaksPanel src/Streaks.test.tsx:34:35
+     32| }
+     33|
+     34| const streaksPanel = () => screen.findByRole("region", { name: "Streak…
+       |                                   ^
+     35|
+     36| describe("AC-07.14 Streaks panel", () => {
+ ❯ src/Streaks.test.tsx:50:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/Streaks.test.tsx > AC-07.15 refresh after an entry > TEST-07.15 recording an entry loads the streaks again and shows the new numbers
+TestingLibraryElementError: Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ streaksPanel src/Streaks.test.tsx:34:35
+     32| }
+     33|
+     34| const streaksPanel = () => screen.findByRole("region", { name: "Streak…
+       |                                   ^
+     35|
+     36| describe("AC-07.14 Streaks panel", () => {
+ ❯ src/Streaks.test.tsx:69:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/Streaks.test.tsx > AC-07.16 a failed load stays inside the panel > TEST-07.16 streaks GET 500: panel message, no alert, the goal screen still works
+TestingLibraryElementError: Unable to find role="region" and name "Streaks"
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <section
+      class="goal-detail"
+    >
+      <div
+        class="goal-detail__header"
+      >
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Back to goals
+        </button>
+        <h3
+          class="card-title"
+        >
+          Running
+        </h3>
+        <span
+          class="goal-list__meta"
+        >
+          5
+           
+          km
+           a day · 
+          2026-11-01
+           → 
+          2026-11-30
+        </span>
+        <button
+          class="btn btn--secondary btn--small"
+          type="button"
+        >
+          Revise goal
+        </button>
+      </div>
+      <div
+        aria-label="Progress"
+        class="card progress-card"
+      >
+        <p
+          class="progress-card__pct"
+        >
+          0
+          %
+        </p>
+        <p
+          class="progress-card__days"
+        >
+          0
+           of 
+          10
+           days met
+        </p>
+        <div
+          aria-hidden="true"
+          class="progress-bar"
+        >
+          <div
+            class="progress-bar__fill"
+            style="width: 0%;"
+          />
+        </div>
+        <p
+          class="progress-card__today"
+        >
+          Today (Asia/Bangkok): 
+          2026-11-10
+        </p>
+      </div>
+      <form
+        aria-label="Record entry"
+        class="card template-form"
+      >
+        <h3
+          class="card-title"
+        >
+          Record entry
+        </h3>
+        <div
+          class="field-grid"
+        >
+          <div
+            class="field"
+          >
+            <label
+              for="entry-date"
+            >
+              Date
+            </label>
+            <input
+              class="input"
+              id="entry-date"
+              required=""
+              type="date"
+              value="2026-11-10"
+            />
+          </div>
+          <div
+            class="field"
+          >
+            <label
+              for="entry-value"
+            >
+              Value (
+              km
+              )
+            </label>
+            <input
+              class="input"
+              id="entry-value"
+              required=""
+              step="0.01"
+              type="number"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="template-form__actions"
+        >
+          <button
+            class="btn btn--primary"
+            type="submit"
+          >
+            Record
+          </button>
+        </div>
+      </form>
+      <h3
+        class="section-subtitle"
+      >
+        History
+      </h3>
+      <p
+        class="status-message"
+      >
+        No entries yet.
+      </p>
+    </section>
+  </div>
+</body>
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ streaksPanel src/Streaks.test.tsx:34:35
+     32| }
+     33|
+     34| const streaksPanel = () => screen.findByRole("region", { name: "Streak…
+       |                                   ^
+     35|
+     36| describe("AC-07.14 Streaks panel", () => {
+ ❯ src/Streaks.test.tsx:85:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/Streaks.test.tsx > AC-07.17 a 401 from the streaks request > TEST-07.17 calls onUnauthorized
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+
+Ignored nodes: comments, script, style
+<html>
+  <head />
+  <body>
+    <div>
+      <section
+        class="goal-detail"
+      >
+        <div
+          class="goal-detail__header"
+        >
+          <button
+            class="btn btn--secondary btn--small"
+            type="button"
+          >
+            Back to goals
+          </button>
+          <h3
+            class="card-title"
+          >
+            Running
+          </h3>
+          <span
+            class="goal-list__meta"
+          >
+            5
+             
+            km
+             a day · 
+            2026-11-01
+             → 
+            2026-11-30
+          </span>
+          <button
+            class="btn btn--secondary btn--small"
+            type="button"
+          >
+            Revise goal
+          </button>
+        </div>
+        <div
+          aria-label="Progress"
+          class="card progress-card"
+        >
+          <p
+            class="progress-card__pct"
+          >
+            0
+            %
+          </p>
+          <p
+            class="progress-card__days"
+          >
+            0
+             of 
+            10
+             days met
+          </p>
+          <div
+            aria-hidden="true"
+            class="progress-bar"
+          >
+            <div
+              class="progress-bar__fill"
+              style="width: 0%;"
+            />
+          </div>
+          <p
+            class="progress-card__today"
+          >
+            Today (Asia/Bangkok): 
+            2026-11-10
+          </p>
+        </div>
+        <form
+          aria-label="Record entry"
+          class="card template-form"
+        >
+          <h3
+            class="card-title"
+          >
+            Record entry
+          </h3>
+          <div
+            class="field-grid"
+          >
+            <div
+              class="field"
+            >
+              <label
+                for="entry-date"
+              >
+                Date
+              </label>
+              <input
+                class="input"
+                id="entry-date"
+                required=""
+                type="date"
+                value="2026-11-10"
+              />
+            </div>
+            <div
+              class="field"
+            >
+              <label
+                for="entry-value"
+              >
+                Value (
+                km
+                )
+              </label>
+              <input
+                class="input"
+                id="entry-value"
+                required=""
+                step="0.01"
+                type="number"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="template-form__actions"
+          >
+            <button
+              class="btn btn--primary"
+              type="submit"
+            >
+              Record
+            </button>
+          </div>
+        </form>
+        <h3
+          class="section-subtitle"
+        >
+          History
+        </h3>
+        <p
+          class="status-message"
+        >
+          No entries yet.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>
+ ❯ src/Streaks.test.tsx:100:48
+     98|     const { onUnauthorized } = renderDetail();
+     99|
+    100|     await waitFor(() => expect(onUnauthorized).toHaveBeenCalledTimes(1…
+       |                                                ^
+    101|   });
+    102| });
+ ❯ runWithExpensiveErrorDiagnosticsDisabled node_modules/@testing-library/dom/dist/config.js:47:12
+ ❯ checkCallback node_modules/@testing-library/dom/dist/wait-for.js:124:77
+ ❯ Timeout.checkRealTimersCallback node_modules/@testing-library/dom/dist/wait-for.js:118:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  06:16:26
+   Duration  5.54s (tests 94%, environment 4%, setup 1%, transform 1%, import 1%)
+
