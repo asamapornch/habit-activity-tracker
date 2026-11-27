@@ -6,6 +6,7 @@ import { templatesRouter } from "./routes/templates.js";
 import { goalsRouter } from "./routes/goals.js";
 import { entriesRouter } from "./routes/entries.js";
 import { streaksRouter } from "./routes/streaks.js";
+import { remindersRouter } from "./routes/reminders.js";
 import { createSessionMiddleware } from "./lib/session.js";
 import { createCorsMiddleware } from "./lib/cors.js";
 import { mountFrontend } from "./lib/staticFrontend.js";
@@ -32,6 +33,7 @@ export function createApp() {
   app.use(goalsRouter);
   app.use(entriesRouter);
   app.use(streaksRouter);
+  app.use(remindersRouter);
   // Must come last: a no-op unless frontend/dist was built into this image
   // (see config.frontendDistPath), and only ever reached by a request none
   // of the routers above already handled.

@@ -1,0 +1,39 @@
+# F-09 GREEN (backend)
+# Tested commit: e0e0e79 (feature/f09-reminder-schedules, routes added on top of 5ac2d73)
+# Run at: 2026-11-28 05:45 +07; Node v26.13.1; Postgres 16 (docker compose db)
+# Command: cd backend && npx vitest run tests/reminders.test.ts --reporter=verbose
+# Expected (F-09 v1.2 §5): all 23 tests green, same tests that were red at da70bbd.
+# Full backend suite on the same commit: Tests  252 passed (252).
+
+
+ RUN  v5.1.0 <repo>/backend
+
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.1 owner sets a schedule on a goal without one: 200 and it is stored 445ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.2 a second PUT replaces the schedule wholesale, not a merge (D-20) 393ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.3a no cookie gets 401 on PUT, GET and DELETE 379ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.3b a Manager gets 403 on PUT, GET and DELETE and nothing is stored 389ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.4a a weekday out of range (7) is a shape error 373ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.4b a duplicate weekday is a shape error 380ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.4c a time not matching HH:MM (8:00, 24:00) is a shape error 380ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.4d a malformed goal id returns Invalid goal id. 375ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.4e other shape errors: not an object, missing and unknown keys, string weekday 387ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.5 control; another Participant gets the same 404 as a missing goal on all three 399ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.6 an empty weekdays array returns the BR-13 message and nothing is stored 372ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.6b an empty weekdays array does not change an existing schedule 388ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.7 GET on an own goal with no schedule is the no-schedule 404, not goal-not-found 389ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.8 DELETE is 204 with or without a schedule, and GET is the no-schedule 404 after 404ms
+ ✓ tests/reminders.test.ts > Slice 1: set, read and remove one goal's schedule (FR-13) > TEST-09.9 control; Manager 403 before shape, ownership 404 before the weekday rule 389ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.10 lists every matching instance across the caller's goals, sorted 389ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.10b today itself is in the window and today + 7 is not 393ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.11 an instance after the goal's end date is excluded, earlier ones stay 397ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.11b the end date in effect is used: an F-06 extension past the stored end adds instances 384ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.12a a goal without a schedule contributes nothing 385ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.12b a Participant with no schedules gets an empty list, never another user's 381ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.13a two goals on the same date and time are ordered by goalId 386ms
+ ✓ tests/reminders.test.ts > Slice 2: upcoming reminders for the next 7 days (FR-14, BR-13) > TEST-09.13b anonymous gets 401 and a Manager gets 403 378ms
+
+ Test Files  1 passed (1)
+      Tests  23 passed (23)
+   Start at  05:38:48
+   Duration  9.59s (tests 94%, setup 3%, import 2%)
+

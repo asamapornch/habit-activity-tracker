@@ -1,0 +1,28 @@
+# F-09 TEST-09.20a/b controls (frontend)
+# Tested commit: d0706fb (tests added after the panels existed: review finding 1 on #86)
+# Run at: 2026-11-28 05:59 +07; Node v26.13.1
+# Command: cd frontend && npx vitest run src/Reminders.test.tsx --reporter=verbose
+# Expected (F-09 v1.4 §5.2): controls, green on the existing code; 11/11 in this file.
+# Full frontend suite on the same commit: Tests  61 passed (61).
+# Not vacuous: with role="alert" added to both panels' load-error line (local edit, not committed), TEST-09.20a and TEST-09.20b both fail (2 failed | 9 skipped with -t TEST-09.20).
+
+
+ RUN  v5.1.0 <repo>/frontend
+
+ ✓ src/Reminders.test.tsx > AC-09.14 Reminder panel shows the current schedule > TEST-09.14a no schedule (404) shows 'No reminder set.' and no Remove button 46ms
+ ✓ src/Reminders.test.tsx > AC-09.14 Reminder panel shows the current schedule > TEST-09.14b a schedule shows its weekday names Sun to Sat and the time 7ms
+ ✓ src/Reminders.test.tsx > AC-09.15 saving a schedule > TEST-09.15 Save sends the ticked weekdays as ascending integers and HH:MM, then shows the saved schedule 58ms
+ ✓ src/Reminders.test.tsx > AC-09.15 saving a schedule > TEST-09.15b the form is pre-filled from an existing schedule 10ms
+ ✓ src/Reminders.test.tsx > AC-09.16 a rejected save > TEST-09.16 a 400 shows the server's message as returned and the form keeps what was typed 32ms
+ ✓ src/Reminders.test.tsx > AC-09.17 removing a schedule > TEST-09.17 Remove sends DELETE, then the panel shows 'No reminder set.' without Remove 16ms
+ ✓ src/Reminders.test.tsx > AC-09.18 Upcoming reminders panel on the Goals screen > TEST-09.18a lists each instance as date, time and goal name in the server's order 8ms
+ ✓ src/Reminders.test.tsx > AC-09.18 Upcoming reminders panel on the Goals screen > TEST-09.18b an empty list shows 'No reminders in the next 7 days.' 4ms
+ ✓ src/Reminders.test.tsx > AC-09.19 a 401 from a reminder request > TEST-09.19 the Reminder panel's GET returning 401 calls onUnauthorized 53ms
+ ✓ src/Reminders.test.tsx > AC-09.20 a failed load stays inside its panel (controls, added in v1.4) > TEST-09.20a Reminder GET 500: the panel shows its message, no alert, the goal screen still works 6ms
+ ✓ src/Reminders.test.tsx > AC-09.20 a failed load stays inside its panel (controls, added in v1.4) > TEST-09.20b Upcoming GET 500: the panel shows its message, no alert, the goal list still works 6ms
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  05:59:29
+   Duration  891ms (environment 47%, tests 33%, setup 9%, import 7%, transform 3%, worker 1%)
+

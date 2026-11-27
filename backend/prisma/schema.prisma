@@ -49,6 +49,7 @@ model Goal {
   endDate     DateTime @db.Date
   entries     Entry[]
   revisions   GoalRevision[]
+  reminder    ReminderSchedule?
 
   @@map("goals")
 }
@@ -92,4 +93,15 @@ model Session {
   @@index([expire])
   @@map("session")
   @@ignore
+}
+
+// F-09 (SRS D-20): at most one reminder schedule per goal, enforced by the unique goalId.
+model ReminderSchedule {
+  id       Int    @id @default(autoincrement())
+  goalId   Int    @unique
+  goal     Goal   @relation(fields: [goalId], references: [id])
+  weekdays Int[]
+  time     String @db.Char(5)
+
+  @@map("reminder_schedules")
 }
