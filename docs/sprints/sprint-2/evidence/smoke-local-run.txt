@@ -1,12 +1,22 @@
-Local verification of the extended deploy/smoke_test.py (Issue #99), branch
-feature/smoke-test-d2, commit 51bc0bb391d2543d532c6d91be752e6e9151c1a8 (same
-commit as origin/sprint-1-staging at the time of this run; the smoke script
-itself is an uncommitted working-tree change built into the test image).
+Local verification of the redesigned deploy/smoke_test.py (Issue #99), branch
+feature/smoke-test-d2 (PR #100), commit 51bc0bb391d2543d532c6d91be752e6e9151c1a8
+(same commit as origin/sprint-1-staging; the smoke script is an uncommitted
+working-tree change built into each test image below, until this round's
+commit).
+
+This supersedes the previous version of this file (same filename, earlier
+commit): the script was redesigned after review so that the default mode
+(SMOKE_D2 unset) is byte-for-byte the Sprint-1-only script at origin/main,
+and all Sprint 2/3 coverage moved behind an explicit SMOKE_D2=1 opt-in, with
+two named soft preconditions (a second account; the Lab 7 fixture goal) that
+SKIP rather than FAIL when absent. The earlier version ran the Sprint 2/3
+checks automatically whenever SMOKE_EMAIL/SMOKE_PASSWORD were set, which
+would have FAILed on a clean/rolled-back database with no Sprint 2/3 fixture
+data yet - a design bug, fixed here, not worked around.
 
 ================================================================================
 Environment (isolated from the user's own dev containers; all stopped and
-removed after this run - see docs/sprints/sprint-2/evidence/post-deploy/ for
-the real deployed-service run)
+removed after this run)
 ================================================================================
 - Dedicated Postgres: `docker run postgres:16-alpine`, container smoke-d2-pg,
   port 55440 (not the project's usual dev DB on 5434, not the F-06 worktree's
@@ -16,48 +26,85 @@ the real deployed-service run)
 - Migrations + seed: `npx prisma migrate deploy && npm run db:seed` run once
   inside that image against the dedicated Postgres (SEED_PASSWORD_* were
   throwaway local-only values, never printed here).
-- App container: `docker run -p 18090:3000 ... habit-tracker-smoke-d2`.
-- One deliberate difference from production, disclosed rather than hidden:
-  ran with NODE_ENV=development (image default is NODE_ENV=production).
-  backend/src/lib/session.ts sets the session cookie's `secure` flag to
-  `process.env.NODE_ENV === "production"`; express-session's own documented
-  behaviour is "If secure is set, and you access your site over HTTP, the
-  cookie will not be set" - confirmed by testing both ways locally. Plain
-  HTTP to localhost has no TLS, so with NODE_ENV=production no session
-  cookie was ever returned and every login-dependent check failed at the
-  first step. The real Cloud Run service serves over HTTPS, so this does
-  not affect production; it is purely a local HTTP vs HTTPS artifact, not a
-  code change (nothing under backend/ or deploy/release.sh was touched to
-  get this local run working - only this run's own `docker run -e NODE_ENV`
-  flag).
-- One Manager-created template was needed as the "L7-CHECK*" fixture this
-  script looks for (the script only ever logs in as Participants, per the
-  design decision to keep SMOKE_EMAIL/SMOKE_PASSWORD as participant 1
-  unchanged): created once by hand via curl as manager@example.com,
-  named "L7-CHECK-LOCALVERIFY" (minValue=0, maxValue=50), landing at
-  template id 1 in this fresh database.
-- SMOKE_L7_GOAL_ID (new env var, default 12 - the real deployed fixture's
-  goal id from docs/labs/lab-07/evidence/post-deploy-check-output.txt) was
-  left at its default for the main runs below, which is why
-  PERSIST-LAB7-GOAL/PERSIST-LAB7-ENTRIES correctly report "not found": a
-  fresh local database has no goal 12 at all, let alone one with the real
-  Lab 7 entry dates. This is the expected, disclosed local-environment
-  limitation named in the script's own module docstring - not a defect in
-  the script or the app. The real deployed environment has the real
-  fixture at that id; see the post-deploy run for that check actually
-  passing.
+- App container: `docker run -p 18090:3000 ... habit-tracker-smoke-d2`, with
+  NODE_ENV=development (image default is NODE_ENV=production). One
+  deliberate, disclosed difference from production: backend/src/lib/
+  session.ts's session cookie is `secure` only when NODE_ENV=production, and
+  express-session's own documented behaviour is "If secure is set, and you
+  access your site over HTTP, the cookie will not be set" - confirmed by
+  testing both ways locally. No route handler branches on NODE_ENV, so this
+  does not affect what any check verifies; it was only needed to get a
+  session cookie at all over plain local HTTP. The real Cloud Run service is
+  HTTPS, unaffected.
 - Local python3 is 3.8 (no `zoneinfo`, stdlib since 3.9); used
   /Library/Frameworks/Python.framework/Versions/3.9/bin/python3 (3.9.6) for
-  this local run only. The deploy workflow's own Python is 3.14
-  (actions/setup-python, .github/workflows/deploy.yml), so this is a local
-  machine difference, not a script compatibility issue.
+  every run below. The deploy workflow's own Python is 3.14
+  (actions/setup-python, .github/workflows/deploy.yml) - a local machine
+  difference, not a script compatibility issue.
 
 ================================================================================
-Run 1 - clean pass (fresh database, unmodified code)
+Run 1 - default mode (SMOKE_D2 unset), no login creds - the real pipeline's
+behaviour today (gh variable/secret list confirmed SMOKE_EMAIL/SMOKE_PASSWORD
+are not currently configured at all in the "demo" environment or the repo)
+================================================================================
+$ python3 deploy/smoke_test.py http://localhost:18090
+
+Smoke testing http://localhost:18090
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+SKIP  login: SMOKE_EMAIL/SMOKE_PASSWORD not set
+4/4 checks passed
+exit code: 0
+
+================================================================================
+Run 1b - default mode (SMOKE_D2 unset), WITH login creds set - still exactly
+the Sprint-1-only script's behaviour; SMOKE_D2 alone gates everything new
 ================================================================================
 $ SMOKE_EMAIL="participant1@example.com" SMOKE_PASSWORD="<redacted local dev value>" \
-  SMOKE_EMAIL_2="participant2@example.com" SMOKE_PASSWORD_2="<redacted local dev value>" \
-  SMOKE_L7_GOAL_ID="1" \
+  python3 deploy/smoke_test.py http://localhost:18090
+
+Smoke testing http://localhost:18090
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+PASS  login: 200, session works and logged out (role PARTICIPANT)
+5/5 checks passed
+exit code: 0
+
+Diffed the shared code path (every function above main(), and main()'s own
+Sprint-1-only block) against `git show origin/main:deploy/smoke_test.py`:
+identical except comments/boilerplate. Runs 1 and 1b match that script's
+real output and exit codes exactly.
+
+================================================================================
+Run 2 - SMOKE_D2=1, clean database, NO "L7-CHECK*" template yet - confirms
+the "explicitly enabled precondition missing is a FAIL" rule, distinct from
+the two named soft (SKIP) preconditions
+================================================================================
+$ SMOKE_EMAIL="participant1@example.com" SMOKE_PASSWORD="<redacted>" SMOKE_D2=1 \
+  python3 deploy/smoke_test.py http://localhost:18090
+
+Smoke testing http://localhost:18090
+PASS  health: 200 ok
+PASS  readiness/DB: 200 ready (database reachable)
+PASS  HTML frontend: 200 text/html
+PASS  JSON 404 for unknown API path: 404 JSON NOT_FOUND
+PASS  login: 200, session works and logged out (role PARTICIPANT)
+== Sprint 2/3 feature journey (participant 1) ==
+FAIL  D2-feature-journey: no template named like "L7-CHECK*" found; needs Lab 7's fixture (a Manager-created template this script cannot create itself) - SMOKE_D2=1 explicitly enables this check, so a missing template FAILs it rather than skipping
+5/6 checks passed
+exit code: 1
+
+================================================================================
+Run 3 - SMOKE_D2=1, L7-CHECK template created (by hand, as Manager, same as
+the previous version of this file), but NO second account and NO Lab 7
+fixture goal - both NAMED soft preconditions - confirms SKIPPED, not FAIL,
+and exit 0 despite 2 skips
+================================================================================
+$ SMOKE_EMAIL="participant1@example.com" SMOKE_PASSWORD="<redacted>" SMOKE_D2=1 \
   python3 deploy/smoke_test.py http://localhost:18090
 
 Smoke testing http://localhost:18090
@@ -76,60 +123,52 @@ PASS  F07-STREAKS: GET /goals/1/streaks -> expected currentStreak>=1 and longest
 PASS  F08-SUMMARY: GET /goals/1/summary -> expected week/month daysRecorded>=1 and daysMet>=1, got week={'start': '2026-11-28', 'end': '2026-11-28', 'daysRecorded': 1, 'daysMet': 1, 'total': 50, 'average': 50} month={'start': '2026-11-28', 'end': '2026-11-28', 'daysRecorded': 1, 'daysMet': 1, 'total': 50, 'average': 50}
 PASS  F09-REMINDER-PUT: PUT /goals/1/reminder weekdays=[6] time=09:00 -> expected 200 echoing that, got 200 {'goalId': 1, 'weekdays': [6], 'time': '09:00'}
 PASS  F09-REMINDER-GET: GET /goals/1/reminder -> expected 200 {weekdays: [6], time: '09:00'}, got 200 {'goalId': 1, 'weekdays': [6], 'time': '09:00'}
-== Access restriction (participant 2) ==
-PASS  P2-CANNOT-READ-GOAL: GET /goals/1 as participant 2 -> expected 404 NOT_FOUND, got 404 {'error': {'code': 'NOT_FOUND', 'message': 'Goal not found.'}}
-PASS  P2-CANNOT-REVISE-GOAL: PATCH /goals/1 as participant 2 -> expected 404 NOT_FOUND, got 404 {'error': {'code': 'NOT_FOUND', 'message': 'Goal not found.'}}
-PASS  P2-CANNOT-READ-REMINDER: GET /goals/1/reminder as participant 2 -> expected 404 NOT_FOUND, got 404 {'error': {'code': 'NOT_FOUND', 'message': 'Goal not found.'}}
-PASS  P2-CANNOT-SET-REMINDER: PUT /goals/1/reminder as participant 2 -> expected 404 NOT_FOUND, got 404 {'error': {'code': 'NOT_FOUND', 'message': 'Goal not found.'}}
+SKIP  P2-access-checks: SMOKE_EMAIL_2/SMOKE_PASSWORD_2 not set (soft precondition - not a FAIL)
 PASS  F09-REMINDER-DELETE: DELETE /goals/1/reminder -> expected 204, got 204
 PASS  F09-REMINDER-GONE: GET /goals/1/reminder after DELETE -> expected 404 NOT_FOUND, got 404 {'error': {'code': 'NOT_FOUND', 'message': 'No reminder schedule set for this goal.'}}
 == Persistence (fresh login session) ==
 PASS  PERSIST-ACROSS-SESSION: GET /goals/1 on a brand-new login -> expected the revised dailyTarget=50.0 endDate=2026-12-11 to still be there, got {'id': 1, 'userId': 2, 'templateId': 1, 'dailyTarget': 50, 'startDate': '2026-11-28', 'endDate': '2026-12-11'}
-== Persistence across releases (Lab 7 fixture, goal 1) ==
-PASS  PERSIST-LAB7-GOAL: GET /goals/1 (Lab 7 fixture) -> expected 200, got 200 (if this fails, the fixture may have been manually cleaned up since Lab 7 - report plainly, do not fabricate)
-FAIL  PERSIST-LAB7-ENTRIES: GET /goals/1/entries -> expected dates ('2026-11-17', '2026-11-25', '2026-11-27') present, got ['2026-11-28'] (missing: ['2026-11-17', '2026-11-25', '2026-11-27'])
-22/23 checks passed
-exit code: 1
+== Persistence across releases (Lab 7 fixture, goal 12) ==
+SKIP  PERSIST-LAB7: goal 12 not present (soft precondition - not a FAIL)
+17/17 checks passed, 2 skipped
+exit code: 0
 
-EXPECTED local-only result, explained: SMOKE_L7_GOAL_ID was overridden to 1
-here (this run's OWN goal) so PERSIST-LAB7-GOAL would find something to
-read in a fresh database at all; naturally its entry dates are today's,
-not the real Lab 7 dates, so PERSIST-LAB7-ENTRIES correctly reports them
-missing. This is not a defect - see "Run 1b" below for the same check
-correctly reporting the real fixture as simply absent (404) when not
-overridden, and the post-deploy evidence for this check actually passing
-against the real deployed fixture.
+Expected on a fresh local database: no goal 12 exists at all (that id is the
+real deployed fixture's - see docs/labs/lab-07/evidence/
+post-deploy-check-output.txt), so PERSIST-LAB7 correctly SKIPs rather than
+fabricating or FAILing. In the real deployed environment this check will
+find the real fixture and run for real (see the post-deploy evidence for
+that).
 
 ================================================================================
-Run 2 - demonstrated FAIL: a real one-line regression, reverted, never committed
+Run 4 - demonstrated FAIL: a real one-line regression, reverted, never
+committed - confirms SMOKE_D2=1 still catches a genuine defect, and that a
+FAIL and the unrelated SKIPs are tallied independently
 ================================================================================
 Temporarily changed backend/src/routes/reminders.ts's DELETE /goals/:id/reminder
-handler from `res.status(204).end()` to `res.status(200).end()` (AC-09.x /
-D-21's exact 204 contract), rebuilt the image, reran against the SAME
-database (so the goal/entries/revision from Run 1 are reused, confirming the
-idempotent-rerun path also works under this condition):
+handler from `res.status(204).end()` to `res.status(200).end()` (D-21's exact
+204 contract), rebuilt the image, reran against the SAME database as Run 3
+(reusing its goal/entries/revision/template, confirming the idempotent-rerun
+path also works):
 
-$ SMOKE_EMAIL=... SMOKE_PASSWORD=... SMOKE_EMAIL_2=... SMOKE_PASSWORD_2=... \
+$ SMOKE_EMAIL="participant1@example.com" SMOKE_PASSWORD="<redacted>" SMOKE_D2=1 \
   python3 deploy/smoke_test.py http://localhost:18090
-  (PASS through F09-REMINDER-PUT and F09-REMINDER-GET, and the P2 access
-  checks, all unaffected by this change)
+  (PASS through F09-REMINDER-PUT/-GET, SKIP P2-access-checks, unaffected)
 FAIL  F09-REMINDER-DELETE: DELETE /goals/1/reminder -> expected 204, got 200
 PASS  F09-REMINDER-GONE: GET /goals/1/reminder after DELETE -> expected 404 NOT_FOUND, got 404 {...}
-  (the schedule row really was deleted - only the status code was wrong -
-  so this one check alone catches exactly the injected regression, nothing
-  else)
+  (the schedule row really was deleted - only the status code was wrong - so
+  this one check alone catches exactly the injected regression)
 == Persistence across releases (Lab 7 fixture, goal 12) ==
-FAIL  PERSIST-LAB7-GOAL: GET /goals/12 (Lab 7 fixture) -> expected 200, got 404
-FAIL  PERSIST-LAB7-ENTRIES: GET /goals/12/entries -> expected 200, got 404
-20/23 checks passed
+SKIP  PERSIST-LAB7: goal 12 not present (soft precondition - not a FAIL)
+16/17 checks passed, 2 skipped
 exit code: 1
 
-The `reminders.ts` change was reverted immediately after this run (confirmed
+The reminders.ts change was reverted immediately after this run (confirmed
 by `git diff --stat backend/src/routes/reminders.ts` showing no output) and
-was never committed. The clean image habit-tracker-smoke-d2-broken used for
-this one run was removed afterward along with every other local Docker
-resource (see below) - it does not back any pushed commit, tag, or the real
-deployed service.
+was never committed. The image habit-tracker-smoke-d2-broken used for this
+one run was removed afterward along with every other local Docker resource
+(see below) - it does not back any pushed commit, tag, or the real deployed
+service.
 
 ================================================================================
 Cleanup
